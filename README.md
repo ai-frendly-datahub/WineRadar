@@ -19,7 +19,7 @@
 
 ## 데모
 
-- [샘플 리포트](https://<username>.github.io/WineRadar/) – GitHub Pages에 게시되는 일일 HTML 리포트 예시
+- **[📊 Live Daily Reports](https://zzragida.github.io/WineRadar/)** – GitHub Pages에 게시되는 일일 HTML 리포트 (매일 자동 업데이트)
 
 ## 주요 기능
 
@@ -101,8 +101,10 @@ WineRadar를 Claude Desktop의 MCP 서버로 사용할 수 있습니다.
 
 1. 저장소를 Fork 하고 Settings → Pages → Branch를 `gh-pages` 로 설정합니다.
 2. (선택) Settings → Secrets 에 `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` 등을 등록합니다.
-3. Actions 탭에서 “WineRadar Crawler” 워크플로를 수동 실행하거나 스케줄링합니다.
-4. `https://<username>.github.io/WineRadar/` 에서 HTML 리포트를 확인합니다.
+3. Actions 탭에서 "WineRadar Crawler" 워크플로를 수동 실행하거나 스케줄링합니다.
+4. **[Daily Reports](https://zzragida.github.io/WineRadar/)** 에서 HTML 리포트를 확인합니다.
+
+**현재 배포된 리포트**: https://zzragida.github.io/WineRadar/
 
 ### 환경 변수
 
@@ -180,10 +182,20 @@ WineRadar/
 - **정기 수집 스케줄러**: main.py에서 1회 실행 (`--mode once`) 및 정기 실행 (`--mode scheduler`) 지원
 - **통합 테스트**: 수집 → 엔티티 추출 → 저장 → 조회 전체 파이프라인 검증 (202개 단위 테스트 통과)
 - **Demo Pipeline**: `python demo_pipeline.py` 실행 가능 (RSS + HTML 수집, 엔티티 추출 포함)
-- **GitHub Actions**: 매일 자동 수집 워크플로 (cron: 0 0 * * *)
-- **데이터 저장**: DuckDB 파일을 Git 리포지토리에 자동 커밋 + 7일 Artifact 백업
+- **GitHub Actions**: 매일 자동 수집 워크플로 (cron: 0 0 * * *) - 매일 오전 9시(KST) 실행
+- **데이터 저장**: DuckDB Artifact 백업 (7일 보관, ~1MB)
 - **HTML Reporter**: Jinja2 기반 일일 리포트 생성 및 GitHub Pages 자동 배포
+- **GitHub Pages**: https://zzragida.github.io/WineRadar/ (매일 자동 업데이트)
 - **MCP 서버**: Claude Desktop 연동 (3개 tools: get_view, search_by_keyword, get_recent_items)
+- **EDA 분석**: 수집 데이터 탐색 및 통계 분석 (notebooks/eda_wineradar.ipynb)
+
+### 📊 현재 수집 데이터 통계 (2025-11-19)
+- 총 596개 기사 (6개 활성 소스)
+- 2,959개 엔티티 추출 (와이너리: 2,758, 지역: 125, 기후대: 40, 포도품종: 36)
+- 주요 소스: Gambero Rosso (84.2%), Decanter (5.5%)
+- 지역 분포: 구대륙 92.1%, 아시아 5.0%, 신대륙 2.9%
+- Top 포도품종: Chardonnay, Pinot Noir, Riesling
+- Top 와인 지역: Champagne, Bordeaux, Burgundy
 
 ### 🚧 다음 단계
 - [ ] **벡터 검색**: FAISS 기반 유사 콘텐츠 검색
