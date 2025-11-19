@@ -9,41 +9,71 @@ sources:
     country: "KR"
     continent: "ASIA"
     region: "Asia/East/Korea"
-    tier: "community"
+    tier: "premium"  # 전문 온라인 와인 미디어
     content_type: "news_review"
     language: "ko"
-    enabled: true
+    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
     weight: 2.8
+    supports_rss: false
+    requires_login: false
+    notes: "Korean professional wine media (wine21.com)"
     config:
-      list_url: "https://example.com/wine21/rss"
+      list_url: "https://www.wine21.com/11_news/reporter_news_list.html"
+      collection_method: "html"
 
-  - name: "ImporterExample"
-    id: "importer_example_kr"
+  - name: "Wine Review"
+    id: "media_winereview_kr"
+    type: "media"
+    country: "KR"
+    continent: "ASIA"
+    region: "Asia/East/Korea"
+    tier: "premium"  # 와인 전문 매체
+    content_type: "news_review"
+    language: "ko"
+    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
+    weight: 2.8
+    supports_rss: false
+    requires_login: false
+    notes: "Korean wine specialty publication (winereview.co.kr)"
+    config:
+      list_url: "https://winereview.co.kr/news"
+      collection_method: "html"
+
+  - name: "Korean Wine Consumer Association"
+    id: "official_koreawine_kr"
+    type: "official"
+    country: "KR"
+    continent: "ASIA"
+    region: "Asia/East/Korea"
+    tier: "official"  # 공식 협회
+    content_type: "education"
+    language: "ko"
+    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
+    weight: 2.0
+    supports_rss: false
+    requires_login: false
+    notes: "Official Korean wine consumer association (koreawine.or.kr)"
+    config:
+      list_url: "https://koreawine.or.kr/wineinfo"
+      collection_method: "html"
+
+  - name: "Shinsegae L&B"
+    id: "importer_shinsegae_kr"
     type: "importer"
     country: "KR"
     continent: "ASIA"
     region: "Asia/East/Korea"
-    tier: "community"
+    tier: "community"  # 유통사
     content_type: "news_review"
     language: "ko"
-    enabled: true
+    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
     weight: 2.0
+    supports_rss: false
+    requires_login: false
+    notes: "Major Korean wine distributor (shinsegae-lnb.com)"
     config:
-      list_url: "https://example.com/importer/news"
-
-  - name: "CommunityExample"
-    id: "community_example_kr"
-    type: "community"
-    country: "KR"
-    continent: "ASIA"
-    region: "Asia/East/Korea"
-    tier: "community"
-    content_type: "news_review"
-    language: "ko"
-    enabled: true
-    weight: 1.0
-    config:
-      list_url: "https://example.com/community/list"
+      list_url: "https://www.shinsegae-lnb.com/html/news/promotion.html"
+      collection_method: "html"
 
   # === 글로벌 프리미엄 미디어 ===
   - name: "Decanter"
@@ -57,8 +87,12 @@ sources:
     language: "en"
     enabled: true
     weight: 3.0
+    supports_rss: true
+    requires_login: false
+    notes: Official_RSS
     config:
       list_url: "https://www.decanter.com/feed/"
+      collection_method: "rss"  # ✅ 검증 완료 (RSS 2.0)
 
   # === 구대륙 (Old World) 출처 ===
 
@@ -72,10 +106,14 @@ sources:
     tier: "premium"
     content_type: "news_review"
     language: "fr"
-    enabled: true
+    enabled: false  # ❌ RSS 접근 실패, HTML 스크레이퍼 구현 필요
     weight: 3.0
+    supports_rss: false
+    requires_login: false
+    notes: html_scrape
     config:
-      list_url: "https://www.larvf.com/rss"  # RSS 피드 확인 필요
+      list_url: "https://www.larvf.com/actualites"
+      collection_method: "html"  # RSS 대신 HTML 스크레이핑
 
   - name: "Institut Français de la Vigne et du Vin"
     id: "official_ifv_fr"
@@ -86,10 +124,14 @@ sources:
     tier: "official"
     content_type: "statistics"
     language: "fr"
-    enabled: true
+    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
     weight: 2.5
+    supports_rss: false
+    requires_login: false
+    notes: html_stats
     config:
-      list_url: "https://www.vignevin.com/actualites/"  # RSS 피드 확인 필요
+      list_url: "https://www.vignevin.com/actualites/"
+      collection_method: "html"
 
   # 🇮🇹 이탈리아
   - name: "Gambero Rosso"
@@ -103,8 +145,12 @@ sources:
     language: "it"
     enabled: true
     weight: 3.0
+    supports_rss: true
+    requires_login: false
+    notes: rss_available
     config:
       list_url: "https://www.gamberorosso.it/feed/"
+      collection_method: "rss"  # ✅ 검증 완료 (RSS 2.0)
 
   - name: "Federdoc"
     id: "official_federdoc_it"
@@ -115,10 +161,14 @@ sources:
     tier: "official"
     content_type: "education"
     language: "it"
-    enabled: true
+    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
     weight: 2.5
+    supports_rss: false
+    requires_login: false
+    notes: html_news
     config:
-      list_url: "https://www.federdoc.com/feed/"  # RSS 피드 확인 필요
+      list_url: "https://www.federdoc.com/news/"
+      collection_method: "html"
 
   # 🇪🇸 스페인
   - name: "Vinos de España (ICEX)"
@@ -130,10 +180,14 @@ sources:
     tier: "official"
     content_type: "market_report"
     language: "es"
-    enabled: true
+    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
     weight: 2.5
+    supports_rss: false
+    requires_login: false
+    notes: html_market
     config:
-      list_url: "https://www.foodswinesfromspain.com/feed/"  # RSS 피드 확인 필요
+      list_url: "https://www.foodswinesfromspain.com/news/"
+      collection_method: "html"
 
   # 🇩🇪 독일
   - name: "Wines of Germany"
@@ -145,10 +199,14 @@ sources:
     tier: "official"
     content_type: "education"
     language: "en"
-    enabled: true
+    enabled: false  # ❌ RSS 없음 (리디렉션: winesofgermany.com), HTML 스크레이퍼 필요
     weight: 2.5
+    supports_rss: true
+    requires_login: false
+    notes: rss_available
     config:
-      list_url: "https://www.germanwines.de/feed/"  # RSS 피드 확인 필요
+      list_url: "https://www.winesofgermany.com/news/"
+      collection_method: "html"
 
   # 🇵🇹 포르투갈
   - name: "Wines of Portugal"
@@ -160,10 +218,14 @@ sources:
     tier: "official"
     content_type: "education"
     language: "en"
-    enabled: true
+    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
     weight: 2.5
+    supports_rss: false
+    requires_login: false
+    notes: html_listing
     config:
-      list_url: "https://www.winesofportugal.com/feed/"  # RSS 피드 확인 필요
+      list_url: "https://www.winesofportugal.com/news/news-list"
+      collection_method: "html"
 
   # === 신대륙 (New World) 출처 ===
 
@@ -177,10 +239,14 @@ sources:
     tier: "official"
     content_type: "statistics"
     language: "en"
-    enabled: true
+    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요 (우선순위 높음)
     weight: 2.5
+    supports_rss: false
+    requires_login: false
+    notes: html_press
     config:
-      list_url: "https://wineinstitute.org/feed/"  # RSS 피드 확인 필요
+      list_url: "https://wineinstitute.org/category/press-releases/"
+      collection_method: "html"
 
   - name: "Wine Spectator"
     id: "media_winespectator_us"
@@ -191,10 +257,15 @@ sources:
     tier: "premium"
     content_type: "news_review"
     language: "en"
-    enabled: true
+    enabled: false  # ❌ RSS 없음, 페이월 가능성 (구독 모델)
     weight: 3.0
+    supports_rss: false
+    requires_login: true
+    notes: subscription
     config:
-      list_url: "https://www.winespectator.com/rss/feed"  # RSS 피드 확인 필요
+      list_url: "https://www.winespectator.com/articles"
+      collection_method: "html"
+      note: "Premium content may require subscription"
 
   # 🇦🇺 호주
   - name: "Wine Australia"
@@ -206,10 +277,14 @@ sources:
     tier: "official"
     content_type: "statistics"
     language: "en"
-    enabled: true
+    enabled: false  # ❌ RSS 없음 (JS 기반 SPA), HTML 스크레이퍼 필요 (우선순위 높음)
     weight: 2.5
+    supports_rss: false
+    requires_login: false
+    notes: spa_html
     config:
-      list_url: "https://www.wineaustralia.com/news/feed"  # RSS 피드 확인 필요
+      list_url: "https://www.wineaustralia.com/news"
+      collection_method: "html"
 
   # 🇳🇿 뉴질랜드
   - name: "New Zealand Wine"
@@ -221,10 +296,14 @@ sources:
     tier: "official"
     content_type: "education"
     language: "en"
-    enabled: true
+    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
     weight: 2.5
+    supports_rss: false
+    requires_login: false
+    notes: html_listing
     config:
-      list_url: "https://www.nzwine.com/feed/"  # RSS 피드 확인 필요
+      list_url: "https://www.nzwine.com/news/"
+      collection_method: "html"
 
   # 🇨🇱 칠레
   - name: "Wines of Chile"
@@ -236,10 +315,14 @@ sources:
     tier: "official"
     content_type: "market_report"
     language: "en"
-    enabled: true
+    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
     weight: 2.5
+    supports_rss: false
+    requires_login: false
+    notes: html_listing
     config:
-      list_url: "https://www.winesofchile.org/feed/"  # RSS 피드 확인 필요
+      list_url: "https://www.winesofchile.org/news/"
+      collection_method: "html"
 
   # 🇦🇷 아르헨티나
   - name: "Wines of Argentina"
@@ -251,10 +334,14 @@ sources:
     tier: "official"
     content_type: "market_report"
     language: "en"
-    enabled: true
+    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
     weight: 2.5
+    supports_rss: false
+    requires_login: false
+    notes: html_listing
     config:
-      list_url: "https://www.winesofargentina.org/feed/"  # RSS 피드 확인 필요
+      list_url: "https://www.winesofargentina.org/news/"
+      collection_method: "html"
 
   # 🇿🇦 남아프리카공화국
   - name: "Wines of South Africa"
@@ -266,7 +353,11 @@ sources:
     tier: "official"
     content_type: "education"
     language: "en"
-    enabled: true
+    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
     weight: 2.5
+    supports_rss: false
+    requires_login: false
+    notes: html_listing
     config:
-      list_url: "https://www.wosa.co.za/feed/"  # RSS 피드 확인 필요
+      list_url: "https://www.wosa.co.za/news/"
+      collection_method: "html"
