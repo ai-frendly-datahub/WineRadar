@@ -1,39 +1,272 @@
-# WineRadar 수집 소스 정의 (MVP용 초안)
-# 실제 URL/구조는 프로젝트 진행하며 수정
+# WineRadar 수집 소스 정의
+# 구대륙/신대륙 균형을 고려한 공신력 있는 출처 포함
 
 sources:
+  # === 한국 로컬 소스 ===
   - name: "Wine21"
-    id: "media_wine21"
+    id: "media_wine21_kr"
     type: "media"
     country: "KR"
+    continent: "ASIA"
+    region: "Asia/East/Korea"
+    tier: "community"
+    content_type: "news_review"
+    language: "ko"
     enabled: true
     weight: 2.8
     config:
       list_url: "https://example.com/wine21/rss"
 
-  - name: "Decanter"
-    id: "media_decanter"
-    type: "media"
-    country: "GLOBAL"
-    enabled: true
-    weight: 3.0
-    config:
-      list_url: "https://example.com/decanter/rss"
-
   - name: "ImporterExample"
-    id: "importer_example"
+    id: "importer_example_kr"
     type: "importer"
     country: "KR"
+    continent: "ASIA"
+    region: "Asia/East/Korea"
+    tier: "community"
+    content_type: "news_review"
+    language: "ko"
     enabled: true
     weight: 2.0
     config:
       list_url: "https://example.com/importer/news"
 
   - name: "CommunityExample"
-    id: "community_example"
+    id: "community_example_kr"
     type: "community"
     country: "KR"
+    continent: "ASIA"
+    region: "Asia/East/Korea"
+    tier: "community"
+    content_type: "news_review"
+    language: "ko"
     enabled: true
     weight: 1.0
     config:
       list_url: "https://example.com/community/list"
+
+  # === 글로벌 프리미엄 미디어 ===
+  - name: "Decanter"
+    id: "media_decanter_global"
+    type: "media"
+    country: "GB"
+    continent: "OLD_WORLD"
+    region: "Europe/Western/UK"
+    tier: "premium"
+    content_type: "news_review"
+    language: "en"
+    enabled: true
+    weight: 3.0
+    config:
+      list_url: "https://www.decanter.com/feed/"
+
+  # === 구대륙 (Old World) 출처 ===
+
+  # 🇫🇷 프랑스
+  - name: "La Revue du vin de France"
+    id: "media_larvf_fr"
+    type: "media"
+    country: "FR"
+    continent: "OLD_WORLD"
+    region: "Europe/Western/France"
+    tier: "premium"
+    content_type: "news_review"
+    language: "fr"
+    enabled: true
+    weight: 3.0
+    config:
+      list_url: "https://www.larvf.com/rss"  # RSS 피드 확인 필요
+
+  - name: "Institut Français de la Vigne et du Vin"
+    id: "official_ifv_fr"
+    type: "official"
+    country: "FR"
+    continent: "OLD_WORLD"
+    region: "Europe/Western/France"
+    tier: "official"
+    content_type: "statistics"
+    language: "fr"
+    enabled: true
+    weight: 2.5
+    config:
+      list_url: "https://www.vignevin.com/actualites/"  # RSS 피드 확인 필요
+
+  # 🇮🇹 이탈리아
+  - name: "Gambero Rosso"
+    id: "media_gambero_it"
+    type: "media"
+    country: "IT"
+    continent: "OLD_WORLD"
+    region: "Europe/Southern/Italy"
+    tier: "premium"
+    content_type: "news_review"
+    language: "it"
+    enabled: true
+    weight: 3.0
+    config:
+      list_url: "https://www.gamberorosso.it/feed/"
+
+  - name: "Federdoc"
+    id: "official_federdoc_it"
+    type: "official"
+    country: "IT"
+    continent: "OLD_WORLD"
+    region: "Europe/Southern/Italy"
+    tier: "official"
+    content_type: "education"
+    language: "it"
+    enabled: true
+    weight: 2.5
+    config:
+      list_url: "https://www.federdoc.com/feed/"  # RSS 피드 확인 필요
+
+  # 🇪🇸 스페인
+  - name: "Vinos de España (ICEX)"
+    id: "official_icex_es"
+    type: "official"
+    country: "ES"
+    continent: "OLD_WORLD"
+    region: "Europe/Southern/Spain"
+    tier: "official"
+    content_type: "market_report"
+    language: "es"
+    enabled: true
+    weight: 2.5
+    config:
+      list_url: "https://www.foodswinesfromspain.com/feed/"  # RSS 피드 확인 필요
+
+  # 🇩🇪 독일
+  - name: "Wines of Germany"
+    id: "official_dwi_de"
+    type: "official"
+    country: "DE"
+    continent: "OLD_WORLD"
+    region: "Europe/Western/Germany"
+    tier: "official"
+    content_type: "education"
+    language: "en"
+    enabled: true
+    weight: 2.5
+    config:
+      list_url: "https://www.germanwines.de/feed/"  # RSS 피드 확인 필요
+
+  # 🇵🇹 포르투갈
+  - name: "Wines of Portugal"
+    id: "official_viniportugal_pt"
+    type: "official"
+    country: "PT"
+    continent: "OLD_WORLD"
+    region: "Europe/Southern/Portugal"
+    tier: "official"
+    content_type: "education"
+    language: "en"
+    enabled: true
+    weight: 2.5
+    config:
+      list_url: "https://www.winesofportugal.com/feed/"  # RSS 피드 확인 필요
+
+  # === 신대륙 (New World) 출처 ===
+
+  # 🇺🇸 미국
+  - name: "Wine Institute"
+    id: "official_wineinstitute_us"
+    type: "official"
+    country: "US"
+    continent: "NEW_WORLD"
+    region: "Americas/North/USA"
+    tier: "official"
+    content_type: "statistics"
+    language: "en"
+    enabled: true
+    weight: 2.5
+    config:
+      list_url: "https://wineinstitute.org/feed/"  # RSS 피드 확인 필요
+
+  - name: "Wine Spectator"
+    id: "media_winespectator_us"
+    type: "media"
+    country: "US"
+    continent: "NEW_WORLD"
+    region: "Americas/North/USA"
+    tier: "premium"
+    content_type: "news_review"
+    language: "en"
+    enabled: true
+    weight: 3.0
+    config:
+      list_url: "https://www.winespectator.com/rss/feed"  # RSS 피드 확인 필요
+
+  # 🇦🇺 호주
+  - name: "Wine Australia"
+    id: "official_wineaustralia_au"
+    type: "official"
+    country: "AU"
+    continent: "NEW_WORLD"
+    region: "Oceania/Australia"
+    tier: "official"
+    content_type: "statistics"
+    language: "en"
+    enabled: true
+    weight: 2.5
+    config:
+      list_url: "https://www.wineaustralia.com/news/feed"  # RSS 피드 확인 필요
+
+  # 🇳🇿 뉴질랜드
+  - name: "New Zealand Wine"
+    id: "official_nzwine_nz"
+    type: "official"
+    country: "NZ"
+    continent: "NEW_WORLD"
+    region: "Oceania/New Zealand"
+    tier: "official"
+    content_type: "education"
+    language: "en"
+    enabled: true
+    weight: 2.5
+    config:
+      list_url: "https://www.nzwine.com/feed/"  # RSS 피드 확인 필요
+
+  # 🇨🇱 칠레
+  - name: "Wines of Chile"
+    id: "official_winesofchile_cl"
+    type: "official"
+    country: "CL"
+    continent: "NEW_WORLD"
+    region: "Americas/South/Chile"
+    tier: "official"
+    content_type: "market_report"
+    language: "en"
+    enabled: true
+    weight: 2.5
+    config:
+      list_url: "https://www.winesofchile.org/feed/"  # RSS 피드 확인 필요
+
+  # 🇦🇷 아르헨티나
+  - name: "Wines of Argentina"
+    id: "official_winesofargentina_ar"
+    type: "official"
+    country: "AR"
+    continent: "NEW_WORLD"
+    region: "Americas/South/Argentina"
+    tier: "official"
+    content_type: "market_report"
+    language: "en"
+    enabled: true
+    weight: 2.5
+    config:
+      list_url: "https://www.winesofargentina.org/feed/"  # RSS 피드 확인 필요
+
+  # 🇿🇦 남아프리카공화국
+  - name: "Wines of South Africa"
+    id: "official_wosa_za"
+    type: "official"
+    country: "ZA"
+    continent: "NEW_WORLD"
+    region: "Africa/South/South Africa"
+    tier: "official"
+    content_type: "education"
+    language: "en"
+    enabled: true
+    weight: 2.5
+    config:
+      list_url: "https://www.wosa.co.za/feed/"  # RSS 피드 확인 필요

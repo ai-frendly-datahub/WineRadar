@@ -15,6 +15,12 @@ class RawItem(TypedDict):
     source_name: str
     source_type: str
     language: str | None
+    # 지리적/분류 메타데이터 (sources.yaml에서 전달됨)
+    country: str  # ISO 국가 코드 (KR, FR, US 등)
+    continent: str  # OLD_WORLD, NEW_WORLD, ASIA 등
+    region: str  # 계층적 지역 (Europe/Western/France)
+    tier: str  # official, premium, community
+    content_type: str  # news_review, statistics, education, market_report
 
 
 class Collector(Protocol):
