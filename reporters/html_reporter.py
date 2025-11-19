@@ -15,6 +15,68 @@ from graph.graph_queries import ViewItem
 TEMPLATE_DIR = Path(__file__).parent / "templates"
 
 
+def _generate_chart_data(sections: dict[str, list[ViewItem]], stats: dict[str, Any]) -> dict[str, Any]:
+    """차트 시각화를 위한 데이터를 생성한다."""
+    from collections import Counter
+
+    all_items = []
+    for items in sections.values():
+        all_items.extend(items)
+
+    # 소스별 분포
+    source_counts = Counter(item['source_name'] for item in all_items)
+    source_data = {
+        'labels': list(source_counts.keys()),
+        'values': list(source_counts.values())
+    }
+
+    # 대륙별 분포
+    continent_counts = Counter(item['continent'] for item in all_items)
+    continent_data = {
+        'labels': list(continent_counts.keys()),
+        'values': list(continent_counts.values())
+    }
+
+    # 엔티티 타입별 분포
+    entity_type_counts = Counter()
+    for item in all_items:
+        if item.get('entities'):
+            for entity_type in item['entities'].keys():
+                entity_type_counts[entity_type] += len(item['entities'][entity_type])
+
+    entity_data = {
+        'labels': list(entity_type_counts.keys()),
+        'values': list(entity_type_counts.values())
+    }
+
+    # 점수 분포
+    score_ranges = {'0-1': 0, '1-2': 0, '2-3': 0, '3-4': 0, '4-5': 0}
+    for item in all_items:
+        score = item.get('score', 0)
+        if score < 1:
+            score_ranges['0-1'] += 1
+        elif score < 2:
+            score_ranges['1-2'] += 1
+        elif score < 3:
+            score_ranges['2-3'] += 1
+        elif score < 4:
+            score_ranges['3-4'] += 1
+        else:
+            score_ranges['4-5'] += 1
+
+    score_data = {
+        'labels': list(score_ranges.keys()),
+        'values': list(score_ranges.values())
+    }
+
+    return {
+        'source_distribution': source_data,
+        'continent_distribution': continent_data,
+        'entity_types': entity_data,
+        'score_distribution': score_data,
+    }
+
+
 def generate_daily_report(
     target_date: date,
     sections: dict[str, list[ViewItem]],
@@ -57,11 +119,15 @@ def generate_daily_report(
     # 섹션 데이터 구조화 (title, description, items 포함)
     structured_sections = _structure_sections(sections)
 
+    # 차트 데이터 생성
+    chart_data = _generate_chart_data(sections, stats)
+
     # 템플릿 렌더링
     html_content = template.render(
         report_date=target_date.isoformat(),
         sections=structured_sections,
         stats=stats,
+        chart_data=chart_data,
         generation_time=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
     )
 
