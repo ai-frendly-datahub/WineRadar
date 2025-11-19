@@ -8,6 +8,9 @@ on:
   schedule:
     - cron: "0 0 * * *"  # 매일 00:00 UTC (한국 기준 오전 9시)
 
+permissions:
+  contents: write
+
 jobs:
   crawl-and-report:
     runs-on: ubuntu-latest
