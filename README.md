@@ -185,9 +185,14 @@ WineRadar/
 - **GitHub Actions**: 매일 자동 수집 워크플로 (cron: 0 0 * * *) - 매일 오전 9시(KST) 실행
 - **데이터 저장**: DuckDB Artifact 백업 (7일 보관, ~1MB)
 - **HTML Reporter**: Jinja2 기반 일일 리포트 생성 및 GitHub Pages 자동 배포
+- **Interactive Charts**: Chart.js 기반 데이터 시각화 (소스/대륙/엔티티/스코어 분포)
 - **GitHub Pages**: https://zzragida.github.io/WineRadar/ (매일 자동 업데이트)
 - **MCP 서버**: Claude Desktop 연동 (3개 tools: get_view, search_by_keyword, get_recent_items)
 - **EDA 분석**: 수집 데이터 탐색 및 통계 분석 (notebooks/eda_wineradar.ipynb)
+- **고도화된 엔티티 추출**:
+  - 91개 포도 품종, 195개 와인 지역, 127개 유명 와이너리 사전
+  - 자동 정규화 (Shiraz→Syrah, Cote→Côte, DRC→Domaine de la Romanée-Conti)
+  - Accent/spelling 변형 처리
 
 ### 📊 현재 수집 데이터 통계 (2025-11-19)
 - 총 596개 기사 (6개 활성 소스)

@@ -23,6 +23,25 @@ class Entity(TypedDict):
     source: str  # title, summary, content 중 어디서 추출되었는지
 
 
+# Import expanded entity dictionaries
+from analyzers.wine_entities_data import (
+    GRAPE_VARIETIES_EXPANDED,
+    WINE_REGIONS_EXPANDED,
+    CLIMATE_ZONE_MAPPING_EXPANDED,
+    KNOWN_WINERIES_EXPANDED,
+)
+from analyzers.entity_normalizer import (
+    normalize_entity,
+    calculate_entity_confidence,
+    deduplicate_entities,
+)
+
+# Use expanded dictionaries
+GRAPE_VARIETIES = GRAPE_VARIETIES_EXPANDED
+WINE_REGIONS = WINE_REGIONS_EXPANDED
+CLIMATE_ZONE_MAPPING = CLIMATE_ZONE_MAPPING_EXPANDED
+KNOWN_WINERIES = KNOWN_WINERIES_EXPANDED
+
 # spaCy 모델(옵션)
 try:  # pragma: no cover - 모델이 없으면 규칙만 사용
     import spacy
@@ -30,51 +49,6 @@ try:  # pragma: no cover - 모델이 없으면 규칙만 사용
     _NLP = spacy.load("en_core_web_sm")
 except Exception:  # pragma: no cover
     _NLP = None
-
-
-# 주요 포도 품종 사전 (확장 가능)
-GRAPE_VARIETIES = {
-    # 레드 품종
-    "Cabernet Sauvignon", "Merlot", "Pinot Noir", "Syrah", "Shiraz",
-    "Grenache", "Tempranillo", "Sangiovese", "Nebbiolo", "Malbec",
-    "Zinfandel", "Carmenere", "Petit Verdot", "Mourvèdre",
-    # 화이트 품종
-    "Chardonnay", "Sauvignon Blanc", "Riesling", "Pinot Grigio", "Pinot Gris",
-    "Gewürztraminer", "Viognier", "Chenin Blanc", "Sémillon", "Albariño",
-    "Moscato", "Grüner Veltliner",
-}
-
-# 주요 와인 산지 (확장 가능)
-WINE_REGIONS = {
-    # 구대륙
-    "Bordeaux", "Burgundy", "Champagne", "Rhône", "Loire", "Alsace",
-    "Tuscany", "Piedmont", "Veneto", "Rioja", "Ribera del Duero", "Priorat",
-    "Douro", "Mosel", "Rheingau", "Pfalz",
-    # 신대륙
-    "Napa Valley", "Sonoma", "Paso Robles", "Willamette Valley",
-    "Barossa Valley", "Margaret River", "Marlborough", "Central Otago",
-    "Mendoza", "Maipo Valley", "Colchagua Valley", "Stellenbosch",
-}
-
-# 기후대 매핑 (region → climate_zone)
-CLIMATE_ZONE_MAPPING = {
-    # 지중해성 기후
-    "Mediterranean": [
-        "Bordeaux", "Tuscany", "Rioja", "Douro", "Napa Valley", "Margaret River"
-    ],
-    # 대륙성 기후
-    "Continental": [
-        "Burgundy", "Champagne", "Piedmont", "Mosel", "Rheingau", "Mendoza"
-    ],
-    # 해양성 기후
-    "Oceanic": [
-        "Loire", "Marlborough", "Willamette Valley", "Sonoma"
-    ],
-    # 준건조 기후
-    "Semi-Arid": [
-        "Ribera del Duero", "Priorat", "Barossa Valley", "Paso Robles"
-    ],
-}
 
 
 def extract_grape_varieties(item: RawItem) -> list[Entity]:
@@ -218,29 +192,6 @@ def extract_wineries(item: RawItem) -> list[Entity]:
     """
     import re
 
-    # 유명 와이너리 사전 (확장 가능)
-    KNOWN_WINERIES = {
-        # 프랑스 보르도
-        "Château Lafite", "Château Margaux", "Château Latour",
-        "Château Mouton Rothschild", "Château Haut-Brion", "Pétrus",
-        "Château d'Yquem", "Château Lynch-Bages", "Château Palmer",
-
-        # 프랑스 부르고뉴
-        "Domaine de la Romanée-Conti", "Domaine Leflaive", "Domaine Leroy",
-
-        # 이탈리아
-        "Antinori", "Gaja", "Sassicaia", "Ornellaia", "Masseto",
-
-        # 미국
-        "Opus One", "Screaming Eagle", "Harlan Estate", "Ridge Vineyards",
-
-        # 호주
-        "Penfolds", "Henschke",
-
-        # 스페인
-        "Vega Sicilia", "Pingus",
-    }
-
     entities: list[Entity] = []
 
     sources = [
@@ -306,8 +257,11 @@ def extract_all_entities(item: RawItem) -> dict[str, list[str]]:
     # 모든 엔티티 통합
     all_entities = grape_entities + region_entities + winery_entities + climate_entities
 
+    # 정규화 및 중복 제거 (동일 엔티티의 다양한 표기 통합)
+    deduplicated = deduplicate_entities(all_entities)
+
     # 신뢰도 필터링 (threshold > 0.5)
-    filtered_entities = [e for e in all_entities if e["confidence"] > 0.5]
+    filtered_entities = [e for e in deduplicated if e["confidence"] > 0.5]
 
     # dict[str, list[str]] 형태로 변환
     result: dict[str, list[str]] = {}
@@ -319,7 +273,7 @@ def extract_all_entities(item: RawItem) -> dict[str, list[str]]:
         if entity_type not in result:
             result[entity_type] = []
 
-        # 중복 제거
+        # 중복 제거 (이미 deduplicate_entities에서 처리했지만 추가 보호)
         if entity_value not in result[entity_type]:
             result[entity_type].append(entity_value)
 

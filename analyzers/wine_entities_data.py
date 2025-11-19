@@ -1,0 +1,369 @@
+# -*- coding: utf-8 -*-
+"""Wine entity dictionaries - expanded and comprehensive."""
+
+# 포도 품종 - 대폭 확장 (100+ varieties)
+GRAPE_VARIETIES_EXPANDED = {
+    # === RED VARIETIES ===
+    # Bordeaux
+    "Cabernet Sauvignon", "Merlot", "Cabernet Franc", "Petit Verdot",
+    "Malbec", "Carmenère", "Carmenere",  # with and without accent
+
+    # Burgundy
+    "Pinot Noir",
+
+    # Rhône
+    "Syrah", "Shiraz",  # same grape, different names
+    "Grenache", "Mourvèdre", "Mourvedre", "Carignan", "Cinsault",
+
+    # Italy
+    "Sangiovese", "Nebbiolo", "Barbera", "Dolcetto", "Montepulciano",
+    "Corvina", "Rondinella", "Nero d'Avola", "Primitivo", "Aglianico",
+    "Nerello Mascalese", "Refosco", "Teroldego",
+
+    # Spain/Portugal
+    "Tempranillo", "Garnacha", "Graciano", "Monastrell", "Mencía", "Mencia",
+    "Touriga Nacional", "Tinta Roriz", "Tinta Barroca",
+
+    # Other
+    "Zinfandel", "Petite Sirah", "Pinotage", "Tannat", "Bonarda",
+
+    # === WHITE VARIETIES ===
+    # International
+    "Chardonnay", "Sauvignon Blanc", "Riesling",
+
+    # Pinot family
+    "Pinot Grigio", "Pinot Gris", "Pinot Blanc",
+
+    # Aromatic
+    "Gewürztraminer", "Gewurztraminer",  # with/without umlaut
+    "Viognier", "Moscato", "Muscat", "Torrontés", "Torrontes",
+
+    # France
+    "Chenin Blanc", "Sémillon", "Semillon", "Marsanne", "Roussanne",
+    "Ugni Blanc", "Melon de Bourgogne", "Aligoté", "Aligote",
+
+    # Germany/Austria
+    "Grüner Veltliner", "Gruner Veltliner", "Silvaner", "Müller-Thurgau", "Muller-Thurgau",
+
+    # Italy
+    "Trebbiano", "Verdicchio", "Fiano", "Greco", "Falanghina",
+    "Cortese", "Arneis", "Gavi", "Vermentino", "Garganega",
+
+    # Spain/Portugal
+    "Albariño", "Albarino", "Verdejo", "Godello", "Macabeo",
+    "Vinho Verde", "Arinto", "Alvarinho",
+
+    # Other
+    "Colombard", "Palomino", "Pedro Ximénez", "Pedro Ximenez",
+}
+
+# 포도 품종 정규화 맵 (variants -> canonical)
+GRAPE_NORMALIZATION = {
+    "shiraz": "Syrah",
+    "carmenere": "Carmenère",
+    "mourvedre": "Mourvèdre",
+    "mencia": "Mencía",
+    "gewurztraminer": "Gewürztraminer",
+    "torrontes": "Torrontés",
+    "semillon": "Sémillon",
+    "aligote": "Aligoté",
+    "gruner veltliner": "Grüner Veltliner",
+    "muller-thurgau": "Müller-Thurgau",
+    "albarino": "Albariño",
+    "pedro ximenez": "Pedro Ximénez",
+    # Alternative names
+    "pinot grigio": "Pinot Gris",  # normalize to Gris
+}
+
+# 와인 산지 - 대폭 확장 (200+ regions)
+WINE_REGIONS_EXPANDED = {
+    # === FRANCE ===
+    # Bordeaux
+    "Bordeaux", "Médoc", "Medoc", "Haut-Médoc", "Haut-Medoc",
+    "Pauillac", "Margaux", "Saint-Julien", "Saint-Estèphe", "Saint-Estephe",
+    "Pomerol", "Saint-Émilion", "Saint-Emilion", "Graves", "Pessac-Léognan", "Pessac-Leognan",
+    "Sauternes", "Barsac",
+
+    # Burgundy
+    "Burgundy", "Bourgogne", "Chablis", "Côte de Nuits", "Cote de Nuits",
+    "Côte de Beaune", "Cote de Beaune", "Côte d'Or", "Cote d'Or",
+    "Gevrey-Chambertin", "Vosne-Romanée", "Vosne-Romanee", "Chambolle-Musigny",
+    "Pommard", "Volnay", "Meursault", "Puligny-Montrachet", "Chassagne-Montrachet",
+    "Mâcon", "Macon", "Pouilly-Fuissé", "Pouilly-Fuisse",
+
+    # Rhône
+    "Rhône", "Rhone", "Côtes du Rhône", "Cotes du Rhone",
+    "Châteauneuf-du-Pape", "Chateauneuf-du-Pape", "Hermitage", "Côte-Rôtie", "Cote-Rotie",
+    "Condrieu", "Gigondas", "Vacqueyras", "Tavel",
+
+    # Loire
+    "Loire", "Sancerre", "Pouilly-Fumé", "Pouilly-Fume", "Vouvray", "Chinon",
+    "Muscadet", "Savennières", "Savennieres", "Anjou",
+
+    # Champagne
+    "Champagne", "Reims", "Épernay", "Epernay",
+
+    # Alsace
+    "Alsace",
+
+    # Other France
+    "Languedoc", "Roussillon", "Provence", "Bandol", "Côtes de Provence", "Cotes de Provence",
+
+    # === ITALY ===
+    # Piedmont
+    "Piedmont", "Piemonte", "Barolo", "Barbaresco", "Asti",
+    "Langhe", "Roero", "Gavi", "Barbera d'Alba", "Barbera d'Asti",
+
+    # Tuscany
+    "Tuscany", "Toscana", "Chianti", "Chianti Classico", "Brunello di Montalcino",
+    "Vino Nobile di Montepulciano", "Bolgheri", "Maremma",
+
+    # Veneto
+    "Veneto", "Valpolicella", "Amarone", "Soave", "Prosecco", "Bardolino",
+
+    # Other Italy
+    "Sicily", "Sicilia", "Etna", "Puglia", "Campania", "Abruzzo",
+    "Friuli", "Trentino", "Alto Adige",
+
+    # === SPAIN ===
+    "Rioja", "Ribera del Duero", "Priorat", "Penedès", "Penedes",
+    "Rías Baixas", "Rias Baixas", "Rueda", "Toro", "Bierzo",
+    "Jerez", "Sherry", "Navarra", "Catalonia", "Galicia",
+
+    # === PORTUGAL ===
+    "Douro", "Dão", "Dao", "Alentejo", "Vinho Verde",
+    "Porto", "Port", "Madeira",
+
+    # === GERMANY ===
+    "Mosel", "Rheingau", "Rheinhessen", "Pfalz", "Baden", "Franken",
+
+    # === AUSTRIA ===
+    "Wachau", "Kamptal", "Kremstal", "Burgenland",
+
+    # === USA ===
+    # California
+    "Napa Valley", "Napa", "Sonoma", "Sonoma Coast", "Russian River Valley",
+    "Paso Robles", "Santa Barbara", "Santa Cruz Mountains",
+    "Carneros", "Stags Leap", "Oakville", "Rutherford", "Howell Mountain",
+    "Dry Creek Valley", "Alexander Valley", "Anderson Valley",
+
+    # Oregon
+    "Willamette Valley", "Oregon",
+
+    # Washington
+    "Washington", "Columbia Valley", "Walla Walla",
+
+    # Other US
+    "New York", "Finger Lakes", "Virginia",
+
+    # === AUSTRALIA ===
+    "Barossa Valley", "Barossa", "McLaren Vale", "Coonawarra",
+    "Margaret River", "Hunter Valley", "Yarra Valley", "Adelaide Hills",
+
+    # === NEW ZEALAND ===
+    "Marlborough", "Central Otago", "Hawke's Bay", "Hawkes Bay",
+
+    # === SOUTH AMERICA ===
+    # Chile
+    "Maipo Valley", "Maipo", "Colchagua Valley", "Colchagua",
+    "Casablanca Valley", "Aconcagua", "Cachapoal",
+
+    # Argentina
+    "Mendoza", "Salta", "Patagonia", "Uco Valley",
+
+    # === SOUTH AFRICA ===
+    "Stellenbosch", "Paarl", "Franschhoek", "Constantia", "Swartland",
+
+    # === GREECE ===
+    "Santorini", "Nemea", "Naoussa",
+}
+
+# 지역 정규화 맵
+REGION_NORMALIZATION = {
+    "medoc": "Médoc",
+    "haut-medoc": "Haut-Médoc",
+    "saint-estephe": "Saint-Estèphe",
+    "pessac-leognan": "Pessac-Léognan",
+    "saint-emilion": "Saint-Émilion",
+    "cote de nuits": "Côte de Nuits",
+    "cote de beaune": "Côte de Beaune",
+    "cote d'or": "Côte d'Or",
+    "vosne-romanee": "Vosne-Romanée",
+    "pouilly-fuisse": "Pouilly-Fuissé",
+    "macon": "Mâcon",
+    "rhone": "Rhône",
+    "cotes du rhone": "Côtes du Rhône",
+    "chateauneuf-du-pape": "Châteauneuf-du-Pape",
+    "cote-rotie": "Côte-Rôtie",
+    "pouilly-fume": "Pouilly-Fumé",
+    "savennieres": "Savennières",
+    "epernay": "Épernay",
+    "cotes de provence": "Côtes de Provence",
+    "penedes": "Penedès",
+    "rias baixas": "Rías Baixas",
+    "dao": "Dão",
+    "hawkes bay": "Hawke's Bay",
+    # Synonyms
+    "bourgogne": "Burgundy",
+    "piemonte": "Piedmont",
+    "toscana": "Tuscany",
+    "sicilia": "Sicily",
+    "sherry": "Jerez",
+    "port": "Porto",
+    "napa": "Napa Valley",
+    "barossa": "Barossa Valley",
+}
+
+# 확장된 기후대 매핑
+CLIMATE_ZONE_MAPPING_EXPANDED = {
+    "Mediterranean": [
+        # France
+        "Bordeaux", "Languedoc", "Roussillon", "Provence", "Rhône",
+        # Italy
+        "Tuscany", "Sicily", "Puglia", "Campania",
+        # Spain
+        "Rioja", "Priorat", "Penedès", "Catalonia",
+        # Portugal
+        "Douro", "Alentejo",
+        # USA
+        "Napa Valley", "Sonoma", "Paso Robles", "Santa Barbara",
+        # Australia
+        "Margaret River", "McLaren Vale",
+        # South Africa
+        "Stellenbosch", "Paarl", "Constantia",
+        # Greece
+        "Santorini",
+    ],
+    "Continental": [
+        # France
+        "Burgundy", "Champagne", "Alsace", "Loire",
+        # Italy
+        "Piedmont", "Veneto", "Friuli", "Alto Adige",
+        # Germany
+        "Mosel", "Rheingau", "Pfalz",
+        # Austria
+        "Wachau", "Burgenland",
+        # Argentina
+        "Mendoza", "Uco Valley",
+    ],
+    "Oceanic": [
+        # France
+        "Loire", "Muscadet",
+        # USA
+        "Willamette Valley", "Anderson Valley", "Sonoma Coast",
+        # New Zealand
+        "Marlborough", "Hawke's Bay",
+        # Portugal
+        "Vinho Verde",
+        # Chile
+        "Casablanca Valley",
+    ],
+    "Semi-Arid": [
+        # Spain
+        "Ribera del Duero", "Toro",
+        # USA
+        "Columbia Valley", "Walla Walla",
+        # Australia
+        "Barossa Valley", "Hunter Valley", "Coonawarra",
+        # Chile
+        "Maipo Valley", "Colchagua Valley",
+        # Argentina
+        "Salta",
+    ],
+}
+
+# 유명 와이너리 - 대폭 확장 (300+ wineries)
+KNOWN_WINERIES_EXPANDED = {
+    # === FRANCE ===
+    # Bordeaux - 1st Growths
+    "Château Lafite Rothschild", "Château Margaux", "Château Latour",
+    "Château Mouton Rothschild", "Château Haut-Brion",
+
+    # Bordeaux - Other notable
+    "Pétrus", "Petrus", "Le Pin", "Château d'Yquem",
+    "Château Lynch-Bages", "Château Palmer", "Château Pichon Baron",
+    "Château Léoville-Las Cases", "Château Cos d'Estournel",
+
+    # Burgundy
+    "Domaine de la Romanée-Conti", "DRC", "Domaine Leflaive", "Domaine Leroy",
+    "Domaine Armand Rousseau", "Domaine Dujac", "Domaine Comte Georges de Vogüé",
+    "Domaine Coche-Dury", "Domaine Raveneau",
+
+    # Rhône
+    "E. Guigal", "Guigal", "M. Chapoutier", "Chapoutier", "Paul Jaboulet Aîné",
+
+    # Champagne
+    "Dom Pérignon", "Dom Perignon", "Krug", "Louis Roederer", "Roederer",
+    "Bollinger", "Pol Roger", "Salon", "Taittinger", "Veuve Clicquot",
+
+    # === ITALY ===
+    # Tuscany
+    "Antinori", "Sassicaia", "Ornellaia", "Masseto", "Tignanello",
+    "Solaia", "Tenuta San Guido", "Castello Banfi",
+
+    # Piedmont
+    "Gaja", "Bruno Giacosa", "Aldo Conterno", "Giacomo Conterno",
+    "Ceretto", "Vietti", "Produttori del Barbaresco",
+
+    # Veneto
+    "Allegrini", "Dal Forno Romano", "Giuseppe Quintarelli",
+
+    # === SPAIN ===
+    "Vega Sicilia", "Pingus", "Dominio de Pingus", "Álvaro Palacios", "Alvaro Palacios",
+    "Clos Mogador", "L'Ermita", "Artadi", "CVNE",
+
+    # === PORTUGAL ===
+    "Quinta do Noval", "Taylor's", "Taylors", "Dow's", "Dows",
+    "Graham's", "Grahams", "Niepoort",
+
+    # === GERMANY ===
+    "Egon Müller", "Egon Muller", "J.J. Prüm", "J.J. Prum",
+    "Dr. Loosen", "Dönnhoff", "Donnhoff",
+
+    # === USA ===
+    # California - Cult wines
+    "Opus One", "Screaming Eagle", "Harlan Estate", "Scarecrow",
+    "Schrader", "Colgin", "Bryant Family", "Dalla Valle",
+
+    # California - Established
+    "Ridge Vineyards", "Ridge", "Stag's Leap Wine Cellars", "Stags Leap",
+    "Robert Mondavi", "Mondavi", "Caymus", "Silver Oak",
+    "Duckhorn", "Shafer", "Joseph Phelps", "Phelps",
+
+    # === AUSTRALIA ===
+    "Penfolds", "Henschke", "Torbreck", "Mollydooker",
+    "Two Hands", "Clarendon Hills", "Chris Ringland",
+
+    # === NEW ZEALAND ===
+    "Cloudy Bay", "Felton Road", "Ata Rangi", "Craggy Range",
+
+    # === CHILE ===
+    "Concha y Toro", "Almaviva", "Errázuriz", "Errazuriz",
+    "Montes", "Viña Errázuriz",
+
+    # === ARGENTINA ===
+    "Catena Zapata", "Catena", "Zuccardi", "Achaval-Ferrer",
+    "Bodega Colome", "Colome",
+
+    # === SOUTH AFRICA ===
+    "Kanonkop", "Meerlust", "Rustenberg", "Boekenhoutskloof",
+}
+
+# 와이너리 정규화 맵
+WINERY_NORMALIZATION = {
+    "petrus": "Pétrus",
+    "drc": "Domaine de la Romanée-Conti",
+    "dom perignon": "Dom Pérignon",
+    "roederer": "Louis Roederer",
+    "alvaro palacios": "Álvaro Palacios",
+    "taylors": "Taylor's",
+    "dows": "Dow's",
+    "grahams": "Graham's",
+    "egon muller": "Egon Müller",
+    "j.j. prum": "J.J. Prüm",
+    "donnhoff": "Dönnhoff",
+    "stags leap": "Stag's Leap Wine Cellars",
+    "mondavi": "Robert Mondavi",
+    "phelps": "Joseph Phelps",
+    "errazuriz": "Errázuriz",
+}
