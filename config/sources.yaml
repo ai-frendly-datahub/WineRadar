@@ -1,9 +1,10 @@
 sources:
 - collection_tier: C2_html_simple
   config:
-    article_selector: a[href*='reporter_news_view']
+    article_selector: a[href*='goNewsViewDirect']
     collection_method: html
-    list_url: https://www.wine21.com/11_news/reporter_news_list.html
+    list_url: https://www.wine21.com/11_news/news_list.html
+    max_articles: 20
   content_type: news_review
   continent: ASIA
   country: KR
@@ -14,7 +15,7 @@ sources:
   - P4_trend_discovery
   language: ko
   name: Wine21
-  notes: Korean professional wine media (wine21.com)
+  notes: Korean professional wine media (wine21.com) - Updated URL and selector
   producer_role: trade_media
   region: Asia/East/Korea
   requires_login: false
