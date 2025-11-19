@@ -38,8 +38,9 @@ def _generate_html_reports(
     """HTML 리포트를 생성하고 인덱스를 업데이트한다."""
     from datetime import timedelta
 
-    # 섹션별 데이터 수집
+    # 섹션별 데이터 수집 - 사용자 관점별로 확장
     sections = {
+        # === 일일 브리핑 (모든 사용자) ===
         "top_issues": get_view(
             db_path=db_path,
             view_type="info_purpose",
@@ -47,23 +48,79 @@ def _generate_html_reports(
             time_window=timedelta(days=1),
             limit=20,
         ),
-        "by_continent": get_view(
+
+        # === 신뢰도별 뷰 (품질 중심 사용자) ===
+        "tier_authoritative": get_view(
+            db_path=db_path,
+            view_type="trust_tier",
+            focus_id="T1_authoritative",
+            time_window=timedelta(days=3),
+            limit=10,
+        ),
+        "tier_expert": get_view(
+            db_path=db_path,
+            view_type="trust_tier",
+            focus_id="T2_expert",
+            time_window=timedelta(days=2),
+            limit=10,
+        ),
+
+        # === 지역별 뷰 (지역 관심 사용자) ===
+        "region_asia": get_view(
             db_path=db_path,
             view_type="continent",
             focus_id="ASIA",
-            time_window=timedelta(days=1),
+            time_window=timedelta(days=7),
             limit=15,
         ),
+        "region_europe": get_view(
+            db_path=db_path,
+            view_type="continent",
+            focus_id="OLD_WORLD",
+            time_window=timedelta(days=3),
+            limit=15,
+        ),
+        "region_new_world": get_view(
+            db_path=db_path,
+            view_type="continent",
+            focus_id="NEW_WORLD",
+            time_window=timedelta(days=3),
+            limit=15,
+        ),
+
+        # === 엔티티별 뷰 (전문가/애호가) ===
         "by_grape": get_view(
             db_path=db_path,
             view_type="grape_variety",
-            time_window=timedelta(days=1),
-            limit=15,
+            time_window=timedelta(days=7),
+            limit=20,
         ),
-        "by_region": get_view(
+        "by_region_detail": get_view(
             db_path=db_path,
             view_type="region",
-            time_window=timedelta(days=1),
+            time_window=timedelta(days=7),
+            limit=20,
+        ),
+        "by_winery": get_view(
+            db_path=db_path,
+            view_type="winery",
+            time_window=timedelta(days=7),
+            limit=20,
+        ),
+
+        # === 목적별 뷰 (사용 시나리오별) ===
+        "for_investment": get_view(
+            db_path=db_path,
+            view_type="info_purpose",
+            focus_id="P2_investment",
+            time_window=timedelta(days=7),
+            limit=10,
+        ),
+        "for_product_discovery": get_view(
+            db_path=db_path,
+            view_type="info_purpose",
+            focus_id="P3_product_discovery",
+            time_window=timedelta(days=3),
             limit=15,
         ),
     }

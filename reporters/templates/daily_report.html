@@ -280,6 +280,56 @@
             max-height: 300px;
         }
 
+        /* Category Filter Buttons */
+        .view-filter {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            border-bottom: 2px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .view-filter h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .filter-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #764ba2;
+        }
+
+        .section.hidden {
+            display: none;
+        }
+
         @media (max-width: 768px) {
             header h1 {
                 font-size: 2em;
@@ -325,8 +375,21 @@
             </div>
         </div>
 
+        <!-- View Filter -->
+        <div class="view-filter">
+            <h3>📊 Filter by View</h3>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-category="all">All News</button>
+                <button class="filter-btn" data-category="briefing">Daily Briefing</button>
+                <button class="filter-btn" data-category="quality">By Quality</button>
+                <button class="filter-btn" data-category="region">By Region</button>
+                <button class="filter-btn" data-category="entity">By Entity</button>
+                <button class="filter-btn" data-category="purpose">By Purpose</button>
+            </div>
+        </div>
+
         {% for section_name, section_data in sections.items() %}
-        <div class="section">
+        <div class="section" data-category="{{ section_data.category }}">
             <h2 class="section-title">{{ section_data.title }}</h2>
             {% if section_data.description %}
             <p class="section-description">{{ section_data.description }}</p>
@@ -435,6 +498,38 @@
             <p><a href="https://github.com/zzragida/WineRadar" target="_blank">GitHub Repository</a></p>
         </footer>
     </div>
+
+    <!-- View Filter JavaScript -->
+    <script>
+        // Category filtering
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const sections = document.querySelectorAll('.section[data-category]');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const category = button.dataset.category;
+
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // Filter sections
+                sections.forEach(section => {
+                    if (category === 'all' || section.dataset.category === category) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                });
+
+                // Smooth scroll to first visible section
+                const firstVisible = document.querySelector('.section[data-category]:not(.hidden)');
+                if (firstVisible && category !== 'all') {
+                    firstVisible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
 
     <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>

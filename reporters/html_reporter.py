@@ -147,47 +147,108 @@ def _structure_sections(sections: dict[str, list[ViewItem]]) -> dict[str, dict[s
     Returns:
         섹션명 -> {title, description, items} 매핑
     """
-    # 섹션 타이틀과 설명 매핑
+    # 섹션 타이틀과 설명 매핑 - 사용자 관점별로 확장
     section_metadata = {
+        # === 일일 브리핑 ===
         "top_issues": {
-            "title": "🔥 Top Issues",
-            "description": "Most important wine industry news today",
+            "title": "🔥 Daily Briefing",
+            "description": "Top wine industry news and must-read articles",
+            "category": "briefing",
         },
+
+        # === 신뢰도별 (Quality-focused Users) ===
+        "tier_authoritative": {
+            "title": "⭐⭐⭐ Authoritative Sources",
+            "description": "From official wine organizations and institutions",
+            "category": "quality",
+        },
+        "tier_expert": {
+            "title": "⭐⭐ Expert Sources",
+            "description": "From wine critics and industry experts",
+            "category": "quality",
+        },
+
+        # === 지역별 (Regional Interest) ===
+        "region_asia": {
+            "title": "🌏 Asia & Korea",
+            "description": "Wine news from Asian markets",
+            "category": "region",
+        },
+        "region_europe": {
+            "title": "🇪🇺 Old World",
+            "description": "From Europe's classic wine regions",
+            "category": "region",
+        },
+        "region_new_world": {
+            "title": "🌎 New World",
+            "description": "From Americas, Australia, and emerging regions",
+            "category": "region",
+        },
+
+        # === 엔티티별 (Enthusiast & Professional) ===
+        "by_grape": {
+            "title": "🍇 Grape Varieties",
+            "description": "News about specific grape varieties and styles",
+            "category": "entity",
+        },
+        "by_region_detail": {
+            "title": "📍 Wine Regions",
+            "description": "Appellation and terroir-specific updates",
+            "category": "entity",
+        },
+        "by_winery": {
+            "title": "🏰 Wineries & Producers",
+            "description": "Producer news, releases, and estate updates",
+            "category": "entity",
+        },
+
+        # === 목적별 (Use Case Scenarios) ===
+        "for_investment": {
+            "title": "💰 Investment & Market",
+            "description": "Auction results, market trends, and investment opportunities",
+            "category": "purpose",
+        },
+        "for_product_discovery": {
+            "title": "🔍 Product Discovery",
+            "description": "New releases, ratings, and recommendations",
+            "category": "purpose",
+        },
+
+        # === Legacy mappings (for backward compatibility) ===
         "by_continent": {
             "title": "🌍 By Continent",
             "description": "Regional wine news and updates",
+            "category": "region",
         },
         "by_country": {
             "title": "🇰🇷 By Country",
             "description": "Country-specific wine news",
+            "category": "region",
         },
         "by_trust_tier": {
             "title": "⭐ By Trust Tier",
             "description": "News from trusted sources",
-        },
-        "by_grape": {
-            "title": "🍇 By Grape Variety",
-            "description": "Grape-specific articles and reviews",
+            "category": "quality",
         },
         "by_region": {
             "title": "📍 By Wine Region",
             "description": "Regional wine news and updates",
-        },
-        "by_winery": {
-            "title": "🏰 By Winery",
-            "description": "Winery-specific news and updates",
+            "category": "entity",
         },
         "by_climate": {
             "title": "🌡️ By Climate Zone",
             "description": "Climate-related wine news",
+            "category": "entity",
         },
         "professional_media": {
             "title": "📰 Professional Media",
             "description": "From trade journals and professional sources",
+            "category": "quality",
         },
         "community": {
             "title": "💬 Community",
             "description": "From wine communities and enthusiasts",
+            "category": "quality",
         },
     }
 
@@ -198,12 +259,14 @@ def _structure_sections(sections: dict[str, list[ViewItem]]) -> dict[str, dict[s
             {
                 "title": section_name.replace("_", " ").title(),
                 "description": "",
+                "category": "other",
             },
         )
 
         structured[section_name] = {
             "title": metadata["title"],
             "description": metadata["description"],
+            "category": metadata.get("category", "other"),
             "items": items,
         }
 
