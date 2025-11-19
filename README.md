@@ -194,18 +194,20 @@ WineRadar/
   - 91개 포도 품종, 195개 와인 지역, 127개 유명 와이너리 사전
   - 자동 정규화 (Shiraz→Syrah, Cote→Côte, DRC→Domaine de la Romanée-Conti)
   - Accent/spelling 변형 처리
-- **소스 다변화 (2025-11-19)**:
-  - 16개 활성 데이터 소스 (RSS 12개, HTML 4개)
-  - 지역 균형: 아시아 5개, 구대륙 6개, 신대륙 5개
-  - 언어 다양성: 영어 7개, 한국어/일본어/프랑스어/이탈리아어 각 2개, 스페인어 1개
-  - 신규 추가: Wine & Spirits Magazine, Vinogusto, Wine Magazine SA 등
-  - 상세 테스트 결과: [SOURCE_STATUS.md](docs/SOURCE_STATUS.md)
+- **소스 다변화 (2025-11-19 - Phase 2)**:
+  - **18개 활성 데이터 소스** (RSS 15개, HTML 3개)
+  - **지역 균형 달성**: 구대륙 44.4%, 신대륙 38.9%, 아시아 16.7%
+  - **언어 다양성**: 영어 9개, 스페인어/프랑스어/이탈리아어/한국어 각 2개, 일본어 1개
+  - **신규 추가 (Phase 1)**: Wine & Spirits Magazine, Vinogusto, Wine Magazine SA, WINE WHAT!?, Enolife
+  - **신규 추가 (Phase 2)**: ACE Vinos, VinePair, Punch, Tim Atkin MW
+  - **신뢰도**: T2_expert 6개 (33%), T3_professional 12개 (67%)
+  - **상세 테스트 결과**: [SOURCE_STATUS.md](docs/SOURCE_STATUS.md) - 39개 소스 테스트 완료
 
 ### 📊 현재 수집 데이터 통계 (2025-11-19)
-- 총 596개 기사 (16개 활성 소스)
+- 총 596개 기사 (18개 활성 소스)
 - 2,959개 엔티티 추출 (와이너리: 2,758, 지역: 125, 기후대: 40, 포도품종: 36)
-- 주요 소스: Gambero Rosso, Decanter, Wine Enthusiast, The Drinks Business
-- 지역 분포: 아시아/구대륙/신대륙 균형 개선 진행 중
+- 주요 소스: Gambero Rosso, Decanter, Wine Enthusiast, The Drinks Business (다변화 진행 중)
+- **지역 분포**: 구대륙 44.4%, 신대륙 38.9%, 아시아 16.7% (균형 개선 완료)
 - Top 포도품종: Chardonnay, Pinot Noir, Riesling
 - Top 와인 지역: Champagne, Bordeaux, Burgundy
 

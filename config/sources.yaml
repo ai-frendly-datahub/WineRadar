@@ -792,13 +792,13 @@ sources:
   content_type: news_review
   continent: ASIA
   country: CN
-  enabled: true
+  enabled: false
   id: media_winesofchina_cn
   info_purpose:
   - P1_daily_briefing
   language: en
   name: Wines of China
-  notes: China wine market news and analysis
+  notes: 'China wine market news and analysis [DISABLED: Connection timeout - site unavailable]'
   producer_role: trade_media
   region: Asia/East/China
   requires_login: false
@@ -817,14 +817,14 @@ sources:
   content_type: news_review
   continent: ASIA
   country: JP
-  enabled: true
+  enabled: false
   id: media_japanwine_jp
   info_purpose:
   - P1_daily_briefing
   - P4_trend_discovery
   language: ja
   name: Japan Wine
-  notes: Japanese wine industry news
+  notes: 'Japanese wine industry news [DISABLED: Connection timeout - site unavailable]'
   producer_role: trade_media
   region: Asia/East/Japan
   requires_login: false
@@ -833,3 +833,95 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.3
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.acenologia.com/feed/
+  content_type: news_review
+  continent: OLD_WORLD
+  country: ES
+  enabled: true
+  id: media_acevinos_es
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: es
+  name: ACE Vinos
+  notes: Spanish wine enology and news portal (acenologia.com)
+  producer_role: trade_media
+  region: Europe/Southern/Spain
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.6
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://vinepair.com/wine-blog/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_vinepair_us
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: en
+  name: VinePair
+  notes: US wine and spirits culture magazine
+  producer_role: trade_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.5
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://punchdrink.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_punch_us
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: en
+  name: Punch
+  notes: Craft spirits and wine culture magazine
+  producer_role: trade_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.4
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.timatkin.com/feed/
+  content_type: news_review
+  continent: OLD_WORLD
+  country: GB
+  enabled: true
+  id: media_timatkin_uk
+  info_purpose:
+  - P1_daily_briefing
+  - P3_investment
+  language: en
+  name: Tim Atkin MW
+  notes: Master of Wine, independent wine critic and journalist
+  producer_role: expert_media
+  region: Europe/Western/UK
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 2.9
