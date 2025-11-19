@@ -1,0 +1,39 @@
+# WineRadar 수집 소스 정의 (MVP용 초안)
+# 실제 URL/구조는 프로젝트 진행하며 수정
+
+sources:
+  - name: "Wine21"
+    id: "media_wine21"
+    type: "media"
+    country: "KR"
+    enabled: true
+    weight: 2.8
+    config:
+      list_url: "https://example.com/wine21/rss"
+
+  - name: "Decanter"
+    id: "media_decanter"
+    type: "media"
+    country: "GLOBAL"
+    enabled: true
+    weight: 3.0
+    config:
+      list_url: "https://example.com/decanter/rss"
+
+  - name: "ImporterExample"
+    id: "importer_example"
+    type: "importer"
+    country: "KR"
+    enabled: true
+    weight: 2.0
+    config:
+      list_url: "https://example.com/importer/news"
+
+  - name: "CommunityExample"
+    id: "community_example"
+    type: "community"
+    country: "KR"
+    enabled: true
+    weight: 1.0
+    config:
+      list_url: "https://example.com/community/list"

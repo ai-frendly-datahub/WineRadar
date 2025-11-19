@@ -1,0 +1,111 @@
+{
+  // UTF-8 인코딩 강제
+  "files.encoding": "utf8",
+  "files.autoGuessEncoding": false,
+
+  // 줄바꿈 설정 (LF)
+  "files.eol": "\n",
+
+  // 파일 끝 빈 줄 추가
+  "files.insertFinalNewline": true,
+
+  // 후행 공백 제거
+  "files.trimTrailingWhitespace": true,
+
+  // Python 관련 설정
+  "python.defaultInterpreterPath": "${workspaceFolder}/venv/bin/python",
+
+  // Python 포맷터 설정
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "editor.rulers": [100],
+    "files.encoding": "utf8"
+  },
+
+  // YAML 파일 설정
+  "[yaml]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.autoIndent": "advanced",
+    "files.encoding": "utf8"
+  },
+
+  // JSON 파일 설정
+  "[json]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "files.encoding": "utf8"
+  },
+
+  // Markdown 파일 설정
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    },
+    "files.encoding": "utf8",
+    "files.trimTrailingWhitespace": false
+  },
+
+  // HTML/Jinja2 템플릿 설정
+  "[html]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "files.encoding": "utf8"
+  },
+
+  "[jinja]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "files.encoding": "utf8"
+  },
+
+  // Black formatter 설정
+  "black-formatter.args": [
+    "--line-length=100"
+  ],
+
+  // Ruff 린터 설정
+  "ruff.args": [
+    "--line-length=100"
+  ],
+
+  // Mypy 타입 체커 설정
+  "python.linting.mypyEnabled": true,
+  "python.linting.enabled": true,
+
+  // pytest 설정
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
+
+  // 파일 제외 설정
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/.ruff_cache": true,
+    "**/*.db": false,
+    "**/*.db-journal": true
+  },
+
+  // 검색 제외 설정
+  "search.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/.ruff_cache": true,
+    "**/venv": true,
+    "**/node_modules": true
+  }
+}

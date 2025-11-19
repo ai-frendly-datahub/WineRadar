@@ -1,0 +1,47 @@
+skills:
+  - name: implement_collector
+    description: >
+      새로운 정보 소스(미디어/수입사/커뮤니티/와이너리)의 Collector를 구현한다.
+    inputs:
+      - name: source_name
+        type: string
+      - name: source_type
+        type: one_of["media","importer","community","winery_official"]
+      - name: list_url
+        type: string
+      - name: item_selector_hint
+        type: string
+    outputs:
+      - name: file_path
+        type: string
+      - name: notes
+        type: string
+    instructions:
+      - "collectors/base.py의 Collector 프로토콜을 반드시 따른다."
+      - "RawItem 타입을 준수한다."
+      - "에러가 나도 전체 흐름이 멈추지 않게 예외 처리를 해라."
+
+  - name: tune_scoring
+    description: >
+      scoring.py 내부의 score 계산 로직을 조정해서
+      Top 이슈 랭킹이 도메인 감각과 잘 맞게 만든다.
+    inputs:
+      - name: current_symptoms
+        type: string
+    outputs:
+      - name: updated_code
+        type: string
+
+  - name: build_view_endpoint
+    description: >
+      graph_queries.get_view 함수 또는 MCP 툴용 view 핸들러를 구현한다.
+    inputs:
+      - name: view_type
+        type: string
+      - name: focus_type
+        type: string
+    outputs:
+      - name: function_signature
+        type: string
+      - name: notes
+        type: string

@@ -1,0 +1,24 @@
+mode: daily                 # daily / incremental 등 (MVP에선 daily 위주)
+timezone: Asia/Seoul
+
+graph:
+  url_ttl_days: 30          # URL 노드 보존 기간
+  snapshot_keep_days: 30    # 일간 스냅샷 보존 기간
+  monthly_keep_months: 12   # 월간 요약 보존 기간
+
+report:
+  daily_max_items: 50       # 하루 리포트 전체 최대 카드 수 (섹션별 제한은 코드에서 조정)
+  sections:
+    - top_issues
+    - winery
+    - importer
+    - community
+
+push:
+  email:
+    enabled: false
+    to: []
+  telegram:
+    enabled: false
+    bot_token_secret_name: TELEGRAM_BOT_TOKEN
+    chat_id_secret_name: TELEGRAM_CHAT_ID

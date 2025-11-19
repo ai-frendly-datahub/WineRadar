@@ -1,0 +1,27 @@
+{
+  "recommendations": [
+    // Python 필수
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-python.black-formatter",
+    "charliermarsh.ruff",
+
+    // 코드 품질
+    "editorconfig.editorconfig",
+
+    // YAML 지원
+    "redhat.vscode-yaml",
+
+    // Jinja2 템플릿 지원
+    "samuelcolvin.jinjahtml",
+
+    // Git 지원
+    "eamodio.gitlens",
+
+    // 마크다운
+    "yzhang.markdown-all-in-one",
+
+    // SQLite 뷰어
+    "qwtel.sqlite-viewer"
+  ]
+}
