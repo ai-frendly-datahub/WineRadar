@@ -157,6 +157,7 @@ WineRadar/
 - [PRD.md](docs/PRD.md) – 제품 요구사항 정의
 - [ROADMAP.md](docs/ROADMAP.md) – 단계별 개발 계획
 - [KPI_METRICS.md](docs/KPI_METRICS.md) – KPI 정의, 목표, 측정 절차
+- [FEATURE_SPEC.md](docs/FEATURE_SPEC.md) – 기능별 세부 스펙 및 KPI 연계
 - [SOURCE_STRATEGY.md](docs/SOURCE_STRATEGY.md) – 데이터 소스 분류/우선순위 전략
 - [SOURCE_STATUS.md](docs/SOURCE_STATUS.md) – 데이터 소스 현황 및 테스트 결과
 

@@ -1,4 +1,4 @@
-"""sources.yaml 사용자 뷰 중심 메타데이터 검증 테스트."""
+﻿"""sources.yaml 사용자 뷰 중심 메타데이터 검증 테스트."""
 
 from __future__ import annotations
 
@@ -415,3 +415,35 @@ def test_trust_tier_weight_consistency(sources_config: dict[str, Any]) -> None:
             f"weight {weight}는 범위를 벗어남. "
             f"예상 범위: {min_weight} ~ {max_weight}"
         )
+
+
+def test_sources_include_multiple_languages(sources_config: dict[str, Any]) -> None:
+    sources = sources_config.get("sources", [])
+    languages = {src.get("language") for src in sources if src.get("enabled") and src.get("language")}
+
+    required = {
+        "ko": "한국어 소스가 활성화되어야 합니다.",
+        "en": "영어 소스가 활성화되어야 합니다.",
+        "fr": "프랑스어 소스가 활성화되어야 합니다.",
+        "it": "이탈리아어 소스가 활성화되어야 합니다.",
+    }
+
+    for lang, message in required.items():
+        assert lang in languages, message
+
+
+def test_all_sources_define_language_field(sources_config: dict[str, Any]) -> None:
+    """language 필드가 누락되지 않고 ISO 소문자 형식을 따르는지 검증."""
+    sources = sources_config.get("sources", [])
+
+    for source in sources:
+        source_id = source.get("id", "unknown")
+        language = source.get("language")
+        assert isinstance(language, str) and language, f"{source_id}: language 필드가 누락되었거나 비어 있음"
+
+        normalized = language.replace("-", "")
+        assert normalized.isalpha(), f"{source_id}: language '{language}'는 알파벳 이어야 함"
+        assert language == language.lower(), f"{source_id}: language '{language}'는 소문자 형식을 사용해야 함"
+        assert len(language.split("-")[0]) == 2, f"{source_id}: language '{language}'는 ISO 639-1 코드여야 함"
+
+

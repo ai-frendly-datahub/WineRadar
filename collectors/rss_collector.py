@@ -58,6 +58,9 @@ class RSSCollector:
             }
             if not raw_item["url"]:
                 continue
+            raw_item["summary"] = self._generate_summary(
+                raw_item["summary"], raw_item["content"], raw_item["title"]
+            )
             yield raw_item
 
     def _published_at(self, entry: Any) -> datetime | None:
@@ -71,3 +74,18 @@ class RSSCollector:
             first = entry.content[0]
             return first.get("value")
         return entry.get("summary")
+
+    def _generate_summary(self, summary: str | None, content: str | None, title: str | None) -> str | None:
+        if summary:
+            normalized = summary.strip()
+            if normalized:
+                return normalized
+        if content:
+            normalized = " ".join(content.split())
+            if len(normalized) > 280:
+                normalized = normalized[:280].rsplit(" ", 1)[0].rstrip() + "…"
+            if normalized:
+                return normalized
+        if title:
+            return title.strip()
+        return None

@@ -29,6 +29,20 @@ SAMPLE_FEED = """<?xml version="1.0" encoding="UTF-8"?>
 """
 
 
+SAMPLE_FEED_NO_SUMMARY = """<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Sample Feed</title>
+    <item>
+      <title>No Summary Story</title>
+      <link>https://example.com/articles/3</link>
+      <guid>item-3</guid>
+    </item>
+  </channel>
+</rss>
+"""
+
+
 def test_rss_collector_parses_entries(rss_source_meta):
     collector = RSSCollector(rss_source_meta, fetcher=lambda url: SAMPLE_FEED.encode("utf-8"))
     items = list(collector.collect())
@@ -46,3 +60,10 @@ def test_rss_collector_parses_entries(rss_source_meta):
     assert second["id"] == "item-2"
     assert second["published_at"].tzinfo == timezone.utc
     assert second["summary"] == "Summary B"
+
+
+def test_rss_collector_falls_back_to_title_when_summary_missing(rss_source_meta):
+    collector = RSSCollector(rss_source_meta, fetcher=lambda url: SAMPLE_FEED_NO_SUMMARY.encode("utf-8"))
+    items = list(collector.collect())
+    assert len(items) == 1
+    assert items[0]["summary"] == "No Summary Story"
