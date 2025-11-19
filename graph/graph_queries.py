@@ -4,11 +4,26 @@
 from __future__ import annotations
 
 import json
+import os
 from datetime import timedelta, datetime, timezone
 from pathlib import Path
 from typing import TypedDict, Literal, Any
 
 import duckdb
+
+# Default database path (same as graph_store)
+DB_ENV_VAR = "WINERADAR_DB_PATH"
+DEFAULT_DB_PATH = Path("data") / "wineradar.duckdb"
+
+
+def _resolve_db_path(db_path: Path | str | None = None) -> Path:
+    """Resolve database path from parameter, environment, or default."""
+    if db_path is not None:
+        return Path(db_path)
+    elif db_env := os.environ.get(DB_ENV_VAR):
+        return Path(db_env)
+    else:
+        return DEFAULT_DB_PATH
 
 
 class ViewItem(TypedDict):
@@ -31,7 +46,7 @@ class ViewItem(TypedDict):
 
 
 def get_view(
-    db_path: Path,
+    db_path: Path | str | None = None,
     view_type: Literal[
         "winery",
         "importer",
@@ -48,7 +63,7 @@ def get_view(
         "grape_variety",
         "climate_zone",
         "content_type",
-    ],
+    ] = "info_purpose",
     focus_id: str | None = None,
     time_window: timedelta = timedelta(days=7),
     limit: int = 50,
@@ -80,7 +95,8 @@ def get_view(
     now = datetime.now(timezone.utc)
     threshold = now - time_window
 
-    with duckdb.connect(str(db_path)) as conn:
+    resolved_path = _resolve_db_path(db_path)
+    with duckdb.connect(str(resolved_path)) as conn:
         # Entity-based views require JOIN with url_entities table
         if view_type in entity_views:
             entity_type = entity_view_map[view_type]

@@ -327,7 +327,7 @@
                         {% if item.published_at %}
                         <div class="card-meta-item">
                             <span>📅</span>
-                            <span>{{ item.published_at[:10] }}</span>
+                            <span>{{ item.published_at.strftime('%Y-%m-%d') if item.published_at.strftime else item.published_at }}</span>
                         </div>
                         {% endif %}
                     </div>

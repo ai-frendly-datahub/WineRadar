@@ -44,12 +44,7 @@ def populated_db(tmp_path: Path, sample_raw_item: RawItem) -> Path:
         collection_tier="C1_rss",
     )
 
-    graph_store.upsert_url_and_entities(
-        other_item,
-        {"topic": ["market"]},
-        now,
-        db_path=db_path,
-    )
+    graph_store.upsert_url_and_entities(other_item, {"topic": ["market"]}, now, db_path=db_path)
     with duckdb.connect(str(db_path)) as conn:
         count = conn.execute("SELECT COUNT(*) FROM urls").fetchone()[0]
         assert count == 2

@@ -278,10 +278,13 @@ async def handle_get_recent_items(arguments: dict[str, Any]) -> list[TextContent
         result_lines = [f"Found {len(items)} recent items (last {time_window_days} days):\n"]
 
         for i, item in enumerate(items, 1):
+            pub_date = item.get('published_at', 'N/A')
+            if hasattr(pub_date, 'strftime'):
+                pub_date = pub_date.strftime('%Y-%m-%d')
             result_lines.append(
                 f"\n{i}. [{item['score']:.1f}] {item['title']}\n"
                 f"   Source: {item['source_name']} | "
-                f"Published: {item.get('published_at', 'N/A')[:10]}\n"
+                f"Published: {pub_date}\n"
                 f"   URL: {item['url']}"
             )
 
