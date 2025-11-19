@@ -37,7 +37,7 @@ sources:
   content_type: news_review
   continent: ASIA
   country: KR
-  enabled: true
+  enabled: false
   id: media_winereview_kr
   info_purpose:
   - P1_daily_briefing
@@ -926,3 +926,125 @@ sources:
   trust_tier: T2_expert
   type: media
   weight: 2.9
+
+# === Phase 4 신규 소스 (2025-11-19) ===
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.winereview.co.kr/feed/
+  content_type: news_review
+  continent: ASIA
+  country: KR
+  enabled: true
+  id: media_winereview_rss_kr
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: ko
+  name: Wine Review Korea RSS
+  notes: Alternative RSS feed for Wine Review - Asian market coverage enhancement (Phase 4)
+  producer_role: trade_media
+  region: Asia/East/Korea
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.7
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.wineanorak.com/feed
+  content_type: news_review
+  continent: OLD_WORLD
+  country: GB
+  enabled: true
+  id: media_jamiegoode_uk
+  info_purpose:
+  - P1_daily_briefing
+  - P3_investment
+  language: en
+  name: Jamie Goode's Wine Blog
+  notes: Wine scientist and critic - expert tier enhancement (Phase 4)
+  producer_role: expert_media
+  region: Europe/Western/UK
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 2.9
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.jebdunnuck.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_jebdunnuck_us
+  info_purpose:
+  - P1_daily_briefing
+  - P3_investment
+  language: en
+  name: Jeb Dunnuck
+  notes: Independent wine critic - expert tier enhancement (Phase 4)
+  producer_role: expert_media
+  region: America/North/US
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 2.9
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.intravino.com/feed/
+  content_type: news_review
+  continent: OLD_WORLD
+  country: IT
+  enabled: true
+  id: media_intravino_it
+  info_purpose:
+  - P1_daily_briefing
+  - P2_market_insight
+  language: it
+  name: Intravino
+  notes: Italian wine magazine - Gambero Rosso alternative for balance (Phase 4)
+  producer_role: trade_media
+  region: Europe/Southern/Italy
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.6
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.drvino.com/feed/
+  content_type: news_review
+  continent: OLD_WORLD
+  country: IT
+  enabled: true
+  id: media_drvino_it
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: en
+  name: Dr Vino
+  notes: Italian wine culture and analysis - Gambero Rosso alternative (Phase 4)
+  producer_role: trade_media
+  region: Europe/Southern/Italy
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.5

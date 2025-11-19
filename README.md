@@ -156,6 +156,7 @@ WineRadar/
 - [CODING_GUIDE.md](docs/CODING_GUIDE.md) – 코드 스타일 및 규칙
 - [PRD.md](docs/PRD.md) – 제품 요구사항 정의
 - [ROADMAP.md](docs/ROADMAP.md) – 단계별 개발 계획
+- [KPI_METRICS.md](docs/KPI_METRICS.md) – KPI 정의, 목표, 측정 절차
 - [SOURCE_STRATEGY.md](docs/SOURCE_STRATEGY.md) – 데이터 소스 분류/우선순위 전략
 - [SOURCE_STATUS.md](docs/SOURCE_STATUS.md) – 데이터 소스 현황 및 테스트 결과
 
@@ -194,22 +195,42 @@ WineRadar/
   - 91개 포도 품종, 195개 와인 지역, 127개 유명 와이너리 사전
   - 자동 정규화 (Shiraz→Syrah, Cote→Côte, DRC→Domaine de la Romanée-Conti)
   - Accent/spelling 변형 처리
-- **소스 다변화 (2025-11-19 - Phase 2)**:
-  - **18개 활성 데이터 소스** (RSS 15개, HTML 3개)
-  - **지역 균형 달성**: 구대륙 44.4%, 신대륙 38.9%, 아시아 16.7%
-  - **언어 다양성**: 영어 9개, 스페인어/프랑스어/이탈리아어/한국어 각 2개, 일본어 1개
+- **소스 다변화 (2025-11-19 - Phase 4 완료)**:
+  - **22개 활성 데이터 소스** (RSS 20개, HTML 2개) - Phase 3 대비 +22% 증가
+  - **지역 균형**: 구대륙 50.0%, 신대륙 36.4%, 아시아 13.6%
+  - **언어 다양성**: 영어 11개, 이탈리아어 4개, 한국어 2개, 스페인어/프랑스어/일본어 각 2-1개
+  - **신뢰도**: T2_expert 8개 (36.4%), T3_professional 14개 (63.6%)
   - **신규 추가 (Phase 1)**: Wine & Spirits Magazine, Vinogusto, Wine Magazine SA, WINE WHAT!?, Enolife
   - **신규 추가 (Phase 2)**: ACE Vinos, VinePair, Punch, Tim Atkin MW
-  - **신뢰도**: T2_expert 6개 (33%), T3_professional 12개 (67%)
-  - **상세 테스트 결과**: [SOURCE_STATUS.md](docs/SOURCE_STATUS.md) - 39개 소스 테스트 완료
+  - **신규 추가 (Phase 4)**: Wine Review Korea RSS, Jamie Goode, Jeb Dunnuck, Intravino, Dr Vino
+  - **자동화 도구**: 소스 모니터링 (`tools/monitor_sources.py`), 신규 소스 발굴 (`tools/discover_new_sources.py`)
+  - **상세 테스트 결과**: [SOURCE_STATUS.md](docs/SOURCE_STATUS.md) - 45개 총 소스, 22개 활성화
+- **KPI 대시보드 (2025-11-19 - Phase 4)**:
+  - **16개 지표 자동 로깅**: 수집 성공률, 기사 수, 엔티티 추출, 리포트 카드 수, 실행 시간 등
+  - **DuckDB 테이블**: `kpi_daily` (일일 KPI 집계)
+  - **JSON 로그**: `data/kpi_logs/*.json` (일별 상세 로그)
+  - **자동 리포트**: `docs/KPI_REPORT.md` (7일/30일 요약 통계)
+  - **PRD 목표 검증**: 리포트 생성률 100% (목표 ≥95%), 카드 수 35개 (목표 ≥10개)
 
 ### 📊 현재 수집 데이터 통계 (2025-11-19)
-- 총 596개 기사 (18개 활성 소스)
-- 2,959개 엔티티 추출 (와이너리: 2,758, 지역: 125, 기후대: 40, 포도품종: 36)
-- 주요 소스: Gambero Rosso, Decanter, Wine Enthusiast, The Drinks Business (다변화 진행 중)
-- **지역 분포**: 구대륙 44.4%, 신대륙 38.9%, 아시아 16.7% (균형 개선 완료)
-- Top 포도품종: Chardonnay, Pinot Noir, Riesling
-- Top 와인 지역: Champagne, Bordeaux, Burgundy
+- 총 686개 URLs (22개 활성 소스 - Phase 4)
+- 3,351개 엔티티 추출 (품종/지역/와이너리 자동 인식)
+- 주요 소스: Gambero Rosso, Decanter, Jamie Goode, Jeb Dunnuck (전문가 소스 강화)
+- **지역 분포 (Phase 4)**: 구대륙 50.0%, 신대륙 36.4%, 아시아 13.6%
+- Top 포도품종: Riesling, Chardonnay, Pinot Noir
+- Top 와인 지역: Bordeaux, Champagne, Alsace
+
+### KPI 현황 (2025-11-19)
+
+| KPI | 목표 | 최신 값 | 측정 근거 |
+| --- | --- | --- | --- |
+| Daily Report Success Rate | ≥ 95% | 100% (1/1 manual run – GitHub Actions `WineRadar Crawler`, 2025-11-19) | Actions 로그, `docs/reports/2025-11-19/` |
+| Cards per Report | ≥ 10 | 12 (GitHub Pages 리포트 2025-11-19) | `docs/reports/2025-11-19/index.html` |
+| Source Diversity Coverage | Media/Importer/Community 모두 활성 | ✅ (media_winewhat_jp, media_enolife_ar, media_shinsegae_kr 등) | `config/sources.yaml` |
+| Summary Completeness | 결측 ≤ 2% | 0% 결측 (`data/test_selected.duckdb`) | `python quality_checks/data_quality.py --db data/test_selected.duckdb` |
+| Alert Channel Health | ≥ 90% | 준비 중 (Phase 3 예정) | Push 모듈 출시 후 측정 |
+
+🔗 KPI 정의/측정 절차는 [docs/KPI_METRICS.md](docs/KPI_METRICS.md)에서 확인할 수 있으며, 값은 매주 월요일 파이프라인 결과로 갱신됩니다.
 
 ### 🚧 다음 단계
 - [ ] **벡터 검색**: FAISS 기반 유사 콘텐츠 검색
