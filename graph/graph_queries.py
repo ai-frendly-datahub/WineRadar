@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
-"""그래프 조회용 쿼리 스켈레톤."""
+"""그래프 조회 모듈."""
 
-from typing import TypedDict, Literal, Any
-from datetime import timedelta, datetime
+from __future__ import annotations
+
+import json
+from datetime import timedelta, datetime, timezone
 from pathlib import Path
+from typing import TypedDict, Literal, Any
+
+import duckdb
 
 
 class ViewItem(TypedDict):
@@ -13,6 +18,14 @@ class ViewItem(TypedDict):
     published_at: datetime
     source_name: str
     source_type: str
+    content_type: str
+    country: str
+    continent: str
+    region: str
+    producer_role: str
+    trust_tier: str
+    info_purpose: list[str]
+    collection_tier: str
     score: float
     entities: dict[str, list[str]]
 
@@ -20,60 +33,142 @@ class ViewItem(TypedDict):
 def get_view(
     db_path: Path,
     view_type: Literal[
-        # 기존 엔티티 기반 뷰
-        "winery", "importer", "wine", "topic", "community",
-        # 지리적 관점
-        "continent", "country", "region",
-        # 농업/품종 관점
-        "grape_variety", "climate_zone",
-        # 콘텐츠 관점
-        "content_type", "tier"
+        "winery",
+        "importer",
+        "wine",
+        "topic",
+        "community",
+        "continent",
+        "country",
+        "region",
+        "producer_role",
+        "trust_tier",
+        "info_purpose",
+        "collection_tier",
+        "grape_variety",
+        "climate_zone",
+        "content_type",
     ],
     focus_id: str | None = None,
     time_window: timedelta = timedelta(days=7),
     limit: int = 50,
     source_filter: list[str] | None = None,
 ) -> list[ViewItem]:
-    """그래프에서 특정 관점(view)으로 URL 목록을 조회한다.
+    """urls/url_entities 테이블에서 특정 관점(view)에 따른 카드 목록을 조회한다."""
 
-    Args:
-        db_path: DuckDB 데이터베이스 파일 경로
-        view_type: 뷰 타입
-            - 엔티티 기반: winery, importer, wine, topic, community
-            - 지리적: continent (OLD_WORLD/NEW_WORLD), country (FR/US/AU 등), region (Bordeaux, Napa 등)
-            - 농업/품종: grape_variety (Cabernet Sauvignon 등), climate_zone (Mediterranean 등)
-            - 콘텐츠: content_type (news_review/statistics 등), tier (official/premium/community)
-        focus_id: 중심 엔티티 ID (None이면 전체 TOP)
-            - continent view: "OLD_WORLD" or "NEW_WORLD"
-            - country view: "FR", "US", "AU" 등 ISO 국가 코드
-            - grape_variety view: "Cabernet Sauvignon", "Pinot Noir" 등
-            - climate_zone view: "Mediterranean", "Continental" 등
-        time_window: 시간 범위 (기본 7일)
-        limit: 최대 개수
-        source_filter: 소스 필터 (예: ["Wine21", "Decanter"])
+    column_views: dict[str, str] = {
+        "continent": "continent",
+        "country": "country",
+        "region": "region",
+        "producer_role": "producer_role",
+        "trust_tier": "trust_tier",
+        "collection_tier": "collection_tier",
+        "content_type": "content_type",
+    }
+    json_views = {"info_purpose"}
+    entity_view_map = {
+        "winery": "winery",
+        "wine": "wine",
+        "grape_variety": "grape_variety",
+        "topic": "topic",
+        "community": "community",
+        "importer": "importer",
+        "climate_zone": "climate_zone",
+    }
+    entity_views = set(entity_view_map.keys())
 
-    Returns:
-        list[ViewItem]: ViewItem 목록 (score 내림차순 정렬)
+    now = datetime.now(timezone.utc)
+    threshold = now - time_window
 
-    Examples:
-        # 구대륙 트렌드 조회
-        get_view(db, "continent", focus_id="OLD_WORLD", limit=20)
+    with duckdb.connect(str(db_path)) as conn:
+        # Entity-based views require JOIN with url_entities table
+        if view_type in entity_views:
+            entity_type = entity_view_map[view_type]
+            query = [
+                "SELECT u.url, u.title, u.summary, u.published_at, u.source_name, u.source_type, u.content_type,",
+                "u.country, u.continent, u.region, u.producer_role, u.trust_tier, u.info_purpose, u.collection_tier, u.score",
+                "FROM urls u",
+                "INNER JOIN url_entities ue ON u.url = ue.url",
+                "WHERE u.published_at >= ?",
+                "AND ue.entity_type = ?",
+            ]
+            params = [threshold, entity_type]
+            if focus_id:
+                query.append("AND ue.entity_value = ?")
+                params.append(focus_id)
+        else:
+            query = [
+                "SELECT url, title, summary, published_at, source_name, source_type, content_type,",
+                "country, continent, region, producer_role, trust_tier, info_purpose, collection_tier, score",
+                "FROM urls",
+                "WHERE published_at >= ?",
+            ]
+            params = [threshold]
 
-        # 프랑스 와인 뉴스 조회
-        get_view(db, "country", focus_id="FR", time_window=timedelta(days=14))
+        if source_filter:
+            placeholders = ",".join(["?"] * len(source_filter))
+            column = "u.source_name" if view_type in entity_views else "source_name"
+            query.append(f"AND {column} IN ({placeholders})")
+            params.extend(source_filter)
 
-        # 카베르네 소비뇽 관련 기사
-        get_view(db, "grape_variety", focus_id="Cabernet Sauvignon")
+        if view_type in column_views and focus_id is not None:
+            column = column_views[view_type]
+            query.append(f"AND {column} = ?")
+            params.append(focus_id)
+        elif view_type in json_views and focus_id is not None:
+            if view_type in entity_views and focus_id is not None:
+                query.append("AND json_contains(u.info_purpose, ?)")
+            else:
+                query.append("AND json_contains(info_purpose, ?)")
+            params.append(json.dumps(focus_id))
+        elif view_type not in set(column_views.keys()) | json_views | entity_views:
+            raise ValueError(f"지원하지 않는 view_type: {view_type}")
 
-        # 공식 기관 통계 리포트만
-        get_view(db, "tier", focus_id="official")
+        if view_type in entity_views:
+            query.append("ORDER BY u.score DESC NULLS LAST, u.published_at DESC")
+        else:
+            query.append("ORDER BY score DESC NULLS LAST, published_at DESC")
+        query.append("LIMIT ?")
+        params.append(limit)
 
-    TODO:
-    - graph_store 에서 최근 time_window 범위 내 URL 노드 로드
-    - view_type / focus_id 에 따라 관련 URL 필터링
-    - 지리적 뷰는 urls 테이블의 continent/country/region 컬럼 사용
-    - 품종/기후대 뷰는 url_entities 테이블의 entity_type 사용
-    - scoring 모듈을 사용해서 score 계산 후 정렬
-    - ViewItem 리스트 반환
-    """
-    raise NotImplementedError
+        sql = "\n".join(query)
+        rows = conn.execute(sql, params).fetchall()
+        columns = [desc[0] for desc in conn.description]
+
+        urls = [row[0] for row in rows]
+        entity_map: dict[str, dict[str, list[str]]] = {url: {} for url in urls}
+
+        if urls:
+            placeholders = ",".join(["?"] * len(urls))
+            entity_rows = conn.execute(
+                f"SELECT url, entity_type, entity_value FROM url_entities WHERE url IN ({placeholders})",
+                urls,
+            ).fetchall()
+            for url, entity_type, entity_value in entity_rows:
+                entity_map.setdefault(url, {}).setdefault(entity_type, []).append(entity_value)
+
+    view_items: list[ViewItem] = []
+    for row in rows:
+        row_dict = dict(zip(columns, row))
+        info_purpose = json.loads(row_dict["info_purpose"]) if row_dict["info_purpose"] else []
+        item: ViewItem = {
+            "url": row_dict["url"],
+            "title": row_dict["title"],
+            "summary": row_dict["summary"],
+            "published_at": row_dict["published_at"],
+            "source_name": row_dict["source_name"],
+            "source_type": row_dict["source_type"],
+            "content_type": row_dict["content_type"],
+            "country": row_dict["country"],
+            "continent": row_dict["continent"],
+            "region": row_dict["region"],
+            "producer_role": row_dict["producer_role"],
+            "trust_tier": row_dict["trust_tier"],
+            "info_purpose": info_purpose,
+            "collection_tier": row_dict["collection_tier"],
+            "score": row_dict["score"] or 0.0,
+            "entities": entity_map.get(row_dict["url"], {}),
+        }
+        view_items.append(item)
+
+    return view_items

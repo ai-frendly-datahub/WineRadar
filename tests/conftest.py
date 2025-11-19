@@ -41,6 +41,15 @@ def sample_raw_item() -> RawItem:
         source_name="Wine21",
         source_type="media",
         language="ko",
+        content_type="news_review",
+        # 사용자 뷰 중심 메타데이터
+        country="KR",
+        continent="ASIA",
+        region="Asia/East/Korea",
+        producer_role="trade_media",
+        trust_tier="T3_professional",
+        info_purpose=["P1_daily_briefing", "P4_trend_discovery"],
+        collection_tier="C2_html_simple",
     )
 
 
@@ -54,6 +63,16 @@ def sample_sections(sample_raw_item: RawItem) -> dict[str, list[ViewItem]]:
         "published_at": sample_raw_item["published_at"],
         "source_name": sample_raw_item["source_name"],
         "source_type": sample_raw_item["source_type"],
+        "content_type": sample_raw_item["content_type"],
+        # 사용자 뷰 중심 메타데이터
+        "country": sample_raw_item["country"],
+        "continent": sample_raw_item["continent"],
+        "region": sample_raw_item["region"],
+        "producer_role": sample_raw_item["producer_role"],
+        "trust_tier": sample_raw_item["trust_tier"],
+        "info_purpose": sample_raw_item["info_purpose"],
+        "collection_tier": sample_raw_item["collection_tier"],
+        # 스코어 및 엔티티
         "score": 1.0,
         "entities": {"winery": ["샘플 와이너리"]},
     }
@@ -62,4 +81,26 @@ def sample_sections(sample_raw_item: RawItem) -> dict[str, list[ViewItem]]:
         "winery": [view_item],
         "importer": [],
         "community": [],
+    }
+
+
+@pytest.fixture()
+def rss_source_meta() -> dict[str, Any]:
+    return {
+        "id": "media_sample_rss",
+        "name": "Sample RSS Source",
+        "type": "media",
+        "country": "GB",
+        "continent": "OLD_WORLD",
+        "region": "Europe/Western/UK",
+        "producer_role": "expert_media",
+        "tier": "premium",
+        "trust_tier": "T2_expert",
+        "info_purpose": ["P1_daily_briefing"],
+        "collection_tier": "C1_rss",
+        "supports_rss": True,
+        "requires_login": False,
+        "content_type": "news_review",
+        "language": "en",
+        "config": {"list_url": "https://example.com/feed"},
     }

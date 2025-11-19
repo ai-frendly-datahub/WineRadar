@@ -2,3 +2,8 @@ requests
 beautifulsoup4
 pyyaml
 jinja2
+duckdb
+faiss-cpu
+numpy
+feedparser
+mcp>=1.0.0

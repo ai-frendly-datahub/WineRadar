@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WineRadar Daily Report - {{ report_date }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            background: #f8f9fa;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .stat-card .number {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section {
+            padding: 40px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .section-description {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleY(0);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transform: translateY(-5px);
+        }
+
+        .card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            line-height: 1.4;
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .card-score {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .card-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-summary {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-entities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .entity-tag {
+            background: #f0f0f0;
+            color: #555;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .entity-tag.grape { background: #e8f5e9; color: #2e7d32; }
+        .entity-tag.region { background: #fff3e0; color: #e65100; }
+        .entity-tag.winery { background: #f3e5f5; color: #6a1b9a; }
+        .entity-tag.climate { background: #e3f2fd; color: #1565c0; }
+
+        .card-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .card-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .empty-section {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-section-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        footer p {
+            margin: 5px 0;
+            opacity: 0.8;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍷 WineRadar Daily Report</h1>
+            <div class="subtitle">{{ report_date }}</div>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number">{{ stats.total_items }}</div>
+                <div class="label">Total Items</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">{{ stats.active_sources }}</div>
+                <div class="label">Active Sources</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">{{ stats.entities_extracted }}</div>
+                <div class="label">Entities</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">{{ stats.sections_count }}</div>
+                <div class="label">Sections</div>
+            </div>
+        </div>
+
+        {% for section_name, section_data in sections.items() %}
+        <div class="section">
+            <h2 class="section-title">{{ section_data.title }}</h2>
+            {% if section_data.description %}
+            <p class="section-description">{{ section_data.description }}</p>
+            {% endif %}
+
+            {% if section_data['items'] %}
+            <div class="cards">
+                {% for item in section_data['items'] %}
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">{{ item.title }}</div>
+                        <div class="card-score">{{ "%.1f"|format(item.score) }}</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>{{ item.source_name }}</span>
+                        </div>
+                        {% if item.country %}
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>{{ item.country }}</span>
+                        </div>
+                        {% endif %}
+                        {% if item.published_at %}
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>{{ item.published_at[:10] }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if item.summary %}
+                    <div class="card-summary">{{ item.summary }}</div>
+                    {% endif %}
+
+                    {% if item.entities %}
+                    <div class="card-entities">
+                        {% if item.entities.grape_variety %}
+                            {% for grape in item.entities.grape_variety[:5] %}
+                            <span class="entity-tag grape">🍇 {{ grape }}</span>
+                            {% endfor %}
+                        {% endif %}
+                        {% if item.entities.region %}
+                            {% for region in item.entities.region[:3] %}
+                            <span class="entity-tag region">📍 {{ region }}</span>
+                            {% endfor %}
+                        {% endif %}
+                        {% if item.entities.winery %}
+                            {% for winery in item.entities.winery[:3] %}
+                            <span class="entity-tag winery">🏰 {{ winery }}</span>
+                            {% endfor %}
+                        {% endif %}
+                        {% if item.entities.climate_zone %}
+                            {% for climate in item.entities.climate_zone[:2] %}
+                            <span class="entity-tag climate">🌡️ {{ climate }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <a href="{{ item.url }}" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-section">
+                <div class="empty-section-icon">📭</div>
+                <p>No items in this section</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <footer>
+            <p><strong>WineRadar</strong> - Wine Industry Intelligence</p>
+            <p>Generated on {{ generation_time }}</p>
+            <p><a href="https://github.com/your-repo/WineRadar" target="_blank">GitHub Repository</a></p>
+        </footer>
+    </div>
+</body>
+</html>

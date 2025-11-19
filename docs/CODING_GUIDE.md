@@ -1,42 +1,25 @@
-# WineRadar 코딩 가이드
+﻿# 코딩 가이드
 
-## 1. 기본 원칙
+## 일반 원칙
+- PEP 8 스타일을 기본으로 하되, `ruff`/`black` 조합으로 일관성 유지
+- 한 함수는 하나의 책임만, 복잡한 로직은 설명 주석과 테스트로 보강
+- 예외 메시지는 한국어/영어 혼합 가능하나 의미가 명확해야 함
 
-- Python 3.11+ 가정
-- 타입 힌트 적극 사용, mypy 통과를 목표로 작성
-- PEP8 스타일 가이드 준수
-- 하나의 함수/클래스는 하나의 책임만 가지도록 설계
+## 타입 힌트
+- `from __future__ import annotations` 사용을 권장
+- Public 함수/메서드는 모두 타입 힌트를 작성
+- `TypedDict`, `Protocol` 로 도메인 스키마를 표현해 호환성을 유지
 
-## 2. 디렉토리 책임
+## 로깅 & 에러 처리
+- `logging` 모듈을 사용해 구조화된 로그를 남긴다.
+- 네트워크/IO 오류는 재시도 가능하도록 `Retry` 유틸리티(추후 구현) 활용
+- 치명적 오류만 예외를 전파하고, 나머지는 오류 내용을 수집해 보고서에 반영
 
-- collectors/
-  - 각 소스별 수집기
-  - Collector 프로토콜을 따르는 클래스/함수 구현
-- analyzers/
-  - keyword_filter: frequency_words.txt 기반 필터
-  - entity_extractor: 룰/사전 기반 엔티티 추출
-  - scoring: URL에 대한 score 계산
-  - snapshot: 일간/월간 요약 생성
-- graph/
-  - graph_store: 노드/엣지 CRUD + TTL/Pruning
-  - graph_queries: 뷰(view) 및 통계(top entities) 쿼리
-- reporters/
-  - html_reporter: ViewItem들을 HTML 리포트로 렌더링
-- pushers/
-  - email_pusher, telegram_pusher 등 알림 채널 모듈
+## 테스트 전략
+- 새 기능 추가 시 `tests/unit` → `tests/integration` → `tests/e2e` 순으로 보장
+- 미구현 기능은 `pytest.mark.xfail` 로 명시하고, 구현 완료 시 제거
+- fixture는 `tests/conftest.py` 에 배치해 재사용
 
-## 3. 에러 처리
-
-- Collector에서 개별 아이템 파싱 실패는 전체 실패로 이어지지 않게 try/except로 처리
-- 외부 I/O는 실패 시 로깅하고, 가능한 한 graceful degrade
-
-## 4. 테스트 지향
-
-- 필터, 엔티티 추출, scoring, get_view 는 순수 함수 형태로 작성
-- pytest로 단위 테스트 작성하기 좋게 설계
-
-## 5. AI 도우미 사용 시
-
-- Codex/Claude Code에게 작업을 맡길 때는
-  - 입력/출력 타입, 파일 위치, 제약사항을 명확하게 전달
-  - docs/AI_TASK_TEMPLATE.md 를 참고해 동일한 형식으로 요청
+## 커밋 / PR
+- 작업 단위를 작게 유지하고, PR에는 “배경 → 변경사항 → 테스트” 순으로 설명
+- 문서/코드 한글화를 유지하며, 팀 합의 없는 번역/언어 변경은 피함

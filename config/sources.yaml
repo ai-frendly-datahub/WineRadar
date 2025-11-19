@@ -1,5 +1,6 @@
 # WineRadar 수집 소스 정의
 # 구대륙/신대륙 균형을 고려한 공신력 있는 출처 포함
+# 사용자 뷰 중심 메타데이터: region + producer_role + trust_tier + info_purpose
 
 sources:
   # === 한국 로컬 소스 ===
@@ -9,10 +10,20 @@ sources:
     country: "KR"
     continent: "ASIA"
     region: "Asia/East/Korea"
-    tier: "premium"  # 전문 온라인 와인 미디어
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "trade_media"
+    trust_tier: "T3_professional"
+    info_purpose: ["P1_daily_briefing", "P4_trend_discovery"]
+
+    # 수집 메타데이터
+    collection_tier: "C2_html_simple"
+
+    # Legacy 필드
+    tier: "premium"
     content_type: "news_review"
     language: "ko"
-    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
+    enabled: true
     weight: 2.8
     supports_rss: false
     requires_login: false
@@ -20,6 +31,7 @@ sources:
     config:
       list_url: "https://www.wine21.com/11_news/reporter_news_list.html"
       collection_method: "html"
+      article_selector: "a[href*='reporter_news_view']"
 
   - name: "Wine Review"
     id: "media_winereview_kr"
@@ -27,10 +39,20 @@ sources:
     country: "KR"
     continent: "ASIA"
     region: "Asia/East/Korea"
-    tier: "premium"  # 와인 전문 매체
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "trade_media"
+    trust_tier: "T3_professional"
+    info_purpose: ["P1_daily_briefing", "P4_trend_discovery"]
+
+    # 수집 메타데이터
+    collection_tier: "C2_html_simple"
+
+    # Legacy 필드
+    tier: "premium"
     content_type: "news_review"
     language: "ko"
-    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
+    enabled: true
     weight: 2.8
     supports_rss: false
     requires_login: false
@@ -45,10 +67,20 @@ sources:
     country: "KR"
     continent: "ASIA"
     region: "Asia/East/Korea"
-    tier: "official"  # 공식 협회
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "industry_assoc"
+    trust_tier: "T1_authoritative"
+    info_purpose: ["P5_education"]
+
+    # 수집 메타데이터
+    collection_tier: "C2_html_simple"
+
+    # Legacy 필드
+    tier: "official"
     content_type: "education"
     language: "ko"
-    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
+    enabled: true
     weight: 2.0
     supports_rss: false
     requires_login: false
@@ -63,10 +95,20 @@ sources:
     country: "KR"
     continent: "ASIA"
     region: "Asia/East/Korea"
-    tier: "community"  # 유통사
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "importer"
+    trust_tier: "T3_professional"
+    info_purpose: ["P4_trend_discovery"]
+
+    # 수집 메타데이터
+    collection_tier: "C2_html_simple"
+
+    # Legacy 필드
+    tier: "community"
     content_type: "news_review"
     language: "ko"
-    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
+    enabled: true
     weight: 2.0
     supports_rss: false
     requires_login: false
@@ -82,6 +124,16 @@ sources:
     country: "GB"
     continent: "OLD_WORLD"
     region: "Europe/Western/UK"
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "expert_media"
+    trust_tier: "T2_expert"
+    info_purpose: ["P1_daily_briefing", "P4_trend_discovery"]
+
+    # 수집 메타데이터
+    collection_tier: "C1_rss"
+
+    # Legacy 필드
     tier: "premium"
     content_type: "news_review"
     language: "en"
@@ -89,10 +141,10 @@ sources:
     weight: 3.0
     supports_rss: true
     requires_login: false
-    notes: Official_RSS
+    notes: "International authority, consistent RSS feed"
     config:
       list_url: "https://www.decanter.com/feed/"
-      collection_method: "rss"  # ✅ 검증 완료 (RSS 2.0)
+      collection_method: "rss"
 
   # === 구대륙 (Old World) 출처 ===
 
@@ -103,17 +155,27 @@ sources:
     country: "FR"
     continent: "OLD_WORLD"
     region: "Europe/Western/France"
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "expert_media"
+    trust_tier: "T2_expert"
+    info_purpose: ["P1_daily_briefing", "P4_trend_discovery"]
+
+    # 수집 메타데이터
+    collection_tier: "C2_html_simple"
+
+    # Legacy 필드
     tier: "premium"
     content_type: "news_review"
     language: "fr"
-    enabled: false  # ❌ RSS 접근 실패, HTML 스크레이퍼 구현 필요
+    enabled: true
     weight: 3.0
     supports_rss: false
     requires_login: false
-    notes: html_scrape
+    notes: "French wine authority, HTML scraping needed"
     config:
       list_url: "https://www.larvf.com/actualites"
-      collection_method: "html"  # RSS 대신 HTML 스크레이핑
+      collection_method: "html"
 
   - name: "Institut Français de la Vigne et du Vin"
     id: "official_ifv_fr"
@@ -121,14 +183,24 @@ sources:
     country: "FR"
     continent: "OLD_WORLD"
     region: "Europe/Western/France"
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "research_inst"
+    trust_tier: "T1_authoritative"
+    info_purpose: ["P2_market_analysis", "P5_education"]
+
+    # 수집 메타데이터
+    collection_tier: "C2_html_simple"
+
+    # Legacy 필드
     tier: "official"
     content_type: "statistics"
     language: "fr"
-    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
+    enabled: true
     weight: 2.5
     supports_rss: false
     requires_login: false
-    notes: html_stats
+    notes: "French viticulture research institute, statistics"
     config:
       list_url: "https://www.vignevin.com/actualites/"
       collection_method: "html"
@@ -140,6 +212,16 @@ sources:
     country: "IT"
     continent: "OLD_WORLD"
     region: "Europe/Southern/Italy"
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "expert_media"
+    trust_tier: "T2_expert"
+    info_purpose: ["P1_daily_briefing", "P4_trend_discovery"]
+
+    # 수집 메타데이터
+    collection_tier: "C1_rss"
+
+    # Legacy 필드
     tier: "premium"
     content_type: "news_review"
     language: "it"
@@ -147,10 +229,10 @@ sources:
     weight: 3.0
     supports_rss: true
     requires_login: false
-    notes: rss_available
+    notes: "Italian wine authority, consistent RSS feed"
     config:
       list_url: "https://www.gamberorosso.it/feed/"
-      collection_method: "rss"  # ✅ 검증 완료 (RSS 2.0)
+      collection_method: "rss"
 
   - name: "Federdoc"
     id: "official_federdoc_it"
@@ -158,14 +240,24 @@ sources:
     country: "IT"
     continent: "OLD_WORLD"
     region: "Europe/Southern/Italy"
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "industry_assoc"
+    trust_tier: "T1_authoritative"
+    info_purpose: ["P5_education"]
+
+    # 수집 메타데이터
+    collection_tier: "C2_html_simple"
+
+    # Legacy 필드
     tier: "official"
     content_type: "education"
     language: "it"
-    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
+    enabled: true
     weight: 2.5
     supports_rss: false
     requires_login: false
-    notes: html_news
+    notes: "Italian DOC federation, educational content"
     config:
       list_url: "https://www.federdoc.com/news/"
       collection_method: "html"
@@ -177,14 +269,24 @@ sources:
     country: "ES"
     continent: "OLD_WORLD"
     region: "Europe/Southern/Spain"
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "government"
+    trust_tier: "T1_authoritative"
+    info_purpose: ["P2_market_analysis"]
+
+    # 수집 메타데이터
+    collection_tier: "C2_html_simple"
+
+    # Legacy 필드
     tier: "official"
     content_type: "market_report"
     language: "es"
-    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
+    enabled: true
     weight: 2.5
     supports_rss: false
     requires_login: false
-    notes: html_market
+    notes: "Spanish official export promotion, market reports"
     config:
       list_url: "https://www.foodswinesfromspain.com/news/"
       collection_method: "html"
@@ -196,14 +298,24 @@ sources:
     country: "DE"
     continent: "OLD_WORLD"
     region: "Europe/Western/Germany"
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "industry_assoc"
+    trust_tier: "T1_authoritative"
+    info_purpose: ["P5_education"]
+
+    # 수집 메타데이터
+    collection_tier: "C2_html_simple"
+
+    # Legacy 필드
     tier: "official"
     content_type: "education"
     language: "en"
-    enabled: false  # ❌ RSS 없음 (리디렉션: winesofgermany.com), HTML 스크레이퍼 필요
+    enabled: true
     weight: 2.5
-    supports_rss: true
+    supports_rss: false
     requires_login: false
-    notes: rss_available
+    notes: "German Wine Institute, educational content"
     config:
       list_url: "https://www.winesofgermany.com/news/"
       collection_method: "html"
@@ -215,14 +327,24 @@ sources:
     country: "PT"
     continent: "OLD_WORLD"
     region: "Europe/Southern/Portugal"
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "industry_assoc"
+    trust_tier: "T1_authoritative"
+    info_purpose: ["P5_education"]
+
+    # 수집 메타데이터
+    collection_tier: "C2_html_simple"
+
+    # Legacy 필드
     tier: "official"
     content_type: "education"
     language: "en"
-    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
+    enabled: true
     weight: 2.5
     supports_rss: false
     requires_login: false
-    notes: html_listing
+    notes: "Portuguese wine association, educational content"
     config:
       list_url: "https://www.winesofportugal.com/news/news-list"
       collection_method: "html"
@@ -236,14 +358,24 @@ sources:
     country: "US"
     continent: "NEW_WORLD"
     region: "Americas/North/USA"
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "government"
+    trust_tier: "T1_authoritative"
+    info_purpose: ["P2_market_analysis"]
+
+    # 수집 메타데이터
+    collection_tier: "C2_html_simple"
+
+    # Legacy 필드
     tier: "official"
     content_type: "statistics"
     language: "en"
-    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요 (우선순위 높음)
+    enabled: true
     weight: 2.5
     supports_rss: false
     requires_login: false
-    notes: html_press
+    notes: "California wine industry statistics and press releases"
     config:
       list_url: "https://wineinstitute.org/category/press-releases/"
       collection_method: "html"
@@ -254,14 +386,24 @@ sources:
     country: "US"
     continent: "NEW_WORLD"
     region: "Americas/North/USA"
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "expert_media"
+    trust_tier: "T2_expert"
+    info_purpose: ["P3_investment"]
+
+    # 수집 메타데이터
+    collection_tier: "C5_manual"
+
+    # Legacy 필드
     tier: "premium"
     content_type: "news_review"
     language: "en"
-    enabled: false  # ❌ RSS 없음, 페이월 가능성 (구독 모델)
+    enabled: true
     weight: 3.0
     supports_rss: false
     requires_login: true
-    notes: subscription
+    notes: "Premium subscription content, expert ratings"
     config:
       list_url: "https://www.winespectator.com/articles"
       collection_method: "html"
@@ -274,14 +416,24 @@ sources:
     country: "AU"
     continent: "NEW_WORLD"
     region: "Oceania/Australia"
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "government"
+    trust_tier: "T1_authoritative"
+    info_purpose: ["P2_market_analysis"]
+
+    # 수집 메타데이터
+    collection_tier: "C3_html_js"
+
+    # Legacy 필드
     tier: "official"
     content_type: "statistics"
     language: "en"
-    enabled: false  # ❌ RSS 없음 (JS 기반 SPA), HTML 스크레이퍼 필요 (우선순위 높음)
+    enabled: true
     weight: 2.5
     supports_rss: false
     requires_login: false
-    notes: spa_html
+    notes: "Australian wine statistics, requires JS rendering"
     config:
       list_url: "https://www.wineaustralia.com/news"
       collection_method: "html"
@@ -293,14 +445,24 @@ sources:
     country: "NZ"
     continent: "NEW_WORLD"
     region: "Oceania/New Zealand"
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "industry_assoc"
+    trust_tier: "T1_authoritative"
+    info_purpose: ["P5_education"]
+
+    # 수집 메타데이터
+    collection_tier: "C2_html_simple"
+
+    # Legacy 필드
     tier: "official"
     content_type: "education"
     language: "en"
-    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
+    enabled: true
     weight: 2.5
     supports_rss: false
     requires_login: false
-    notes: html_listing
+    notes: "New Zealand wine association, educational content"
     config:
       list_url: "https://www.nzwine.com/news/"
       collection_method: "html"
@@ -312,14 +474,24 @@ sources:
     country: "CL"
     continent: "NEW_WORLD"
     region: "Americas/South/Chile"
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "industry_assoc"
+    trust_tier: "T1_authoritative"
+    info_purpose: ["P2_market_analysis"]
+
+    # 수집 메타데이터
+    collection_tier: "C2_html_simple"
+
+    # Legacy 필드
     tier: "official"
     content_type: "market_report"
     language: "en"
-    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
+    enabled: true
     weight: 2.5
     supports_rss: false
     requires_login: false
-    notes: html_listing
+    notes: "Chilean wine association, market reports"
     config:
       list_url: "https://www.winesofchile.org/news/"
       collection_method: "html"
@@ -331,14 +503,24 @@ sources:
     country: "AR"
     continent: "NEW_WORLD"
     region: "Americas/South/Argentina"
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "industry_assoc"
+    trust_tier: "T1_authoritative"
+    info_purpose: ["P2_market_analysis"]
+
+    # 수집 메타데이터
+    collection_tier: "C2_html_simple"
+
+    # Legacy 필드
     tier: "official"
     content_type: "market_report"
     language: "en"
-    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
+    enabled: true
     weight: 2.5
     supports_rss: false
     requires_login: false
-    notes: html_listing
+    notes: "Argentine wine association, market reports"
     config:
       list_url: "https://www.winesofargentina.org/news/"
       collection_method: "html"
@@ -350,14 +532,24 @@ sources:
     country: "ZA"
     continent: "NEW_WORLD"
     region: "Africa/South/South Africa"
+
+    # === 사용자 뷰 중심 메타데이터 ===
+    producer_role: "industry_assoc"
+    trust_tier: "T1_authoritative"
+    info_purpose: ["P5_education"]
+
+    # 수집 메타데이터
+    collection_tier: "C2_html_simple"
+
+    # Legacy 필드
     tier: "official"
     content_type: "education"
     language: "en"
-    enabled: false  # ❌ RSS 없음, HTML 스크레이퍼 구현 필요
+    enabled: true
     weight: 2.5
     supports_rss: false
     requires_login: false
-    notes: html_listing
+    notes: "South African wine association, educational content"
     config:
       list_url: "https://www.wosa.co.za/news/"
       collection_method: "html"

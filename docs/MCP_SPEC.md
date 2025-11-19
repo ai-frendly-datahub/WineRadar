@@ -1,45 +1,18 @@
-# WineRadar MCP 스펙 초안
+﻿# MCP 서버 개요
 
-## 개요
+WineRadar는 MCP(Multi-Channel Pipeline) 서버를 통해 외부 클라이언트와 인터페이스할 수 있습니다. 현재는 스켈레톤만 존재합니다.
 
-WineRadar의 그래프/뷰 기능을 MCP 툴로 노출하는 것을 목표로 한다.
+## 목표 기능
+- Graph 조회 API를 MCP 프로토콜로 노출
+- HTML 리포트/요약을 스트리밍 형태로 반환
+- Collector/Analyzer 실행 상태를 조회하는 health endpoint 제공
 
-## 툴 목록(초안)
+## 권장 스펙
+- Python `asyncio` 기반 서버
+- JSON-RPC over WebSocket (초기안)
+- 인증: GitHub App 토큰 또는 PAT 기반 (추후 결정)
 
-1. `wineradar.get_view`
-2. `wineradar.top_entities`
-
-## 예시 스키마
-
-- `wineradar.get_view`
-
-```jsonc
-{
-  "name": "wineradar.get_view",
-  "description": "그래프에서 특정 관점(view_type)과 중심 엔티티(focus_id)에 대한 이슈 리스트를 가져온다.",
-  "input_schema": {
-    "type": "object",
-    "properties": {
-      "view_type": {
-        "type": "string",
-        "enum": ["winery", "importer", "wine", "topic", "community"]
-      },
-      "focus_id": {
-        "type": "string",
-        "description": "엔티티 ID. 없으면 전체 TOP 뷰."
-      },
-      "time_window_days": {
-        "type": "integer",
-        "default": 7
-      },
-      "limit": {
-        "type": "integer",
-        "default": 20
-      }
-    },
-    "required": ["view_type"]
-  }
-}
-```
-
-실제 구현 시에는 graph/graph_queries.py 의 함수를 래핑하는 형태로 MCP 서버에서 처리한다.
+## 다음 단계
+1. `mcp_server/server_stub.py` 에 실제 라우트 구현
+2. `docs/API_SPEC.md` 와 동기화
+3. `tests/integration` 에 MCP 클라이언트 시나리오 추가

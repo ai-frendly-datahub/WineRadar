@@ -22,8 +22,34 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run WineRadar
+      - name: Run WineRadar Collector
+        env:
+          TZ: Asia/Seoul
         run: |
-          python main.py
+          python main.py --mode once --generate-report
 
-      # 필요 시, GitHub Pages 배포 스텝 등을 추가하면 됨
+      - name: Commit and push database
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/wineradar.duckdb
+          git diff --staged --quiet || git commit -m "chore: Update database - $(date +'%Y-%m-%d %H:%M UTC')"
+          git push
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/reports
+          publish_branch: gh-pages
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'docs: Update daily report'
+
+      - name: Archive database (backup)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wineradar-db-${{ github.run_number }}
+          path: data/wineradar.duckdb
+          retention-days: 7

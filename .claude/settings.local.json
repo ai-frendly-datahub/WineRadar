@@ -1,7 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(python -c:*)",
+      "Bash(find:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(pip install:*)",
+      "Bash(python demo_pipeline.py:*)",
+      "Bash(chcp 65001)",
+      "Bash(NUL)",
+      "Bash(python main.py:*)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []
