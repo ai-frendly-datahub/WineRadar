@@ -1,555 +1,835 @@
-# WineRadar 수집 소스 정의
-# 구대륙/신대륙 균형을 고려한 공신력 있는 출처 포함
-# 사용자 뷰 중심 메타데이터: region + producer_role + trust_tier + info_purpose
-
 sources:
-  # === 한국 로컬 소스 ===
-  - name: "Wine21"
-    id: "media_wine21_kr"
-    type: "media"
-    country: "KR"
-    continent: "ASIA"
-    region: "Asia/East/Korea"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "trade_media"
-    trust_tier: "T3_professional"
-    info_purpose: ["P1_daily_briefing", "P4_trend_discovery"]
-
-    # 수집 메타데이터
-    collection_tier: "C2_html_simple"
-
-    # Legacy 필드
-    tier: "premium"
-    content_type: "news_review"
-    language: "ko"
-    enabled: true
-    weight: 2.8
-    supports_rss: false
-    requires_login: false
-    notes: "Korean professional wine media (wine21.com)"
-    config:
-      list_url: "https://www.wine21.com/11_news/reporter_news_list.html"
-      collection_method: "html"
-      article_selector: "a[href*='reporter_news_view']"
-
-  - name: "Wine Review"
-    id: "media_winereview_kr"
-    type: "media"
-    country: "KR"
-    continent: "ASIA"
-    region: "Asia/East/Korea"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "trade_media"
-    trust_tier: "T3_professional"
-    info_purpose: ["P1_daily_briefing", "P4_trend_discovery"]
-
-    # 수집 메타데이터
-    collection_tier: "C2_html_simple"
-
-    # Legacy 필드
-    tier: "premium"
-    content_type: "news_review"
-    language: "ko"
-    enabled: true
-    weight: 2.8
-    supports_rss: false
-    requires_login: false
-    notes: "Korean wine specialty publication (winereview.co.kr)"
-    config:
-      list_url: "https://winereview.co.kr/news"
-      collection_method: "html"
-
-  - name: "Korean Wine Consumer Association"
-    id: "official_koreawine_kr"
-    type: "official"
-    country: "KR"
-    continent: "ASIA"
-    region: "Asia/East/Korea"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "industry_assoc"
-    trust_tier: "T1_authoritative"
-    info_purpose: ["P5_education"]
-
-    # 수집 메타데이터
-    collection_tier: "C2_html_simple"
-
-    # Legacy 필드
-    tier: "official"
-    content_type: "education"
-    language: "ko"
-    enabled: true
-    weight: 2.0
-    supports_rss: false
-    requires_login: false
-    notes: "Official Korean wine consumer association (koreawine.or.kr)"
-    config:
-      list_url: "https://koreawine.or.kr/wineinfo"
-      collection_method: "html"
-
-  - name: "Shinsegae L&B"
-    id: "importer_shinsegae_kr"
-    type: "importer"
-    country: "KR"
-    continent: "ASIA"
-    region: "Asia/East/Korea"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "importer"
-    trust_tier: "T3_professional"
-    info_purpose: ["P4_trend_discovery"]
-
-    # 수집 메타데이터
-    collection_tier: "C2_html_simple"
-
-    # Legacy 필드
-    tier: "community"
-    content_type: "news_review"
-    language: "ko"
-    enabled: true
-    weight: 2.0
-    supports_rss: false
-    requires_login: false
-    notes: "Major Korean wine distributor (shinsegae-lnb.com)"
-    config:
-      list_url: "https://www.shinsegae-lnb.com/html/news/promotion.html"
-      collection_method: "html"
-
-  # === 글로벌 프리미엄 미디어 ===
-  - name: "Decanter"
-    id: "media_decanter_global"
-    type: "media"
-    country: "GB"
-    continent: "OLD_WORLD"
-    region: "Europe/Western/UK"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "expert_media"
-    trust_tier: "T2_expert"
-    info_purpose: ["P1_daily_briefing", "P4_trend_discovery"]
-
-    # 수집 메타데이터
-    collection_tier: "C1_rss"
-
-    # Legacy 필드
-    tier: "premium"
-    content_type: "news_review"
-    language: "en"
-    enabled: true
-    weight: 3.0
-    supports_rss: true
-    requires_login: false
-    notes: "International authority, consistent RSS feed"
-    config:
-      list_url: "https://www.decanter.com/feed/"
-      collection_method: "rss"
-
-  # === 구대륙 (Old World) 출처 ===
-
-  # 🇫🇷 프랑스
-  - name: "La Revue du vin de France"
-    id: "media_larvf_fr"
-    type: "media"
-    country: "FR"
-    continent: "OLD_WORLD"
-    region: "Europe/Western/France"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "expert_media"
-    trust_tier: "T2_expert"
-    info_purpose: ["P1_daily_briefing", "P4_trend_discovery"]
-
-    # 수집 메타데이터
-    collection_tier: "C2_html_simple"
-
-    # Legacy 필드
-    tier: "premium"
-    content_type: "news_review"
-    language: "fr"
-    enabled: true
-    weight: 3.0
-    supports_rss: false
-    requires_login: false
-    notes: "French wine authority, HTML scraping needed"
-    config:
-      list_url: "https://www.larvf.com/actualites"
-      collection_method: "html"
-
-  - name: "Institut Français de la Vigne et du Vin"
-    id: "official_ifv_fr"
-    type: "official"
-    country: "FR"
-    continent: "OLD_WORLD"
-    region: "Europe/Western/France"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "research_inst"
-    trust_tier: "T1_authoritative"
-    info_purpose: ["P2_market_analysis", "P5_education"]
-
-    # 수집 메타데이터
-    collection_tier: "C2_html_simple"
-
-    # Legacy 필드
-    tier: "official"
-    content_type: "statistics"
-    language: "fr"
-    enabled: true
-    weight: 2.5
-    supports_rss: false
-    requires_login: false
-    notes: "French viticulture research institute, statistics"
-    config:
-      list_url: "https://www.vignevin.com/actualites/"
-      collection_method: "html"
-
-  # 🇮🇹 이탈리아
-  - name: "Gambero Rosso"
-    id: "media_gambero_it"
-    type: "media"
-    country: "IT"
-    continent: "OLD_WORLD"
-    region: "Europe/Southern/Italy"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "expert_media"
-    trust_tier: "T2_expert"
-    info_purpose: ["P1_daily_briefing", "P4_trend_discovery"]
-
-    # 수집 메타데이터
-    collection_tier: "C1_rss"
-
-    # Legacy 필드
-    tier: "premium"
-    content_type: "news_review"
-    language: "it"
-    enabled: true
-    weight: 3.0
-    supports_rss: true
-    requires_login: false
-    notes: "Italian wine authority, consistent RSS feed"
-    config:
-      list_url: "https://www.gamberorosso.it/feed/"
-      collection_method: "rss"
-
-  - name: "Federdoc"
-    id: "official_federdoc_it"
-    type: "official"
-    country: "IT"
-    continent: "OLD_WORLD"
-    region: "Europe/Southern/Italy"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "industry_assoc"
-    trust_tier: "T1_authoritative"
-    info_purpose: ["P5_education"]
-
-    # 수집 메타데이터
-    collection_tier: "C2_html_simple"
-
-    # Legacy 필드
-    tier: "official"
-    content_type: "education"
-    language: "it"
-    enabled: true
-    weight: 2.5
-    supports_rss: false
-    requires_login: false
-    notes: "Italian DOC federation, educational content"
-    config:
-      list_url: "https://www.federdoc.com/news/"
-      collection_method: "html"
-
-  # 🇪🇸 스페인
-  - name: "Vinos de España (ICEX)"
-    id: "official_icex_es"
-    type: "official"
-    country: "ES"
-    continent: "OLD_WORLD"
-    region: "Europe/Southern/Spain"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "government"
-    trust_tier: "T1_authoritative"
-    info_purpose: ["P2_market_analysis"]
-
-    # 수집 메타데이터
-    collection_tier: "C2_html_simple"
-
-    # Legacy 필드
-    tier: "official"
-    content_type: "market_report"
-    language: "es"
-    enabled: true
-    weight: 2.5
-    supports_rss: false
-    requires_login: false
-    notes: "Spanish official export promotion, market reports"
-    config:
-      list_url: "https://www.foodswinesfromspain.com/news/"
-      collection_method: "html"
-
-  # 🇩🇪 독일
-  - name: "Wines of Germany"
-    id: "official_dwi_de"
-    type: "official"
-    country: "DE"
-    continent: "OLD_WORLD"
-    region: "Europe/Western/Germany"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "industry_assoc"
-    trust_tier: "T1_authoritative"
-    info_purpose: ["P5_education"]
-
-    # 수집 메타데이터
-    collection_tier: "C2_html_simple"
-
-    # Legacy 필드
-    tier: "official"
-    content_type: "education"
-    language: "en"
-    enabled: true
-    weight: 2.5
-    supports_rss: false
-    requires_login: false
-    notes: "German Wine Institute, educational content"
-    config:
-      list_url: "https://www.winesofgermany.com/news/"
-      collection_method: "html"
-
-  # 🇵🇹 포르투갈
-  - name: "Wines of Portugal"
-    id: "official_viniportugal_pt"
-    type: "official"
-    country: "PT"
-    continent: "OLD_WORLD"
-    region: "Europe/Southern/Portugal"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "industry_assoc"
-    trust_tier: "T1_authoritative"
-    info_purpose: ["P5_education"]
-
-    # 수집 메타데이터
-    collection_tier: "C2_html_simple"
-
-    # Legacy 필드
-    tier: "official"
-    content_type: "education"
-    language: "en"
-    enabled: true
-    weight: 2.5
-    supports_rss: false
-    requires_login: false
-    notes: "Portuguese wine association, educational content"
-    config:
-      list_url: "https://www.winesofportugal.com/news/news-list"
-      collection_method: "html"
-
-  # === 신대륙 (New World) 출처 ===
-
-  # 🇺🇸 미국
-  - name: "Wine Institute"
-    id: "official_wineinstitute_us"
-    type: "official"
-    country: "US"
-    continent: "NEW_WORLD"
-    region: "Americas/North/USA"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "government"
-    trust_tier: "T1_authoritative"
-    info_purpose: ["P2_market_analysis"]
-
-    # 수집 메타데이터
-    collection_tier: "C2_html_simple"
-
-    # Legacy 필드
-    tier: "official"
-    content_type: "statistics"
-    language: "en"
-    enabled: true
-    weight: 2.5
-    supports_rss: false
-    requires_login: false
-    notes: "California wine industry statistics and press releases"
-    config:
-      list_url: "https://wineinstitute.org/category/press-releases/"
-      collection_method: "html"
-
-  - name: "Wine Spectator"
-    id: "media_winespectator_us"
-    type: "media"
-    country: "US"
-    continent: "NEW_WORLD"
-    region: "Americas/North/USA"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "expert_media"
-    trust_tier: "T2_expert"
-    info_purpose: ["P3_investment"]
-
-    # 수집 메타데이터
-    collection_tier: "C5_manual"
-
-    # Legacy 필드
-    tier: "premium"
-    content_type: "news_review"
-    language: "en"
-    enabled: true
-    weight: 3.0
-    supports_rss: false
-    requires_login: true
-    notes: "Premium subscription content, expert ratings"
-    config:
-      list_url: "https://www.winespectator.com/articles"
-      collection_method: "html"
-      note: "Premium content may require subscription"
-
-  # 🇦🇺 호주
-  - name: "Wine Australia"
-    id: "official_wineaustralia_au"
-    type: "official"
-    country: "AU"
-    continent: "NEW_WORLD"
-    region: "Oceania/Australia"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "government"
-    trust_tier: "T1_authoritative"
-    info_purpose: ["P2_market_analysis"]
-
-    # 수집 메타데이터
-    collection_tier: "C3_html_js"
-
-    # Legacy 필드
-    tier: "official"
-    content_type: "statistics"
-    language: "en"
-    enabled: true
-    weight: 2.5
-    supports_rss: false
-    requires_login: false
-    notes: "Australian wine statistics, requires JS rendering"
-    config:
-      list_url: "https://www.wineaustralia.com/news"
-      collection_method: "html"
-
-  # 🇳🇿 뉴질랜드
-  - name: "New Zealand Wine"
-    id: "official_nzwine_nz"
-    type: "official"
-    country: "NZ"
-    continent: "NEW_WORLD"
-    region: "Oceania/New Zealand"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "industry_assoc"
-    trust_tier: "T1_authoritative"
-    info_purpose: ["P5_education"]
-
-    # 수집 메타데이터
-    collection_tier: "C2_html_simple"
-
-    # Legacy 필드
-    tier: "official"
-    content_type: "education"
-    language: "en"
-    enabled: true
-    weight: 2.5
-    supports_rss: false
-    requires_login: false
-    notes: "New Zealand wine association, educational content"
-    config:
-      list_url: "https://www.nzwine.com/news/"
-      collection_method: "html"
-
-  # 🇨🇱 칠레
-  - name: "Wines of Chile"
-    id: "official_winesofchile_cl"
-    type: "official"
-    country: "CL"
-    continent: "NEW_WORLD"
-    region: "Americas/South/Chile"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "industry_assoc"
-    trust_tier: "T1_authoritative"
-    info_purpose: ["P2_market_analysis"]
-
-    # 수집 메타데이터
-    collection_tier: "C2_html_simple"
-
-    # Legacy 필드
-    tier: "official"
-    content_type: "market_report"
-    language: "en"
-    enabled: true
-    weight: 2.5
-    supports_rss: false
-    requires_login: false
-    notes: "Chilean wine association, market reports"
-    config:
-      list_url: "https://www.winesofchile.org/news/"
-      collection_method: "html"
-
-  # 🇦🇷 아르헨티나
-  - name: "Wines of Argentina"
-    id: "official_winesofargentina_ar"
-    type: "official"
-    country: "AR"
-    continent: "NEW_WORLD"
-    region: "Americas/South/Argentina"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "industry_assoc"
-    trust_tier: "T1_authoritative"
-    info_purpose: ["P2_market_analysis"]
-
-    # 수집 메타데이터
-    collection_tier: "C2_html_simple"
-
-    # Legacy 필드
-    tier: "official"
-    content_type: "market_report"
-    language: "en"
-    enabled: true
-    weight: 2.5
-    supports_rss: false
-    requires_login: false
-    notes: "Argentine wine association, market reports"
-    config:
-      list_url: "https://www.winesofargentina.org/news/"
-      collection_method: "html"
-
-  # 🇿🇦 남아프리카공화국
-  - name: "Wines of South Africa"
-    id: "official_wosa_za"
-    type: "official"
-    country: "ZA"
-    continent: "NEW_WORLD"
-    region: "Africa/South/South Africa"
-
-    # === 사용자 뷰 중심 메타데이터 ===
-    producer_role: "industry_assoc"
-    trust_tier: "T1_authoritative"
-    info_purpose: ["P5_education"]
-
-    # 수집 메타데이터
-    collection_tier: "C2_html_simple"
-
-    # Legacy 필드
-    tier: "official"
-    content_type: "education"
-    language: "en"
-    enabled: true
-    weight: 2.5
-    supports_rss: false
-    requires_login: false
-    notes: "South African wine association, educational content"
-    config:
-      list_url: "https://www.wosa.co.za/news/"
-      collection_method: "html"
+- collection_tier: C2_html_simple
+  config:
+    article_selector: a[href*='reporter_news_view']
+    collection_method: html
+    list_url: https://www.wine21.com/11_news/reporter_news_list.html
+  content_type: news_review
+  continent: ASIA
+  country: KR
+  enabled: true
+  id: media_wine21_kr
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: ko
+  name: Wine21
+  notes: Korean professional wine media (wine21.com)
+  producer_role: trade_media
+  region: Asia/East/Korea
+  requires_login: false
+  supports_rss: false
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.8
+- collection_tier: C2_html_simple
+  config:
+    collection_method: html
+    list_url: https://winereview.co.kr/news
+    article_selector: div.td_module_wrap
+    link_selector: h3.entry-title a
+    summary_selector: div.td-excerpt
+    date_selector: time
+    content_selector: div.td-post-content
+    max_articles: 20
+  content_type: news_review
+  continent: ASIA
+  country: KR
+  enabled: true
+  id: media_winereview_kr
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: ko
+  name: Wine Review
+  notes: Korean wine specialty publication (winereview.co.kr)
+  producer_role: trade_media
+  region: Asia/East/Korea
+  requires_login: false
+  supports_rss: false
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.8
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://wine-what.jp/feed/
+  content_type: news_review
+  continent: ASIA
+  country: JP
+  enabled: true
+  id: media_winewhat_jp
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: ja
+  name: WINE WHAT!?
+  notes: Japanese wine lifestyle magazine with regular RSS updates
+  producer_role: trade_media
+  region: Asia/East/Japan
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.4
+- collection_tier: C2_html_simple
+  config:
+    collection_method: html
+    list_url: https://koreawine.or.kr/wineinfo
+  content_type: education
+  continent: ASIA
+  country: KR
+  enabled: false
+  id: official_koreawine_kr
+  info_purpose:
+  - P5_education
+  language: ko
+  name: Korean Wine Consumer Association
+  notes: Official Korean wine consumer association (koreawine.or.kr)
+  producer_role: industry_assoc
+  region: Asia/East/Korea
+  requires_login: false
+  supports_rss: false
+  tier: official
+  trust_tier: T1_authoritative
+  type: official
+  weight: 2.0
+- collection_tier: C2_html_simple
+  config:
+    collection_method: html
+    list_url: https://www.shinsegae-lnb.com/html/news/promotion.html
+  content_type: news_review
+  continent: ASIA
+  country: KR
+  enabled: false
+  id: importer_shinsegae_kr
+  info_purpose:
+  - P4_trend_discovery
+  language: ko
+  name: Shinsegae L&B
+  notes: Major Korean wine distributor (shinsegae-lnb.com)
+  producer_role: importer
+  region: Asia/East/Korea
+  requires_login: false
+  supports_rss: false
+  tier: community
+  trust_tier: T3_professional
+  type: importer
+  weight: 2.0
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.decanter.com/feed/
+  content_type: news_review
+  continent: OLD_WORLD
+  country: GB
+  enabled: true
+  id: media_decanter_global
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: en
+  name: Decanter
+  notes: International authority, consistent RSS feed
+  producer_role: expert_media
+  region: Europe/Western/UK
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 3.0
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.thedrinksbusiness.com/feed/
+  content_type: news_review
+  continent: OLD_WORLD
+  country: GB
+  enabled: true
+  id: media_drinksbusiness_uk
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: en
+  name: The Drinks Business
+  notes: UK-based global drinks trade media with active RSS feed
+  producer_role: trade_media
+  region: Europe/Western/UK
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.6
+- collection_tier: C2_html_simple
+  config:
+    article_selector: a[href*='actualites']
+    collection_method: html
+    content_selector: article
+    list_url: https://www.larvf.com/actualites
+  content_type: news_review
+  continent: OLD_WORLD
+  country: FR
+  enabled: true
+  id: media_larvf_fr
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: fr
+  name: La Revue du vin de France
+  notes: French wine authority, HTML scraping needed
+  producer_role: expert_media
+  region: Europe/Western/France
+  requires_login: false
+  supports_rss: false
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 3.0
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.terredevins.com/feed
+  content_type: news_review
+  continent: OLD_WORLD
+  country: FR
+  enabled: true
+  id: media_terredevins_fr
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: fr
+  name: Terre de Vins
+  notes: French wine lifestyle & news outlet with RSS feed
+  producer_role: trade_media
+  region: Europe/Western/France
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.6
+- collection_tier: C2_html_simple
+  config:
+    collection_method: html
+    list_url: https://www.vignevin.com/actualites/
+  content_type: statistics
+  continent: OLD_WORLD
+  country: FR
+  enabled: false
+  id: official_ifv_fr
+  info_purpose:
+  - P2_market_analysis
+  - P5_education
+  language: fr
+  name: Institut Français de la Vigne et du Vin
+  notes: French viticulture research institute, statistics
+  producer_role: research_inst
+  region: Europe/Western/France
+  requires_login: false
+  supports_rss: false
+  tier: official
+  trust_tier: T1_authoritative
+  type: official
+  weight: 2.5
+- collection_tier: C1_rss
+  config:
+    article_selector: .article-title a
+    collection_method: rss
+    content_selector: article
+    list_url: https://www.gamberorosso.it/feed/
+  content_type: news_review
+  continent: OLD_WORLD
+  country: IT
+  enabled: true
+  id: media_gambero_it
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: it
+  name: Gambero Rosso
+  notes: Italian wine authority, consistent RSS feed
+  producer_role: expert_media
+  region: Europe/Southern/Italy
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 3.0
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.wineenthusiast.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_wineenthusiast_us
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: en
+  name: Wine Enthusiast
+  notes: US-based expert media covering consumer buying trends and ratings
+  producer_role: expert_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 2.9
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.vinography.com/feed
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_vinography_us
+  info_purpose:
+  - P4_trend_discovery
+  language: en
+  name: Vinography
+  notes: Independent US wine analysis blog with long-form coverage
+  producer_role: trade_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.4
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://enolife.com.ar/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: AR
+  enabled: true
+  id: media_enolife_ar
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: es
+  name: Enolife
+  notes: Argentina-based wine industry magazine with RSS feed
+  producer_role: trade_media
+  region: Americas/South/Argentina
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.5
+- collection_tier: C2_html_simple
+  config:
+    collection_method: html
+    list_url: https://www.federdoc.com/news/
+  content_type: education
+  continent: OLD_WORLD
+  country: IT
+  enabled: false
+  id: official_federdoc_it
+  info_purpose:
+  - P5_education
+  language: it
+  name: Federdoc
+  notes: Italian DOC federation, educational content
+  producer_role: industry_assoc
+  region: Europe/Southern/Italy
+  requires_login: false
+  supports_rss: false
+  tier: official
+  trust_tier: T1_authoritative
+  type: official
+  weight: 2.5
+- collection_tier: C2_html_simple
+  config:
+    collection_method: html
+    list_url: https://www.foodswinesfromspain.com/news/
+  content_type: market_report
+  continent: OLD_WORLD
+  country: ES
+  enabled: false
+  id: official_icex_es
+  info_purpose:
+  - P2_market_analysis
+  language: es
+  name: Vinos de España (ICEX)
+  notes: Spanish official export promotion, market reports
+  producer_role: government
+  region: Europe/Southern/Spain
+  requires_login: false
+  supports_rss: false
+  tier: official
+  trust_tier: T1_authoritative
+  type: official
+  weight: 2.5
+- collection_tier: C2_html_simple
+  config:
+    collection_method: html
+    list_url: https://www.winesofgermany.com/news/
+  content_type: education
+  continent: OLD_WORLD
+  country: DE
+  enabled: false
+  id: official_dwi_de
+  info_purpose:
+  - P5_education
+  language: en
+  name: Wines of Germany
+  notes: German Wine Institute, educational content
+  producer_role: industry_assoc
+  region: Europe/Western/Germany
+  requires_login: false
+  supports_rss: false
+  tier: official
+  trust_tier: T1_authoritative
+  type: official
+  weight: 2.5
+- collection_tier: C2_html_simple
+  config:
+    collection_method: html
+    list_url: https://www.winesofportugal.com/news/news-list
+  content_type: education
+  continent: OLD_WORLD
+  country: PT
+  enabled: false
+  id: official_viniportugal_pt
+  info_purpose:
+  - P5_education
+  language: en
+  name: Wines of Portugal
+  notes: Portuguese wine association, educational content
+  producer_role: industry_assoc
+  region: Europe/Southern/Portugal
+  requires_login: false
+  supports_rss: false
+  tier: official
+  trust_tier: T1_authoritative
+  type: official
+  weight: 2.5
+- collection_tier: C2_html_simple
+  config:
+    collection_method: html
+    list_url: https://wineinstitute.org/category/press-releases/
+  content_type: statistics
+  continent: NEW_WORLD
+  country: US
+  enabled: false
+  id: official_wineinstitute_us
+  info_purpose:
+  - P2_market_analysis
+  language: en
+  name: Wine Institute
+  notes: California wine industry statistics and press releases
+  producer_role: government
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: false
+  tier: official
+  trust_tier: T1_authoritative
+  type: official
+  weight: 2.5
+- collection_tier: C5_manual
+  config:
+    collection_method: html
+    list_url: https://www.winespectator.com/articles
+    note: Premium content may require subscription
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: false
+  id: media_winespectator_us
+  info_purpose:
+  - P3_investment
+  language: en
+  name: Wine Spectator
+  notes: Premium subscription content, expert ratings
+  producer_role: expert_media
+  region: Americas/North/USA
+  requires_login: true
+  supports_rss: false
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 3.0
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.jancisrobinson.com/articles/feed
+  content_type: news_review
+  continent: OLD_WORLD
+  country: GB
+  enabled: false
+  id: media_jancisrobinson_uk
+  info_purpose:
+  - P1_daily_briefing
+  - P3_investment
+  language: en
+  name: Jancis Robinson
+  notes: 'Master of Wine, authoritative wine journalism [DISABLED: RSS 404 error -
+    Feed URL not found]'
+  producer_role: expert_media
+  region: Europe/Western/UK
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 3.0
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.winemag.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_winemag_us
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: en
+  name: Wine & Spirits Magazine
+  notes: US wine magazine with extensive coverage
+  producer_role: expert_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 2.8
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.wine-searcher.com/rss.lml
+  content_type: market_report
+  continent: NEW_WORLD
+  country: US
+  enabled: false
+  id: media_winesearcher_global
+  info_purpose:
+  - P2_market_analysis
+  language: en
+  name: Wine-Searcher
+  notes: 'Global wine price database and market news [DISABLED: RSS 403 Forbidden
+    - Bot protection]'
+  producer_role: trade_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.7
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.vinetur.com/feed/
+  content_type: news_review
+  continent: OLD_WORLD
+  country: ES
+  enabled: false
+  id: media_vinetur_es
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: es
+  name: Vinetur
+  notes: 'Leading Spanish wine news portal [DISABLED: RSS 404 error - Feed URL not
+    found]'
+  producer_role: trade_media
+  region: Europe/Southern/Spain
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.7
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.theworlds50best.com/stories/feed
+  content_type: news_review
+  continent: OLD_WORLD
+  country: GB
+  enabled: false
+  id: media_worlds50best_uk
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: en
+  name: The World's 50 Best
+  notes: 'Global food & wine awards authority [DISABLED: RSS 404 error - Feed URL
+    not found]'
+  producer_role: expert_media
+  region: Europe/Western/UK
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 2.8
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.vinogusto.com/feed/
+  content_type: news_review
+  continent: OLD_WORLD
+  country: IT
+  enabled: true
+  id: media_vinogusto_it
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: it
+  name: Vinogusto
+  notes: Italian wine e-commerce and news platform
+  producer_role: trade_media
+  region: Europe/Southern/Italy
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.5
+- collection_tier: C3_html_js
+  config:
+    collection_method: html
+    list_url: https://www.wineaustralia.com/news
+  content_type: statistics
+  continent: NEW_WORLD
+  country: AU
+  enabled: false
+  id: official_wineaustralia_au
+  info_purpose:
+  - P2_market_analysis
+  language: en
+  name: Wine Australia
+  notes: Australian wine statistics, requires JS rendering
+  producer_role: government
+  region: Oceania/Australia
+  requires_login: false
+  supports_rss: false
+  tier: official
+  trust_tier: T1_authoritative
+  type: official
+  weight: 2.5
+- collection_tier: C2_html_simple
+  config:
+    collection_method: html
+    list_url: https://www.nzwine.com/news/
+  content_type: education
+  continent: NEW_WORLD
+  country: NZ
+  enabled: false
+  id: official_nzwine_nz
+  info_purpose:
+  - P5_education
+  language: en
+  name: New Zealand Wine
+  notes: New Zealand wine association, educational content
+  producer_role: industry_assoc
+  region: Oceania/New Zealand
+  requires_login: false
+  supports_rss: false
+  tier: official
+  trust_tier: T1_authoritative
+  type: official
+  weight: 2.5
+- collection_tier: C2_html_simple
+  config:
+    collection_method: html
+    list_url: https://www.winesofchile.org/news/
+  content_type: market_report
+  continent: NEW_WORLD
+  country: CL
+  enabled: false
+  id: official_winesofchile_cl
+  info_purpose:
+  - P2_market_analysis
+  language: en
+  name: Wines of Chile
+  notes: Chilean wine association, market reports
+  producer_role: industry_assoc
+  region: Americas/South/Chile
+  requires_login: false
+  supports_rss: false
+  tier: official
+  trust_tier: T1_authoritative
+  type: official
+  weight: 2.5
+- collection_tier: C2_html_simple
+  config:
+    collection_method: html
+    list_url: https://www.winesofargentina.org/news/
+  content_type: market_report
+  continent: NEW_WORLD
+  country: AR
+  enabled: false
+  id: official_winesofargentina_ar
+  info_purpose:
+  - P2_market_analysis
+  language: en
+  name: Wines of Argentina
+  notes: Argentine wine association, market reports
+  producer_role: industry_assoc
+  region: Americas/South/Argentina
+  requires_login: false
+  supports_rss: false
+  tier: official
+  trust_tier: T1_authoritative
+  type: official
+  weight: 2.5
+- collection_tier: C2_html_simple
+  config:
+    collection_method: html
+    list_url: https://www.wosa.co.za/news/
+  content_type: education
+  continent: NEW_WORLD
+  country: ZA
+  enabled: false
+  id: official_wosa_za
+  info_purpose:
+  - P5_education
+  language: en
+  name: Wines of South Africa
+  notes: South African wine association, educational content
+  producer_role: industry_assoc
+  region: Africa/South/South Africa
+  requires_login: false
+  supports_rss: false
+  tier: official
+  trust_tier: T1_authoritative
+  type: official
+  weight: 2.5
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.winemag.co.za/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: ZA
+  enabled: true
+  id: media_winemag_za
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: en
+  name: Wine Magazine South Africa
+  notes: South African wine lifestyle and news
+  producer_role: trade_media
+  region: Africa/South/South Africa
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.5
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.austinwinejournal.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: false
+  id: media_austinwine_us
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: en
+  name: Austin Wine Journal
+  notes: 'US regional wine coverage [DISABLED: DNS resolution failed - Domain unavailable]'
+  producer_role: trade_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.3
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.meininger.de/en/rss.xml
+  content_type: news_review
+  continent: OLD_WORLD
+  country: DE
+  enabled: false
+  id: media_meininger_de
+  info_purpose:
+  - P1_daily_briefing
+  language: en
+  name: Meininger's Wine Business International
+  notes: 'German wine trade magazine (English edition) [DISABLED: RSS 403 Forbidden
+    - Subscription required]'
+  producer_role: trade_media
+  region: Europe/Western/Germany
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.8
+- collection_tier: C2_html_simple
+  config:
+    collection_method: html
+    list_url: https://www.winesofchina.com/news
+    article_selector: div.news-item
+    link_selector: h3 a
+    max_articles: 15
+  content_type: news_review
+  continent: ASIA
+  country: CN
+  enabled: true
+  id: media_winesofchina_cn
+  info_purpose:
+  - P1_daily_briefing
+  language: en
+  name: Wines of China
+  notes: China wine market news and analysis
+  producer_role: trade_media
+  region: Asia/East/China
+  requires_login: false
+  supports_rss: false
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.4
+- collection_tier: C2_html_simple
+  config:
+    collection_method: html
+    list_url: https://japan-wine.jp/news/
+    article_selector: article.post
+    link_selector: h2.entry-title a
+    max_articles: 10
+  content_type: news_review
+  continent: ASIA
+  country: JP
+  enabled: true
+  id: media_japanwine_jp
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: ja
+  name: Japan Wine
+  notes: Japanese wine industry news
+  producer_role: trade_media
+  region: Asia/East/Japan
+  requires_login: false
+  supports_rss: false
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.3

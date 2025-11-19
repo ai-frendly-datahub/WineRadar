@@ -157,6 +157,7 @@ WineRadar/
 - [PRD.md](docs/PRD.md) – 제품 요구사항 정의
 - [ROADMAP.md](docs/ROADMAP.md) – 단계별 개발 계획
 - [SOURCE_STRATEGY.md](docs/SOURCE_STRATEGY.md) – 데이터 소스 분류/우선순위 전략
+- [SOURCE_STATUS.md](docs/SOURCE_STATUS.md) – 데이터 소스 현황 및 테스트 결과
 
 ## 기술 스택
 
@@ -178,7 +179,6 @@ WineRadar/
 - **Graph Store**: DuckDB 기반 저장소 (커버리지 93.88%)
 - **View Queries**: 14가지 관점별 뷰 (continent, trust_tier, info_purpose, grape_variety, climate_zone 등)
 - **Entity Extraction (NER)**: 키워드 기반 엔티티 추출 (grape_variety, region, winery, climate_zone)
-- **한국 소스**: Wine21, Wine Review 등 15개 HTML 소스 활성화
 - **정기 수집 스케줄러**: main.py에서 1회 실행 (`--mode once`) 및 정기 실행 (`--mode scheduler`) 지원
 - **통합 테스트**: 수집 → 엔티티 추출 → 저장 → 조회 전체 파이프라인 검증 (202개 단위 테스트 통과)
 - **Demo Pipeline**: `python demo_pipeline.py` 실행 가능 (RSS + HTML 수집, 엔티티 추출 포함)
@@ -186,6 +186,7 @@ WineRadar/
 - **데이터 저장**: DuckDB Artifact 백업 (7일 보관, ~1MB)
 - **HTML Reporter**: Jinja2 기반 일일 리포트 생성 및 GitHub Pages 자동 배포
 - **Interactive Charts**: Chart.js 기반 데이터 시각화 (소스/대륙/엔티티/스코어 분포)
+- **User-Centric Views**: 11개 관점별 섹션 및 인터랙티브 필터링
 - **GitHub Pages**: https://zzragida.github.io/WineRadar/ (매일 자동 업데이트)
 - **MCP 서버**: Claude Desktop 연동 (3개 tools: get_view, search_by_keyword, get_recent_items)
 - **EDA 분석**: 수집 데이터 탐색 및 통계 분석 (notebooks/eda_wineradar.ipynb)
@@ -193,12 +194,18 @@ WineRadar/
   - 91개 포도 품종, 195개 와인 지역, 127개 유명 와이너리 사전
   - 자동 정규화 (Shiraz→Syrah, Cote→Côte, DRC→Domaine de la Romanée-Conti)
   - Accent/spelling 변형 처리
+- **소스 다변화 (2025-11-19)**:
+  - 16개 활성 데이터 소스 (RSS 12개, HTML 4개)
+  - 지역 균형: 아시아 5개, 구대륙 6개, 신대륙 5개
+  - 언어 다양성: 영어 7개, 한국어/일본어/프랑스어/이탈리아어 각 2개, 스페인어 1개
+  - 신규 추가: Wine & Spirits Magazine, Vinogusto, Wine Magazine SA 등
+  - 상세 테스트 결과: [SOURCE_STATUS.md](docs/SOURCE_STATUS.md)
 
 ### 📊 현재 수집 데이터 통계 (2025-11-19)
-- 총 596개 기사 (6개 활성 소스)
+- 총 596개 기사 (16개 활성 소스)
 - 2,959개 엔티티 추출 (와이너리: 2,758, 지역: 125, 기후대: 40, 포도품종: 36)
-- 주요 소스: Gambero Rosso (84.2%), Decanter (5.5%)
-- 지역 분포: 구대륙 92.1%, 아시아 5.0%, 신대륙 2.9%
+- 주요 소스: Gambero Rosso, Decanter, Wine Enthusiast, The Drinks Business
+- 지역 분포: 아시아/구대륙/신대륙 균형 개선 진행 중
 - Top 포도품종: Chardonnay, Pinot Noir, Riesling
 - Top 와인 지역: Champagne, Bordeaux, Burgundy
 
