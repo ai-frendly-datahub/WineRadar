@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import os
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Tuple
 
@@ -14,6 +14,8 @@ from collectors.registry import build_collectors, FetcherFactory
 from analyzers.entity_extractor import extract_all_entities
 from graph import graph_store
 from graph.graph_queries import get_view
+from graph.search_index import SearchIndex
+from raw_logger import RawLogger
 from reporters.html_reporter import generate_daily_report, generate_index_page
 from reporters.kpi_logger import KPILogger
 
@@ -21,6 +23,8 @@ CONFIG_ENV_VAR = "WINERADAR_SOURCES_PATH"
 PROJECT_ROOT = Path(__file__).resolve().parent
 DEFAULT_CONFIG_PATH = PROJECT_ROOT / "config" / "sources.yaml"
 DEFAULT_REPORT_DIR = PROJECT_ROOT / "docs" / "reports"
+DEFAULT_RAW_DIR = PROJECT_ROOT / "data" / "raw"
+DEFAULT_SEARCH_DB_PATH = PROJECT_ROOT / "data" / "search_index.db"
 
 
 def load_sources_config(path: Path | None = None) -> dict[str, Any]:
@@ -182,34 +186,43 @@ def collect_and_store(
     sources_succeeded = 0
     sources_failed = 0
     errors = []
+    raw_logger = RawLogger(DEFAULT_RAW_DIR)
+    search_index = SearchIndex(DEFAULT_SEARCH_DB_PATH)
 
-    for collector in collectors:
-        collector_success = False
-        try:
-            for item in collector.collect():
-                # 엔티티 추출
-                entities = extract_all_entities(item)
+    try:
+        for collector in collectors:
+            collector_success = False
+            try:
+                collected_items = list(collector.collect())
+                raw_logger.log_raw_items(collected_items, source_name=collector.source_name)
 
-                # 저장
-                graph_store.upsert_url_and_entities(item, entities, now, db_path=db_path)
-                total_items += 1
-                collector_success = True
+                for item in collected_items:
+                    entities = extract_all_entities(item)
+                    graph_store.upsert_url_and_entities(item, entities, now, db_path=db_path)
+                    search_index.upsert(
+                        link=item["url"],
+                        title=item["title"],
+                        body=item.get("summary") or "",
+                    )
 
-                # 엔티티 수 집계
-                if entities:
-                    total_entities += sum(len(v) for v in entities.values())
+                    total_items += 1
+                    collector_success = True
+                    if entities:
+                        total_entities += sum(len(v) for v in entities.values())
 
-            if collector_success:
-                sources_succeeded += 1
-            else:
+                if collector_success:
+                    sources_succeeded += 1
+                else:
+                    sources_failed += 1
+                    errors.append(f"{collector.__class__.__name__}: No items collected")
+            except Exception as e:
                 sources_failed += 1
-                errors.append(f"{collector.__class__.__name__}: No items collected")
-        except Exception as e:
-            sources_failed += 1
-            errors.append(f"{collector.__class__.__name__}: {str(e)[:100]}")
+                errors.append(f"{collector.__class__.__name__}: {str(e)[:100]}")
 
-    graph_store.prune_expired_urls(now, db_path=db_path)
-    return total_items, len(collectors), total_entities, sources_succeeded, sources_failed, errors
+        graph_store.prune_expired_urls(now, db_path=db_path)
+        return total_items, len(collectors), total_entities, sources_succeeded, sources_failed, errors
+    finally:
+        search_index.close()
 
 
 def run_once(
