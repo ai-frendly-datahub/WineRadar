@@ -11,6 +11,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: wineradar-collection
+  cancel-in-progress: false
+
 jobs:
   crawl-and-report:
     runs-on: ubuntu-latest
