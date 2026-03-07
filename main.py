@@ -18,6 +18,11 @@ from graph.search_index import SearchIndex
 from raw_logger import RawLogger
 from reporters.html_reporter import generate_daily_report, generate_index_page
 from reporters.kpi_logger import KPILogger
+from wineradar.common.validators import (
+    validate_article,
+    validate_rating,
+    validate_vintage,
+)
 
 CONFIG_ENV_VAR = "WINERADAR_SOURCES_PATH"
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -53,7 +58,6 @@ def _generate_html_reports(
             time_window=timedelta(days=1),
             limit=20,
         ),
-
         # === 신뢰도별 뷰 (품질 중심 사용자) ===
         "tier_authoritative": get_view(
             db_path=db_path,
@@ -69,7 +73,6 @@ def _generate_html_reports(
             time_window=timedelta(days=2),
             limit=10,
         ),
-
         # === 지역별 뷰 (지역 관심 사용자) ===
         "region_asia": get_view(
             db_path=db_path,
@@ -92,7 +95,6 @@ def _generate_html_reports(
             time_window=timedelta(days=3),
             limit=15,
         ),
-
         # === 엔티티별 뷰 (전문가/애호가) ===
         "by_grape": get_view(
             db_path=db_path,
@@ -112,7 +114,6 @@ def _generate_html_reports(
             time_window=timedelta(days=7),
             limit=20,
         ),
-
         # === 목적별 뷰 (사용 시나리오별) ===
         "for_investment": get_view(
             db_path=db_path,
@@ -157,11 +158,13 @@ def _update_index_page(output_dir: Path, target_date: date, stats: dict[str, Any
             if report_file.name == "index.html":
                 continue
             report_date = report_file.stem  # 2025-11-19
-            reports.append({
-                "date": report_date,
-                "path": report_file.name,
-                "stats": stats if report_date == target_date.isoformat() else {},
-            })
+            reports.append(
+                {
+                    "date": report_date,
+                    "path": report_file.name,
+                    "stats": stats if report_date == target_date.isoformat() else {},
+                }
+            )
 
     # 인덱스 페이지 생성
     index_path = output_dir / "index.html"
@@ -196,7 +199,28 @@ def collect_and_store(
                 collected_items = list(collector.collect())
                 raw_logger.log_raw_items(collected_items, source_name=collector.source_name)
 
+                validated_items = []
                 for item in collected_items:
+                    is_valid, validation_errors = validate_article(item)
+                    rating = item.get("rating") if isinstance(item, dict) else None
+                    vintage = item.get("vintage") if isinstance(item, dict) else None
+
+                    if not validate_rating(rating):
+                        validation_errors.append(f"rating out of range: {rating}")
+                    if not validate_vintage(vintage):
+                        validation_errors.append(f"vintage out of range: {vintage}")
+
+                    if validation_errors:
+                        errors.append(
+                            f"{collector.__class__.__name__}: {item.get('url', 'unknown')} -> "
+                            f"{'; '.join(validation_errors)}"
+                        )
+                        continue
+
+                    if is_valid:
+                        validated_items.append(item)
+
+                for item in validated_items:
                     entities = extract_all_entities(item)
                     graph_store.upsert_url_and_entities(item, entities, now, db_path=db_path)
                     search_index.upsert(
@@ -220,7 +244,14 @@ def collect_and_store(
                 errors.append(f"{collector.__class__.__name__}: {str(e)[:100]}")
 
         graph_store.prune_expired_urls(now, db_path=db_path)
-        return total_items, len(collectors), total_entities, sources_succeeded, sources_failed, errors
+        return (
+            total_items,
+            len(collectors),
+            total_entities,
+            sources_succeeded,
+            sources_failed,
+            errors,
+        )
     finally:
         search_index.close()
 
@@ -236,6 +267,7 @@ def run_once(
 ) -> None:
     """하루 파이프라인을 한 번 실행한다."""
     import time
+
     start_time = time.time()
 
     now = datetime.now(timezone.utc)
@@ -250,10 +282,12 @@ def run_once(
     # 활성 소스 수 계산
     active_sources = len([s for s in sources_config.get("sources", []) if s.get("enabled", False)])
 
-    total_items, collector_count, total_entities, sources_succeeded, sources_failed, errors = collect_and_store(
-        sources_config,
-        fetcher_factory=fetcher_factory,
-        db_path=db_path,
+    total_items, collector_count, total_entities, sources_succeeded, sources_failed, errors = (
+        collect_and_store(
+            sources_config,
+            fetcher_factory=fetcher_factory,
+            db_path=db_path,
+        )
     )
     print(f"  - 활성 Collector: {collector_count}개")
     print(f"  - 수집된 아이템: {total_items}건")
@@ -288,7 +322,7 @@ def run_once(
             if report_file.exists():
                 content = report_file.read_text(encoding="utf-8")
                 report_cards = content.count('class="card"')
-                report_sections = content.count('section-title')
+                report_sections = content.count("section-title")
 
         except Exception as e:
             print(f"  - 리포트 생성 실패: {e}")
