@@ -9,6 +9,7 @@ import calendar
 
 import feedparser
 import requests
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from collectors.base import RawItem
 
@@ -26,8 +27,18 @@ class RSSCollector:
         self.list_url = source_meta["config"]["list_url"]
         self.fetcher = fetcher or self._default_fetcher
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=1, max=10),
+        retry=retry_if_exception_type(requests.exceptions.RequestException),
+        reraise=True,
+    )
     def _default_fetcher(self, url: str) -> bytes:
-        response = requests.get(url, timeout=10)
+        """Fetch RSS feed with retry and User-Agent."""
+        headers = {
+            "User-Agent": "Mozilla/5.0 (compatible; WineRadarBot/1.0; +https://github.com/zzragida/ai-frendly-datahub)",
+        }
+        response = requests.get(url, timeout=10, headers=headers)
         response.raise_for_status()
         return response.content
 
@@ -38,7 +49,9 @@ class RSSCollector:
         for entry in feed.entries:
             published_at = self._published_at(entry) or now
             raw_item: RawItem = {
-                "id": entry.get("id") or entry.get("link") or f"{self.source_meta['id']}:{published_at.isoformat()}",
+                "id": entry.get("id")
+                or entry.get("link")
+                or f"{self.source_meta['id']}:{published_at.isoformat()}",
                 "url": entry.get("link", ""),
                 "title": entry.get("title", "").strip(),
                 "summary": entry.get("summary", None),
@@ -75,7 +88,9 @@ class RSSCollector:
             return first.get("value")
         return entry.get("summary")
 
-    def _generate_summary(self, summary: str | None, content: str | None, title: str | None) -> str | None:
+    def _generate_summary(
+        self, summary: str | None, content: str | None, title: str | None
+    ) -> str | None:
         if summary:
             normalized = summary.strip()
             if normalized:

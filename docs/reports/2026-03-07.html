@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WineRadar Daily Report - 2026-03-07</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            background: #f8f9fa;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .stat-card .number {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section {
+            padding: 40px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .section-description {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleY(0);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transform: translateY(-5px);
+        }
+
+        .card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            line-height: 1.4;
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .card-score {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .card-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-summary {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-entities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .entity-tag {
+            background: #f0f0f0;
+            color: #555;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .entity-tag.grape { background: #e8f5e9; color: #2e7d32; }
+        .entity-tag.region { background: #fff3e0; color: #e65100; }
+        .entity-tag.winery { background: #f3e5f5; color: #6a1b9a; }
+        .entity-tag.climate { background: #e3f2fd; color: #1565c0; }
+
+        .card-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .card-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .empty-section {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-section-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        footer p {
+            margin: 5px 0;
+            opacity: 0.8;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .chart-container h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        .chart-container canvas {
+            max-height: 300px;
+        }
+
+        /* Category Filter Buttons */
+        .view-filter {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            border-bottom: 2px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .view-filter h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .filter-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #764ba2;
+        }
+
+        .section.hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍷 WineRadar Daily Report</h1>
+            <div class="subtitle">2026-03-07</div>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number">0</div>
+                <div class="label">Total Items</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">0</div>
+                <div class="label">Active Sources</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">0</div>
+                <div class="label">Entities</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">2</div>
+                <div class="label">Sections</div>
+            </div>
+        </div>
+
+        <!-- View Filter -->
+        <div class="view-filter">
+            <h3>📊 Filter by View</h3>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-category="all">All News</button>
+                <button class="filter-btn" data-category="briefing">Daily Briefing</button>
+                <button class="filter-btn" data-category="quality">By Quality</button>
+                <button class="filter-btn" data-category="region">By Region</button>
+                <button class="filter-btn" data-category="entity">By Entity</button>
+                <button class="filter-btn" data-category="purpose">By Purpose</button>
+            </div>
+        </div>
+
+        
+        <div class="section" data-category="briefing">
+            <h2 class="section-title">🔥 Daily Briefing</h2>
+            
+            <p class="section-description">Top wine industry news and must-read articles</p>
+            
+
+            
+            <div class="cards">
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">The ethical drinker: Why Château d&#39;Anglès deserves the spotlight</div>
+                        <div class="card-score">3.8</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&#39;Thoughtful work and the right support feeds into the glass...&#39;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Languedoc</span>
+                            
+                        
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/wine-news/opinion/the-ethical-drinker-why-chateau-dangles-deserves-the-spotlight" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">This Gooey Swiss Mac &amp; Cheese Is Alpine Perfection</div>
+                        <div class="card-score">3.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Wine &amp; Spirits Magazine</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>US</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-07</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;p&gt;Starring nutty Gruyère, zesty yellow onion, and waxy red potatoes, Älplermagronen isn&#39;t your typical mac &amp;#038; cheese.&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.wineenthusiast.com/recipe/swiss-mac-and-cheese/&#34;&gt;This Gooey Swiss Mac &amp;amp; Cheese Is Alpine Perfection&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.wineenthusiast.com&#34;&gt;Wine Enthusiast&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Nebbiolo</span>
+                            
+                        
+                        
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.wineenthusiast.com/recipe/swiss-mac-and-cheese/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">A beautiful dinner at Lakeview Palace in Macau, matching Chinese food with some top Chinese wines</div>
+                        <div class="card-score">3.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Jamie Goode&#39;s Wine Blog</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-07</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Website: https://www.wynnresortsmacau.com/en/wynn-palace/dining/lakeview-palace I arrived tonight in Macau in advance of judging the Wynn Signature Chinese Wine Awards. We dined at</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Chardonnay</span>
+                            
+                        
+                        
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://wineanorak.com/2026/03/06/a-beautiful-dinner-at-lakeview-palace-in-macau-matching-chinese-food-with-some-top-chinese-wines/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">“Nel vino una donna è costretta a dimostrare più di un uomo di essere credibile”. Intervista a Giulia Monteleone</div>
+                        <div class="card-score">3.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Giulia Monteleone, a ridosso dell&#39;8 marzo, racconta la sua esperienza sull’Etna tra vigneti, diffidenze e disparità nel lavoro agricolo: &#34;Sono rimasta sconvolta quando ho scoperto che alcune donne venivano pagate meno degli uomini&#34;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Etna</span>
+                            
+                        
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/vino/giulia-monteleone-vinodonna-dimostrare-doppio-uomo/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">“Sono un medico specializzato in longevità e non rinuncerò mai al vino”. Parla il professor Feldhaus</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-07</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">L&#39;esperto svizzero di malattie dell&#39;invecchiamento spiega gli effetti dei consumi sulla salute e prende le distanze da una medicina moderna troppo focalizzata sulla paura: &#34;Il nostro corpo è capace di gestire l&#39;alcol&#34;</div>
+                    
+
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/attualita/vino-salute-professor-feldhaus-difesa-vino/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">This Plantain Old Fashioned Flew Straight in From Nairobi</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Wine &amp; Spirits Magazine</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>US</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-07</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;p&gt;With rum, chocolate bitters, and homemade plantain-banana syrup, the plantain old fashioned is ready to shake up your at-home cocktail menu.&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.wineenthusiast.com/recipe/plantain-old-fashioned/&#34;&gt;This Plantain Old Fashioned Flew Straight in From Nairobi&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.wineenthusiast.com&#34;&gt;Wine Enthusiast&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+
+                    <a href="https://www.wineenthusiast.com/recipe/plantain-old-fashioned/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">“Sul set con Muccino e Accorsi, ma da ragazza facevo la cameriera nel ristorante di famiglia”: Beatrice Savignani si racconta</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Dal set del nuovo film di Gabriele Muccino alle estati passate a servire ai tavoli nell’agriturismo di famiglia: l’attrice Beatrice Savignani racconta la vita da fuorisede e la sua passione per la cucina umbra</div>
+                    
+
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/rubriche/interviste/beatrice-savignani-attrice-film-muccino-intervista/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Le mondine e la conquista delle otto ore: la storia delle donne nelle risaie</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Tra le campagne del Vercellese si scrisse un capitolo poco noto della storia del lavoro femminile</div>
+                    
+
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/attualita/mondine-vercellesi-sciopero-diritti-donne/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">L’Europa decide sui nomi della carne vegetale: cosa cambia davvero per burger e salsicce plant-based</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Dopo anni di dibattito, l’Unione europea raggiunge un compromesso sulle etichette dei prodotti vegetali: vietati 31 nomi legati alla carne, ma termini diffusi come burger e salsiccia resteranno utilizzabili</div>
+                    
+
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/attualita/europa-burger-vegetale-boccia-veggie-bistecche/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Pizza alla pala a Roma: 15 forni dove mangiare una delle vere istituzioni della città</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Croccante o soffice, stirata o alveolata: la pizza alla pala è uno dei grandi simboli della panificazione romana. Ecco i forni e le insegne dove assaggiarla al meglio, tra storiche istituzioni e nuova generazione</div>
+                    
+
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/rubriche/miniguide/pizza-alla-pala-roma-forni-istituzioni/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Lighting up Levante – the new taste of south-eastern Spain</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Lovers of Spanish wine have mostly looked north for the past few decades. But the country’s southeast is home to a variety of DOs beginning to tilt the country’s geographical scale. Make space for the new Levante.</div>
+                    
+
+                    
+
+                    <a href="https://www.decanter.com/wine/spain/lighting-up-levante-the-new-taste-of-south-eastern-spain" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Cinque ristoratori, un locale visto “per caso” e una follia: così nasce Raimondo, promettente osteria di Roma</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Cinque professionisti della ristorazione romana - tra ex Epiro, Bar Bozza e RadioCraft - aprono Raimondo a Garbatella: una rosticceria moderna tra arrosti, affumicature, birre artigianali e vini naturali</div>
+                    
+
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/rubriche/nuove-aperture/roma-nasce-raimondo-osteria-garbatella/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">A Tirana c’è un bistrot dove i mezze raccontano la nuova cucina albanese</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Nel quartiere di Rruga Njazi Demi, EOS Mezze Bar interpreta la tradizione albanese con uno stile contemporaneo: piccoli piatti da condividere, cocktail creativi e atmosfera mediterranea</div>
+                    
+
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/ristoranti/tirana-bistrot-mezze-nuova-cucina-albanese/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">“Qui non viviamo nel panico: si va a cena e si fa shopping normalmente”. Parla un ristoratore italiano ad Abu Dhabi</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Il manager italiano di SushiSamba ad Abu Dhabi racconta la situazione dopo gli attacchi nel Golfo: “Non viviamo nel panico. Ristoranti aperti, ma il turismo preoccupa”</div>
+                    
+
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/attualita/non-viviamo-panico-cena-ristorante-abu-dhabi/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Buco Unesco: così celebriamo la dieta mediterranea, ma perdiamo stagioni, artigiani e gusto</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Stagionalità azzerate, falsi miti e una cultura fragile del cibo e del vino. Prima risposta? Investire nella formazione per una nuova educazione al gusto</div>
+                    
+
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/attualita/buco-unesco-dieta-mediterranea/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Carlo Cracco: “Roma è la città più interessante dove aprire oggi un ristorante. Caso Noma? Non giudico”</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Lo chef apre al Corinthia di Roma e riflette sul futuro dell’alta ristorazione: “Non esiste un vero modello di business”. E sul caso Noma: “Gli stage? C’è un problema”</div>
+                    
+
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/rubriche/interviste/carlo-cracco-roma-citta-interessante-ristorante-caso-noma-non-giudicare/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Chi era Carla Lonzi, la femminista che si rifiutava di cucinare</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Critica d’arte e figura centrale del femminismo radicale italiano, Carla Lonzi mise in discussione il ruolo domestico imposto alle donne: rifiutare di cucinare diventò per lei un gesto politico di libertà</div>
+                    
+
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/rubriche/storie/carla-lonzi-critica-arte-femminista-rifiutava-cucinare/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Ultra-rare Champagne expression from Gosset hits market</div>
+                        <div class="card-score">3.3</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>The Drinks Business</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;p&gt;Representing the sixth release in a 30-year history, Gosset’s latest Champagne expression is certainly rare, and it’s only being made as a rosé.&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.thedrinksbusiness.com/2026/03/ultra-rare-champagne-expression-from-gosset-hits-market/&#34;&gt;Ultra-rare Champagne expression from Gosset hits market&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.thedrinksbusiness.com&#34;&gt;The Drinks Business&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Chardonnay</span>
+                            
+                            <span class="entity-tag grape">🍇 Pinot Noir</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Champagne</span>
+                            
+                        
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.thedrinksbusiness.com/2026/03/ultra-rare-champagne-expression-from-gosset-hits-market/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Vindustrious drives London Wine Fair into ‘new chapter’ for 2026</div>
+                        <div class="card-score">3.3</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>The Drinks Business</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;p&gt;Four months after her management buyout, Hannah Tovey tells db all about growth plans for London Wine Fair, from returning exhibitors to an expanded Signature Serve and a new BREW//LDN co-location.&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.thedrinksbusiness.com/2026/03/vindustrious-drives-london-wine-fair-into-new-chapter-for-2026/&#34;&gt;Vindustrious drives London Wine Fair into ‘new chapter’ for 2026&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.thedrinksbusiness.com&#34;&gt;The Drinks Business&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Chardonnay</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Bordeaux</span>
+                            
+                            <span class="entity-tag region">📍 Friuli</span>
+                            
+                            <span class="entity-tag region">📍 Virginia</span>
+                            
+                        
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.thedrinksbusiness.com/2026/03/vindustrious-drives-london-wine-fair-into-new-chapter-for-2026/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Champagne outlook: collectible cuvées and entry-level delights set to outperform</div>
+                        <div class="card-score">3.3</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>The Drinks Business</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;p&gt;Despite falling global shipments, certain Champagne segments are thriving, writes Kathleen Willcox. Collectors’ cuvées, by-the-glass programmes and accessible luxury bottles are emerging as bright spots in a challenging market.&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.thedrinksbusiness.com/2026/03/champagne-outlook-collectible-cuvees-and-entry-level-delights-set-to-outperform/&#34;&gt;Champagne outlook: collectible cuvées and entry-level delights set to outperform&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.thedrinksbusiness.com&#34;&gt;The Drinks Business&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Champagne</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Dom Pérignon</span>
+                            
+                            <span class="entity-tag winery">🏰 Krug</span>
+                            
+                            <span class="entity-tag winery">🏰 Salon</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.thedrinksbusiness.com/2026/03/champagne-outlook-collectible-cuvees-and-entry-level-delights-set-to-outperform/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+            </div>
+            
+        </div>
+        
+        <div class="section" data-category="quality">
+            <h2 class="section-title">⭐⭐⭐ Authoritative Sources</h2>
+            
+            <p class="section-description">From official wine organizations and institutions</p>
+            
+
+            
+            <div class="empty-section">
+                <div class="empty-section-icon">📭</div>
+                <p>No items in this section</p>
+            </div>
+            
+        </div>
+        
+        <div class="section" data-category="quality">
+            <h2 class="section-title">⭐⭐ Expert Sources</h2>
+            
+            <p class="section-description">From wine critics and industry experts</p>
+            
+
+            
+            <div class="cards">
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">The ethical drinker: Why Château d&#39;Anglès deserves the spotlight</div>
+                        <div class="card-score">3.8</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&#39;Thoughtful work and the right support feeds into the glass...&#39;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Languedoc</span>
+                            
+                        
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/wine-news/opinion/the-ethical-drinker-why-chateau-dangles-deserves-the-spotlight" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Dreamy Cabernets Are Hiding in the Clouds of Moon Mountain</div>
+                        <div class="card-score">3.8</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Wine &amp; Spirits Magazine</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>US</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;p&gt;Powerful and energetic Cabernet Sauvignon reigns supreme in this high-altitude region of Sonoma.&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.wineenthusiast.com/culture/travel/high-altitude-moon-mountain-ava/&#34;&gt;Dreamy Cabernets Are Hiding in the Clouds of Moon Mountain&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.wineenthusiast.com&#34;&gt;Wine Enthusiast&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Cabernet Sauvignon</span>
+                            
+                            <span class="entity-tag grape">🍇 Chardonnay</span>
+                            
+                            <span class="entity-tag grape">🍇 Grenache</span>
+                            
+                            <span class="entity-tag grape">🍇 Pinot Noir</span>
+                            
+                            <span class="entity-tag grape">🍇 Sémillon</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Bordeaux</span>
+                            
+                            <span class="entity-tag region">📍 Languedoc</span>
+                            
+                            <span class="entity-tag region">📍 Napa Valley</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Ridge</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.wineenthusiast.com/culture/travel/high-altitude-moon-mountain-ava/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">This Gooey Swiss Mac &amp; Cheese Is Alpine Perfection</div>
+                        <div class="card-score">3.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Wine &amp; Spirits Magazine</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>US</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-07</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;p&gt;Starring nutty Gruyère, zesty yellow onion, and waxy red potatoes, Älplermagronen isn&#39;t your typical mac &amp;#038; cheese.&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.wineenthusiast.com/recipe/swiss-mac-and-cheese/&#34;&gt;This Gooey Swiss Mac &amp;amp; Cheese Is Alpine Perfection&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.wineenthusiast.com&#34;&gt;Wine Enthusiast&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Nebbiolo</span>
+                            
+                        
+                        
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.wineenthusiast.com/recipe/swiss-mac-and-cheese/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">A beautiful dinner at Lakeview Palace in Macau, matching Chinese food with some top Chinese wines</div>
+                        <div class="card-score">3.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Jamie Goode&#39;s Wine Blog</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-07</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Website: https://www.wynnresortsmacau.com/en/wynn-palace/dining/lakeview-palace I arrived tonight in Macau in advance of judging the Wynn Signature Chinese Wine Awards. We dined at</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Chardonnay</span>
+                            
+                        
+                        
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://wineanorak.com/2026/03/06/a-beautiful-dinner-at-lakeview-palace-in-macau-matching-chinese-food-with-some-top-chinese-wines/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">“Nel vino una donna è costretta a dimostrare più di un uomo di essere credibile”. Intervista a Giulia Monteleone</div>
+                        <div class="card-score">3.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Giulia Monteleone, a ridosso dell&#39;8 marzo, racconta la sua esperienza sull’Etna tra vigneti, diffidenze e disparità nel lavoro agricolo: &#34;Sono rimasta sconvolta quando ho scoperto che alcune donne venivano pagate meno degli uomini&#34;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Etna</span>
+                            
+                        
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/vino/giulia-monteleone-vinodonna-dimostrare-doppio-uomo/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Mexican Winemaking Is Reaching New Heights in These High-Altitude Regions</div>
+                        <div class="card-score">3.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Wine &amp; Spirits Magazine</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>US</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;p&gt;Despite the popularity of Northern Baja California, a new generation of winemakers are embracing high-altitude regions in other parts of the country.&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.wineenthusiast.com/culture/travel/high-altitude-mexican-winemaking/&#34;&gt;Mexican Winemaking Is Reaching New Heights in These High-Altitude Regions&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.wineenthusiast.com&#34;&gt;Wine Enthusiast&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Albariño</span>
+                            
+                            <span class="entity-tag grape">🍇 Cabernet Franc</span>
+                            
+                            <span class="entity-tag grape">🍇 Cabernet Sauvignon</span>
+                            
+                            <span class="entity-tag grape">🍇 Chardonnay</span>
+                            
+                            <span class="entity-tag grape">🍇 Chenin Blanc</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Languedoc</span>
+                            
+                            <span class="entity-tag region">📍 Napa Valley</span>
+                            
+                            <span class="entity-tag region">📍 Rioja</span>
+                            
+                        
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.wineenthusiast.com/culture/travel/high-altitude-mexican-winemaking/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">“Sono un medico specializzato in longevità e non rinuncerò mai al vino”. Parla il professor Feldhaus</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-07</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">L&#39;esperto svizzero di malattie dell&#39;invecchiamento spiega gli effetti dei consumi sulla salute e prende le distanze da una medicina moderna troppo focalizzata sulla paura: &#34;Il nostro corpo è capace di gestire l&#39;alcol&#34;</div>
+                    
+
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/attualita/vino-salute-professor-feldhaus-difesa-vino/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">This Plantain Old Fashioned Flew Straight in From Nairobi</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Wine &amp; Spirits Magazine</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>US</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-07</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;p&gt;With rum, chocolate bitters, and homemade plantain-banana syrup, the plantain old fashioned is ready to shake up your at-home cocktail menu.&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.wineenthusiast.com/recipe/plantain-old-fashioned/&#34;&gt;This Plantain Old Fashioned Flew Straight in From Nairobi&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.wineenthusiast.com&#34;&gt;Wine Enthusiast&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+
+                    <a href="https://www.wineenthusiast.com/recipe/plantain-old-fashioned/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">“Sul set con Muccino e Accorsi, ma da ragazza facevo la cameriera nel ristorante di famiglia”: Beatrice Savignani si racconta</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Dal set del nuovo film di Gabriele Muccino alle estati passate a servire ai tavoli nell’agriturismo di famiglia: l’attrice Beatrice Savignani racconta la vita da fuorisede e la sua passione per la cucina umbra</div>
+                    
+
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/rubriche/interviste/beatrice-savignani-attrice-film-muccino-intervista/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Le mondine e la conquista delle otto ore: la storia delle donne nelle risaie</div>
+                        <div class="card-score">3.5</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2026-03-06</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Tra le campagne del Vercellese si scrisse un capitolo poco noto della storia del lavoro femminile</div>
+                    
+
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/attualita/mondine-vercellesi-sciopero-diritti-donne/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+            </div>
+            
+        </div>
+        
+
+        <!-- Charts Section -->
+        
+        <div class="section">
+            <h2 class="section-title">📊 Data Visualization</h2>
+            <p class="section-description">Interactive charts showing data distribution and trends</p>
+
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>Source Distribution</h3>
+                    <canvas id="sourceChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Continent Distribution</h3>
+                    <canvas id="continentChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Entity Types</h3>
+                    <canvas id="entityChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Score Distribution</h3>
+                    <canvas id="scoreChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+
+        <footer>
+            <p><strong>WineRadar</strong> - Wine Industry Intelligence</p>
+            <p>Generated on 2026-03-07 06:07 UTC</p>
+            <p><a href="https://github.com/zzragida/WineRadar" target="_blank">GitHub Repository</a></p>
+        </footer>
+    </div>
+
+    <!-- View Filter JavaScript -->
+    <script>
+        // Category filtering
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const sections = document.querySelectorAll('.section[data-category]');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const category = button.dataset.category;
+
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // Filter sections
+                sections.forEach(section => {
+                    if (category === 'all' || section.dataset.category === category) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                });
+
+                // Smooth scroll to first visible section
+                const firstVisible = document.querySelector('.section[data-category]:not(.hidden)');
+                if (firstVisible && category !== 'all') {
+                    firstVisible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- Chart Initialization -->
+    
+    <script>
+        // Color palette
+        const colors = [
+            'rgba(102, 126, 234, 0.8)',
+            'rgba(118, 75, 162, 0.8)',
+            'rgba(237, 100, 166, 0.8)',
+            'rgba(255, 154, 158, 0.8)',
+            'rgba(250, 208, 196, 0.8)',
+            'rgba(184, 233, 148, 0.8)',
+            'rgba(120, 224, 143, 0.8)',
+            'rgba(56, 178, 172, 0.8)',
+        ];
+
+        // Source Distribution Chart
+        new Chart(document.getElementById('sourceChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ["Decanter", "Wine \u0026 Spirits Magazine", "Jamie Goode\u0027s Wine Blog", "Gambero Rosso", "The Drinks Business"],
+                datasets: [{
+                    data: [3, 6, 2, 16, 3],
+                    backgroundColor: colors,
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Continent Distribution Chart
+        new Chart(document.getElementById('continentChart'), {
+            type: 'pie',
+            data: {
+                labels: ["OLD_WORLD", "NEW_WORLD"],
+                datasets: [{
+                    data: [24, 6],
+                    backgroundColor: colors.slice(0, 3),
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Entity Types Chart
+        new Chart(document.getElementById('entityChart'), {
+            type: 'bar',
+            data: {
+                labels: ["region", "climate_zone", "grape_variety", "winery"],
+                datasets: [{
+                    label: 'Count',
+                    data: [20, 8, 30, 4],
+                    backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Score Distribution Chart
+        new Chart(document.getElementById('scoreChart'), {
+            type: 'bar',
+            data: {
+                labels: ["0-1", "1-2", "2-3", "3-4", "4-5"],
+                datasets: [{
+                    label: 'Articles',
+                    data: [0, 0, 0, 30, 0],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(255, 159, 64, 0.8)',
+                        'rgba(255, 205, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(54, 162, 235, 0.8)'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+    
+</body>
+</html>

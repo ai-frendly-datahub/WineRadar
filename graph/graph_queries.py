@@ -188,3 +188,48 @@ def get_view(
         view_items.append(item)
 
     return view_items
+
+
+class TopEntity(TypedDict):
+    entity_type: str
+    entity_value: str
+    count: int
+
+
+def get_top_entities(
+    db_path: Path | str | None = None,
+    entity_type: str = "winery",
+    time_window: timedelta = timedelta(days=30),
+    limit: int = 10,
+) -> list[TopEntity]:
+    """특정 기간 동안 가장 많이 언급된 엔티티를 조회합니다."""
+    now = datetime.now(timezone.utc)
+    threshold = now - time_window
+
+    resolved_path = _resolve_db_path(db_path)
+    with duckdb.connect(str(resolved_path)) as conn:
+        query = [
+            "SELECT ue.entity_type, ue.entity_value, COUNT(*) AS count",
+            "FROM url_entities ue",
+            "INNER JOIN urls u ON ue.url = u.url",
+            "WHERE u.published_at >= ?",
+            "AND ue.entity_type = ?",
+            "GROUP BY ue.entity_type, ue.entity_value",
+            "ORDER BY count DESC, ue.entity_value ASC",
+            "LIMIT ?",
+        ]
+        params = [threshold, entity_type, limit]
+
+        sql = "\n".join(query)
+        rows = conn.execute(sql, params).fetchall()
+
+    entities: list[TopEntity] = []
+    for row in rows:
+        entity: TopEntity = {
+            "entity_type": row[0],
+            "entity_value": row[1],
+            "count": row[2],
+        }
+        entities.append(entity)
+
+    return entities

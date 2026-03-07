@@ -6,7 +6,7 @@ on:
       - main
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"  # 매일 00:00 UTC (한국 기준 오전 9시)
+    - cron: "0 23 * * *"  # 매일 23:00 UTC (KST 08:00+1)
 
 permissions:
   contents: write
@@ -54,4 +54,4 @@ jobs:
         with:
           name: wineradar-db-${{ github.run_number }}
           path: data/wineradar.duckdb
-          retention-days: 7
+          retention-days: 30

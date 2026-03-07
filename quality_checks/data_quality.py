@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-from typing import Iterable
+from typing import cast
 
 import duckdb
 
@@ -23,124 +23,271 @@ NULL_CONDITIONS: dict[str, str] = {
 ALLOWED_LANGUAGES = {"en", "fr", "it", "ko", "ja", "es", "de"}
 
 
+def _quote_identifier(identifier: str) -> str:
+    return '"' + identifier.replace('"', '""') + '"'
+
+
+def _fetchone_required(
+    con: duckdb.DuckDBPyConnection,
+    query: str,
+    params: list[object] | None = None,
+) -> tuple[object, ...]:
+    row = cast(tuple[object, ...] | None, con.execute(query, params or []).fetchone())
+    if row is None:
+        raise RuntimeError("DuckDB query returned no rows")
+    return row
+
+
+def _to_int(value: object) -> int:
+    if isinstance(value, bool):
+        return int(value)
+    if isinstance(value, int):
+        return value
+    if isinstance(value, (float, str, bytes, bytearray)):
+        return int(value)
+    raise TypeError(f"Expected int-compatible value, got {type(value).__name__}")
+
+
+def _to_optional_int(value: object) -> int | None:
+    return None if value is None else _to_int(value)
+
+
+def _to_optional_float(value: object) -> float | None:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return float(int(value))
+    if isinstance(value, (int, float, str, bytes, bytearray)):
+        return float(value)
+    raise TypeError(f"Expected float-compatible value, got {type(value).__name__}")
+
+
 def _print_section(title: str) -> None:
-    print("\n" + title)
-    print("-" * len(title))
+    print(f"\n=== {title} ===\n")
 
 
-def _fetch_rows(con: duckdb.DuckDBPyConnection, query: str) -> Iterable[tuple]:
-    return con.execute(query).fetchall()
+def check_missing_fields(
+    con: duckdb.DuckDBPyConnection,
+    *,
+    table_name: str,
+    null_conditions: dict[str, str],
+) -> None:
+    _print_section("Missing Field Check")
+    total = _to_int(
+        _fetchone_required(con, f"SELECT COUNT(*) FROM {_quote_identifier(table_name)}")[0]
+    )
 
-
-def check_missing_fields(con: duckdb.DuckDBPyConnection) -> None:
-    _print_section("누락 필드 점검")
-    total = con.execute("SELECT COUNT(*) FROM urls").fetchone()[0]
     if total == 0:
-        print("데이터가 비어 있습니다.")
+        print("No records found.")
         return
 
-    for field, condition in NULL_CONDITIONS.items():
-        count = con.execute(f"SELECT COUNT(*) FROM urls WHERE {condition}").fetchone()[0]
-        ratio = (count / total) * 100 if total else 0
-        if count:
-            print(f"- {field}: {count} rows ({ratio:.2f}%) 누락/공백")
+    for field, condition in null_conditions.items():
+        count = _to_int(
+            _fetchone_required(
+                con,
+                f"SELECT COUNT(*) FROM {_quote_identifier(table_name)} WHERE {condition}",
+            )[0]
+        )
+        ratio = (count / total) * 100
+        print(f"  {field}: {count} / {total} ({ratio:.1f}%)")
 
 
-def check_duplicate_urls(con: duckdb.DuckDBPyConnection, limit: int = 10) -> None:
-    _print_section("중복 URL 점검")
-    rows = _fetch_rows(
+def check_duplicate_urls(
+    con: duckdb.DuckDBPyConnection,
+    *,
+    table_name: str,
+    url_column: str = "url",
+    limit: int = 10,
+) -> None:
+    _print_section("Duplicate URL Check")
+    raw_rows = cast(
+        list[tuple[object, object]],
+        con.execute(
+            f"""
+        SELECT {_quote_identifier(url_column)} AS url_value, COUNT(*) AS cnt
+        FROM {_quote_identifier(table_name)}
+        GROUP BY {_quote_identifier(url_column)}
+        HAVING COUNT(*) > 1
+        ORDER BY cnt DESC, url_value
+        LIMIT ?
+        """,
+            [limit],
+        ).fetchall(),
+    )
+    rows: list[tuple[str | None, int]] = [
+        (None if row[0] is None else str(row[0]), _to_int(row[1])) for row in raw_rows
+    ]
+
+    if not rows:
+        print("No duplicate URLs found.")
+        return
+
+    for url_value, cnt in rows:
+        print(f"  {cnt}x: {url_value}")
+
+
+def check_text_lengths(
+    con: duckdb.DuckDBPyConnection,
+    *,
+    table_name: str,
+    text_columns: list[str],
+) -> None:
+    _print_section("Text Length Statistics")
+
+    if not text_columns:
+        print("No text columns provided.")
+        return
+
+    for column in text_columns:
+        avg_len_raw, min_len_raw, max_len_raw = _fetchone_required(
+            con,
+            f"""
+            SELECT
+                AVG(LENGTH({_quote_identifier(column)})) AS avg_len,
+                MIN(LENGTH({_quote_identifier(column)})) AS min_len,
+                MAX(LENGTH({_quote_identifier(column)})) AS max_len
+            FROM {_quote_identifier(table_name)}
+            """,
+        )
+
+        avg_len = _to_optional_float(avg_len_raw)
+        min_len = _to_optional_int(min_len_raw)
+        max_len = _to_optional_int(max_len_raw)
+
+        avg_text = "N/A" if avg_len is None else f"{avg_len:.1f}"
+        print(f"  {column}: avg/min/max = {avg_text} / {min_len} / {max_len}")
+
+
+def check_language_values(
+    con: duckdb.DuckDBPyConnection,
+    *,
+    table_name: str,
+    language_column: str = "language",
+    allowed_languages: set[str] | None = None,
+) -> None:
+    _print_section("Language Value Check")
+    raw_rows = cast(
+        list[tuple[object, object]],
+        con.execute(
+            f"""
+        SELECT {_quote_identifier(language_column)} AS language_value, COUNT(*) AS cnt
+        FROM {_quote_identifier(table_name)}
+        GROUP BY {_quote_identifier(language_column)}
+        ORDER BY cnt DESC, language_value
+        """
+        ).fetchall(),
+    )
+    rows: list[tuple[str | None, int]] = [
+        (None if row[0] is None else str(row[0]), _to_int(row[1])) for row in raw_rows
+    ]
+
+    if not rows:
+        print("No language values found.")
+        return
+
+    print("Distribution:")
+    for language_value, cnt in rows:
+        print(f"  {language_value}: {cnt}")
+
+    if allowed_languages is None:
+        return
+
+    invalid = [
+        (language_value, cnt)
+        for language_value, cnt in rows
+        if language_value is not None and language_value not in allowed_languages
+    ]
+
+    if invalid:
+        print("Invalid language values:")
+        for language_value, cnt in invalid:
+            print(f"  {language_value}: {cnt}")
+    else:
+        print("All language values are allowed.")
+
+
+def check_dates(
+    con: duckdb.DuckDBPyConnection,
+    *,
+    table_name: str,
+    date_column: str = "published_at",
+) -> None:
+    _print_section("Date Check")
+    future_count = _to_int(
+        _fetchone_required(
+            con,
+            f"""
+            SELECT COUNT(*)
+            FROM {_quote_identifier(table_name)}
+            WHERE {_quote_identifier(date_column)} > CURRENT_TIMESTAMP
+            """,
+        )[0]
+    )
+
+    oldest, newest = _fetchone_required(
         con,
         f"""
-        SELECT url, COUNT(*) AS cnt
-        FROM urls
-        GROUP BY url
-        HAVING cnt > 1
-        ORDER BY cnt DESC, url
-        LIMIT {limit}
-        """,
-    )
-    if not rows:
-        print("중복 URL 없음")
-        return
-    for url, cnt in rows:
-        print(f"- {cnt}회: {url}")
-
-
-def check_text_lengths(con: duckdb.DuckDBPyConnection) -> None:
-    _print_section("텍스트 길이 통계")
-    rows = con.execute(
-        """
         SELECT
-            AVG(length(title)) AS avg_title,
-            MIN(length(title)) AS min_title,
-            MAX(length(title)) AS max_title,
-            AVG(length(summary)) AS avg_summary,
-            AVG(length(content)) AS avg_content
-        FROM urls
-        """
-    ).fetchone()
-    print(
-        f"제목 길이 avg/min/max: {rows[0]:.1f} / {rows[1]} / {rows[2]}\n"
-        f"요약 평균 길이: {rows[3]:.1f}\n"
-        f"본문 평균 길이: {rows[4]:.1f}"
-    )
-
-
-def check_language_values(con: duckdb.DuckDBPyConnection) -> None:
-    _print_section("언어 코드 검증")
-    rows = _fetch_rows(
-        con,
-        """
-        SELECT language, COUNT(*) AS cnt
-        FROM urls
-        GROUP BY language
-        ORDER BY cnt DESC
+            MIN({_quote_identifier(date_column)}) AS oldest,
+            MAX({_quote_identifier(date_column)}) AS newest
+        FROM {_quote_identifier(table_name)}
         """,
     )
-    invalid = [(lang, cnt) for lang, cnt in rows if lang not in ALLOWED_LANGUAGES]
-    if invalid:
-        print("허용되지 않은 언어 코드:")
-        for lang, cnt in invalid:
-            print(f"- {lang}: {cnt}")
-    else:
-        print("모든 언어 코드가 허용 범위 내에 있습니다.")
+    print(f"  oldest: {oldest}")
+    print(f"  newest: {newest}")
+    print(f"  future dates: {future_count}")
 
 
-def check_dates(con: duckdb.DuckDBPyConnection) -> None:
-    _print_section("발행일 점검")
-    future_count = con.execute(
-        "SELECT COUNT(*) FROM urls WHERE published_at > now()"
-    ).fetchone()[0]
-    oldest, newest = con.execute(
-        "SELECT MIN(published_at), MAX(published_at) FROM urls"
-    ).fetchone()
-    print(f"가장 오래된 발행일: {oldest}, 최신 발행일: {newest}")
-    if future_count:
-        print(f"미래 날짜 {future_count}건 존재")
+def run_all_checks(
+    con: duckdb.DuckDBPyConnection,
+    *,
+    table_name: str,
+    null_conditions: dict[str, str],
+    text_columns: list[str] | None = None,
+    language_column: str = "language",
+    allowed_languages: set[str] | None = None,
+    url_column: str = "url",
+    date_column: str = "published_at",
+) -> None:
+    total = _to_int(
+        _fetchone_required(con, f"SELECT COUNT(*) FROM {_quote_identifier(table_name)}")[0]
+    )
+    print(f"총 레코드 수: {total}")
+
+    check_missing_fields(con, table_name=table_name, null_conditions=null_conditions)
+    check_duplicate_urls(con, table_name=table_name, url_column=url_column)
+    check_text_lengths(con, table_name=table_name, text_columns=text_columns or [])
+    check_language_values(
+        con,
+        table_name=table_name,
+        language_column=language_column,
+        allowed_languages=allowed_languages,
+    )
+    check_dates(con, table_name=table_name, date_column=date_column)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="DuckDB 데이터 품질 점검")
-    parser.add_argument(
+    _ = parser.add_argument(
         "--db",
         type=Path,
         default=Path("data/test_selected.duckdb"),
         help="검사할 DuckDB 경로",
     )
     args = parser.parse_args()
+    db_path = cast(Path, args.db)
 
-    if not args.db.exists():
-        raise SystemExit(f"DB 파일이 존재하지 않습니다: {args.db}")
+    if not db_path.exists():
+        raise SystemExit(f"DB 파일이 존재하지 않습니다: {db_path}")
 
-    con = duckdb.connect(str(args.db))
-    total = con.execute("SELECT COUNT(*) FROM urls").fetchone()[0]
-    print(f"총 레코드 수: {total}")
-
-    check_missing_fields(con)
-    check_duplicate_urls(con)
-    check_text_lengths(con)
-    check_language_values(con)
-    check_dates(con)
+    con = duckdb.connect(str(db_path))
+    run_all_checks(
+        con,
+        table_name="urls",
+        null_conditions=NULL_CONDITIONS,
+        text_columns=["title", "summary", "content"],
+        allowed_languages=ALLOWED_LANGUAGES,
+    )
 
 
 if __name__ == "__main__":
