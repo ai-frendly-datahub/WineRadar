@@ -1,6 +1,8 @@
 ﻿# WineRadar
 
-[![GitHub Actions](https://github.com/<username>/WineRadar/workflows/WineRadar%20Crawler/badge.svg)](https://github.com/<username>/WineRadar/actions)
+**🌐 Live Report**: https://ai-frendly-datahub.github.io/WineRadar/
+
+[![GitHub Actions](https://github.com/ai-frendly-datahub/WineRadar/workflows/WineRadar%20Crawler/badge.svg)](https://github.com/ai-frendly-datahub/WineRadar/actions)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -27,7 +29,7 @@
 
 ## 데모
 
-- **[📊 Live Daily Reports](https://zzragida.github.io/WineRadar/)** – GitHub Pages에 게시되는 일일 HTML 리포트 (매일 자동 업데이트)
+- **[📊 Live Daily Reports](https://ai-frendly-datahub.github.io/WineRadar/)** – GitHub Pages에 게시되는 일일 HTML 리포트 (매일 자동 업데이트)
 
 ## 주요 기능
 
@@ -110,9 +112,9 @@ WineRadar를 Claude Desktop의 MCP 서버로 사용할 수 있습니다.
 1. 저장소를 Fork 하고 Settings → Pages → Branch를 `gh-pages` 로 설정합니다.
 2. (선택) Settings → Secrets 에 `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` 등을 등록합니다.
 3. Actions 탭에서 "WineRadar Crawler" 워크플로를 수동 실행하거나 스케줄링합니다.
-4. **[Daily Reports](https://zzragida.github.io/WineRadar/)** 에서 HTML 리포트를 확인합니다.
+4. **[Daily Reports](https://ai-frendly-datahub.github.io/WineRadar/)** 에서 HTML 리포트를 확인합니다.
 
-**현재 배포된 리포트**: https://zzragida.github.io/WineRadar/
+**현재 배포된 리포트**: https://ai-frendly-datahub.github.io/WineRadar/
 
 ### 환경 변수
 
