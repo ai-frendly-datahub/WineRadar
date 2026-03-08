@@ -354,6 +354,71 @@ def run_once(
     except Exception as e:
         print(f"  - KPI 로깅 실패: {e}")
 
+    _send_pipeline_notification(
+        total_items=total_items,
+        collector_count=collector_count,
+        total_entities=total_entities,
+        sources_succeeded=sources_succeeded,
+        sources_failed=sources_failed,
+        errors=errors,
+    )
+
+
+def _send_pipeline_notification(
+    *,
+    total_items: int,
+    collector_count: int,
+    total_entities: int,
+    sources_succeeded: int,
+    sources_failed: int,
+    errors: list[str],
+) -> None:
+    email_to = os.environ.get("NOTIFICATION_EMAIL")
+    webhook_url = os.environ.get("NOTIFICATION_WEBHOOK")
+
+    if not email_to and not webhook_url:
+        return
+
+    from notifier import Notifier, NotificationConfig
+
+    config = NotificationConfig(
+        enabled=True,
+        channels=[],
+        email_settings={
+            "smtp_host": os.environ.get("SMTP_HOST", "localhost"),
+            "smtp_port": int(os.environ.get("SMTP_PORT", "587")),
+            "from_address": os.environ.get("SMTP_FROM", ""),
+            "to_addresses": [email_to] if email_to else [],
+            "username": os.environ.get("SMTP_USER", ""),
+            "password": os.environ.get("SMTP_PASSWORD", ""),
+        },
+        webhook_url=webhook_url or "",
+    )
+
+    if email_to:
+        config.channels.append("email")
+    if webhook_url:
+        config.channels.append("webhook")
+
+    notifier = Notifier(config)
+    notifier.send(
+        title="[WineRadar] Pipeline Complete",
+        message=(
+            f"Items: {total_items}, Entities: {total_entities}\n"
+            f"Sources: {sources_succeeded} OK / {sources_failed} failed\n"
+            f"Errors: {len(errors)}"
+        ),
+        priority="high" if sources_failed > 0 else "normal",
+        metadata={
+            "total_items": total_items,
+            "collector_count": collector_count,
+            "total_entities": total_entities,
+            "sources_succeeded": sources_succeeded,
+            "sources_failed": sources_failed,
+            "errors_count": len(errors),
+        },
+    )
+
 
 def run_scheduler(
     interval_hours: int = 24,

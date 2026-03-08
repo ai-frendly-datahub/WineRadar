@@ -1,0 +1,40 @@
+notifications:
+  enabled: true
+  channels:
+    - webhook
+
+  webhook_url: "${WEBHOOK_URL}"
+
+  email:
+    smtp_host: "${SMTP_HOST}"
+    smtp_port: 587
+    username: "${SMTP_USERNAME}"
+    password: "${SMTP_PASSWORD}"
+    from_address: "${EMAIL_FROM}"
+    to_addresses:
+      - "${EMAIL_TO}"
+
+  telegram:
+    bot_token: "${TELEGRAM_BOT_TOKEN}"
+    chat_id: "${TELEGRAM_CHAT_ID}"
+
+  rules:
+    watched_regions:
+      - "Europe/Western/France"
+      - "Europe/Southern/Italy"
+      - "Europe/Southern/Spain"
+      - "Americas/South/Chile"
+      - "Americas/South/Argentina"
+      - "Asia/East/Korea"
+    high_trust_tiers:
+      - "T1_authoritative"
+      - "T2_expert"
+    market_keywords:
+      - "price"
+      - "auction"
+      - "vintage"
+      - "export"
+      - "import"
+      - "tariff"
+      - "investment"
+      - "en primeur"
