@@ -1,0 +1,2517 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WineRadar Daily Report - 2025-11-19</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            background: #f8f9fa;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .stat-card .number {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section {
+            padding: 40px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .section-description {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleY(0);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transform: translateY(-5px);
+        }
+
+        .card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            line-height: 1.4;
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .card-score {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .card-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-summary {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-entities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .entity-tag {
+            background: #f0f0f0;
+            color: #555;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .entity-tag.grape { background: #e8f5e9; color: #2e7d32; }
+        .entity-tag.region { background: #fff3e0; color: #e65100; }
+        .entity-tag.winery { background: #f3e5f5; color: #6a1b9a; }
+        .entity-tag.climate { background: #e3f2fd; color: #1565c0; }
+
+        .card-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .card-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .empty-section {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-section-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        footer p {
+            margin: 5px 0;
+            opacity: 0.8;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .chart-container h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        .chart-container canvas {
+            max-height: 300px;
+        }
+
+        /* Category Filter Buttons */
+        .view-filter {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            border-bottom: 2px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .view-filter h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .filter-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #764ba2;
+        }
+
+        .section.hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍷 WineRadar Daily Report</h1>
+            <div class="subtitle">2025-11-19</div>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number">596</div>
+                <div class="label">Total Items</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">6</div>
+                <div class="label">Active Sources</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">2959</div>
+                <div class="label">Entities</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">4</div>
+                <div class="label">Sections</div>
+            </div>
+        </div>
+
+        <!-- View Filter -->
+        <div class="view-filter">
+            <h3>📊 Filter by View</h3>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-category="all">All News</button>
+                <button class="filter-btn" data-category="briefing">Daily Briefing</button>
+                <button class="filter-btn" data-category="quality">By Quality</button>
+                <button class="filter-btn" data-category="region">By Region</button>
+                <button class="filter-btn" data-category="entity">By Entity</button>
+                <button class="filter-btn" data-category="purpose">By Purpose</button>
+            </div>
+        </div>
+
+        
+        <div class="section" data-category="briefing">
+            <h2 class="section-title">🔥 Daily Briefing</h2>
+            
+            <p class="section-description">Top wine industry news and must-read articles</p>
+            
+
+            
+            <div class="cards">
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Cellar Collection 2025 at the Decanter Fine Wine Encounter London: A journey through iconic wines</div>
+                        <div class="card-score">4.2</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;figure&gt;&lt;img alt=&#34;Cellar Collection 2025 - Decanter Fine Wine Encouter London&#34; class=&#34;attachment-medium size-medium&#34; height=&#34;198&#34; src=&#34;https://keyassets.timeincuk.net/inspirewp/live/wp-content/uploads/sites/34/2025/11/Close-Ellen-Richardson-LFWE-Saturday-hi-res-9-300x198.jpg&#34; width=&#34;300&#34; /&gt;&lt;figcaption&gt;After visiting each of the 21 stands in the Cellar Collection room, guests received a stamp in their tasting &#39;passport&#39;.&lt;/figcaption&gt;&lt;/figure&gt;&lt;p&gt;A mini vertical from 21 producers…&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.decanter.com/wine-news/cellar-collection-2025-at-the-decanter-fine-wine-encounter-london-a-journey-through-iconic-wines-570495/&#34; rel=&#34;nofollow&#34;&gt;Cellar Collection 2025 at the Decanter Fine Wine Encounter London: A journey through iconic wines&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.decanter.com&#34; rel=&#34;nofollow&#34;&gt;Decanter&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Riesling</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Alsace</span>
+                            
+                            <span class="entity-tag region">📍 Bordeaux</span>
+                            
+                            <span class="entity-tag region">📍 Champagne</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 &gt;Domaine de Chevalier&lt;/strong&gt;.&lt;/p&gt;</span>
+                            
+                            <span class="entity-tag winery">🏰 Bordeaux</span>
+                            
+                            <span class="entity-tag winery">🏰 Cellar Collection</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/wine-news/cellar-collection-2025-at-the-decanter-fine-wine-encounter-london-a-journey-through-iconic-wines-570495/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Secret Beaujolais: Our expert guide to must-visit wineries and restaurants</div>
+                        <div class="card-score">4.0</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;figure&gt;&lt;img alt=&#34;Beaujolais wine travel guide&#34; class=&#34;attachment-medium size-medium&#34; height=&#34;198&#34; src=&#34;https://keyassets.timeincuk.net/inspirewp/live/wp-content/uploads/sites/34/2025/11/web-DEC316.beaujolais_travel.j7717f_credit_herve_lenain_alamy-300x198.jpg&#34; width=&#34;300&#34; /&gt;&lt;figcaption&gt;The varicoloured autumn vineyards of Chiroubles – the highest in elevation of Beaujolais’ 10 cru villages. &lt;/figcaption&gt;&lt;/figure&gt;&lt;p&gt;Insider travel tips for this underrated French region...&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.decanter.com/wine-travel/secret-beaujolais-expert-travel-guide-wineries-restaurants-570356/&#34; rel=&#34;nofollow&#34;&gt;Secret Beaujolais: Our expert guide to must-visit wineries and restaurants&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.decanter.com&#34; rel=&#34;nofollow&#34;&gt;Decanter&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Burgundy</span>
+                            
+                            <span class="entity-tag region">📍 Mendoza</span>
+                            
+                            <span class="entity-tag region">📍 Rhône</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 /span&gt;&lt;span</span>
+                            
+                            <span class="entity-tag winery">🏰 Beaujolais</span>
+                            
+                            <span class="entity-tag winery">🏰 Beaujolais’ 10</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/wine-travel/secret-beaujolais-expert-travel-guide-wineries-restaurants-570356/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Sinner vince le Atp Finals e brinda con l’Asti. Ma i giornali italiani sbagliano e lo chiamano Champagne</div>
+                        <div class="card-score">4.0</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">I festeggiamenti del campione e lo scivolone dei media aprono ad una riflessione sulla strana esterofilia tutta Made in Italy. Ricagno: &#34;Abbiamo investito sull&#39;italianità. Siamo amareggiati&#34;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Champagne</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Champagne</span>
+                            
+                            <span class="entity-tag winery">🏰 Siamo</span>
+                            
+                            <span class="entity-tag winery">🏰 aprono ad una riflessione sulla strana</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/vino/sinner-atp-finals-asti-champagne/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">What&#39;s hot on Sicily? Our editor&#39;s 2025 guide</div>
+                        <div class="card-score">3.8</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-18</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;figure&gt;&lt;img alt=&#34;Looking out at the Marsala salt pans Sicily 2025&#34; class=&#34;attachment-medium size-medium&#34; height=&#34;198&#34; src=&#34;https://keyassets.timeincuk.net/inspirewp/live/wp-content/uploads/sites/34/2025/10/Marsala-300x198.jpg&#34; width=&#34;300&#34; /&gt;&lt;figcaption&gt;Marsala&#39;s salt pans.&lt;/figcaption&gt;&lt;/figure&gt;&lt;p&gt;All the latest from Sicily...&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.decanter.com/premium/whats-hot-on-sicily-our-editors-2025-guide-565642/&#34; rel=&#34;nofollow&#34;&gt;What&amp;#039;s hot on Sicily? Our editor&amp;#039;s 2025 guide&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.decanter.com&#34; rel=&#34;nofollow&#34;&gt;Decanter&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 southwest coast</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Guarnaccio</span>
+                            
+                            <span class="entity-tag winery">🏰 Marsala</span>
+                            
+                            <span class="entity-tag winery">🏰 Rosso del Conte</span>
+                            
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/premium/whats-hot-on-sicily-our-editors-2025-guide-565642/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">DWWA winners impress at Decanter&#39;s flagship Fine Wine Encounter in London</div>
+                        <div class="card-score">3.8</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-17</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;figure&gt;&lt;img alt=&#34;&#34; class=&#34;attachment-medium size-medium&#34; height=&#34;198&#34; src=&#34;https://keyassets.timeincuk.net/inspirewp/live/wp-content/uploads/sites/34/2025/10/DWWA_1-300x198.jpg&#34; width=&#34;300&#34; /&gt;&lt;figcaption&gt;Winners from the 2025 competition were showcased at Decanter&#39;s two-day event in London. Credit: Ellen Richardson&lt;/figcaption&gt;&lt;/figure&gt;&lt;p&gt;A standout DWWA showcase with a diverse selection of top-scoring wines to try...&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/&#34; rel=&#34;nofollow&#34;&gt;DWWA winners impress at Decanter&amp;#039;s flagship Fine Wine Encounter in London&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.decanter.com&#34; rel=&#34;nofollow&#34;&gt;Decanter&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Cabernet Sauvignon</span>
+                            
+                            <span class="entity-tag grape">🍇 Chardonnay</span>
+                            
+                            <span class="entity-tag grape">🍇 Chenin Blanc</span>
+                            
+                            <span class="entity-tag grape">🍇 Grüner Veltliner</span>
+                            
+                            <span class="entity-tag grape">🍇 Malbec</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Western Australia</span>
+                            
+                            <span class="entity-tag region">📍 Bordeaux</span>
+                            
+                            <span class="entity-tag region">📍 Burgundy</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Alto Adige / Südtirol Riserva</span>
+                            
+                            <span class="entity-tag winery">🏰 Alto Hungrao Tempranillo</span>
+                            
+                            <span class="entity-tag winery">🏰 Amarone</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">L’ex contadino diventato un grande pasticcere. Ecco dove si trova una delle grandi pasticcerie d’Italia</div>
+                        <div class="card-score">3.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Nuovo Mondo, il laboratorio artigianale che trasforma ingredienti locali in dolci raccontando tradizioni dimenticate e innovazione con passione e maestria senza compromessi</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Nuovo Mondo</span>
+                            
+                            <span class="entity-tag winery">🏰 compromessi</span>
+                            
+                            <span class="entity-tag winery">🏰 compromessi Nuovo Mondo</span>
+                            
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/ristoranti/nuovo-mondo-pasticceria-prato/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Milano fa fuggire gli chef? Come sopravvivere nella città più difficile d’Italia</div>
+                        <div class="card-score">3.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Dopo la decisione di Viviana Varese che sta per chiudere il suo Polpo, analizziamo in modo semiserio le categorie che hanno successo e quelle con le sale vuote. Tra errori di valutazioni e stanche ripetizioni</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Dopo</span>
+                            
+                            <span class="entity-tag winery">🏰 chiudere il suo Polpo</span>
+                            
+                            <span class="entity-tag winery">🏰 nella città più</span>
+                            
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/attualita/milano-fuggire-gli-chef/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Editors&#39; picks – November 2025</div>
+                        <div class="card-score">3.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;figure&gt;&lt;img alt=&#34;The Langham team harvesting in Dorset&#34; class=&#34;attachment-medium size-medium&#34; height=&#34;198&#34; src=&#34;https://keyassets.timeincuk.net/inspirewp/live/wp-content/uploads/sites/34/2025/10/DEC316.editors_picks.the_langham_team_in_dorset_harvesting_red_grapes_2025_credit_becky_bowyer-300x198.jpg&#34; width=&#34;300&#34; /&gt;&lt;figcaption&gt;The Langham team in Dorset.&lt;/figcaption&gt;&lt;/figure&gt;&lt;p&gt;See what our team has been trying recently...&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.decanter.com/wine/editors-picks-november-2025-568505/&#34; rel=&#34;nofollow&#34;&gt;Editors&amp;#039; picks – November 2025&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.decanter.com&#34; rel=&#34;nofollow&#34;&gt;Decanter&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 &gt;Blanc de Blancs NV&lt;/strong&gt;</span>
+                            
+                            <span class="entity-tag winery">🏰 Dorset</span>
+                            
+                            <span class="entity-tag winery">🏰 Dorset.&lt;/figcaption&gt;&lt;/figure&gt;&lt;h2&gt;Eyes</span>
+                            
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/wine/editors-picks-november-2025-568505/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Che cos’è la polenta verde, il piatto molisano fatto con i broccoli neri</div>
+                        <div class="card-score">3.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Non la solita polenta. Il segreto di Venafro è un piatto tradizionale che unisce il sapore delle erbe amare all&#39;antica saggezza contadina del Molise</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Che cos’è la polenta verde</span>
+                            
+                            <span class="entity-tag winery">🏰 Molise Non</span>
+                            
+                            <span class="entity-tag winery">🏰 Non la solita</span>
+                            
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/ricette/polenta-verde-molise/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Bonus elettrodomestici: ecco come cambiare frigoriferi, forni e lavastoviglie</div>
+                        <div class="card-score">3.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Gambero Rosso</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">Fondi già in esaurimento per l&#39;incentivo fino a 200 euro per sostituire gli apparecchi domestici con modelli più efficienti. Cosa sapere per accedere allo sconto del 30%</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Fondi</span>
+                            
+                            <span class="entity-tag winery">🏰 modelli più</span>
+                            
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.gamberorosso.it/notizie/attualita/bonus-elettrodomestici-frigoriferi-forni-lavastoviglie/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+            </div>
+            
+        </div>
+        
+        <div class="section" data-category="quality">
+            <h2 class="section-title">⭐⭐⭐ Authoritative Sources</h2>
+            
+            <p class="section-description">From official wine organizations and institutions</p>
+            
+
+            
+            <div class="cards">
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">INFODOC</div>
+                        <div class="card-score">2.4</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Federdoc</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 INFODOC</span>
+                            
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.federdoc.com/infodoc-i-bollettini-mensili/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">COMUNICAZIONE</div>
+                        <div class="card-score">2.4</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Federdoc</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 COMUNICAZIONE</span>
+                            
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.federdoc.com/comunicazione/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">CONTATTI</div>
+                        <div class="card-score">2.4</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Federdoc</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 CONTATTI</span>
+                            
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.federdoc.com/contatti/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Rinnovato accordo Masaf, eBay, Federdoc ed Origin Italia a tutela delle Indicazioni Geografiche nel commercio elettronico</div>
+                        <div class="card-score">2.4</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Federdoc</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>IT</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Federdoc ed Origin Italia</span>
+                            
+                            <span class="entity-tag winery">🏰 Indicazioni Geografiche</span>
+                            
+                            <span class="entity-tag winery">🏰 Rinnovato</span>
+                            
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.federdoc.com/rinnovato-accordo-masaf-ebay-federdoc-ed-origin-italia-a-tutela-delle-indicazioni-geografiche-nel-commercio-elettronico/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">SUSTAINABILITY</div>
+                        <div class="card-score">2.4</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Wines of South Africa</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>ZA</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 SUSTAINABILITY</span>
+                            
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.wosa.co.za/Sustainability/Environmentally-Sustainable/Intro/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+            </div>
+            
+        </div>
+        
+        <div class="section" data-category="region">
+            <h2 class="section-title">🌏 Asia &amp; Korea</h2>
+            
+            <p class="section-description">Wine news from Asian markets</p>
+            
+
+            
+            <div class="cards">
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">신세계 L&amp;B</div>
+                        <div class="card-score">2.8</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Shinsegae L&amp;B</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>KR</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 L&amp;B</span>
+                            
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.shinsegae-lnb.com/html/main/index.html" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">희망배달 캠페인</div>
+                        <div class="card-score">2.8</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Shinsegae L&amp;B</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>KR</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 희망배달 캠페인</span>
+                            
+                        
+                        
+                    </div>
+                    
+
+                    <a href="https://www.shinsegae-lnb.com/html/csr/campaign.html" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">공지사항</div>
+                        <div class="card-score">2.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Shinsegae L&amp;B</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>KR</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+
+                    
+
+                    <a href="https://www.shinsegae-lnb.com/html/company/notice.html" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">채용</div>
+                        <div class="card-score">2.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Shinsegae L&amp;B</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>KR</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+
+                    
+
+                    <a href="https://www.shinsegae-lnb.com/html/company/recruit.html" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">수상 및 인증</div>
+                        <div class="card-score">2.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Shinsegae L&amp;B</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>KR</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+
+                    
+
+                    <a href="https://www.shinsegae-lnb.com/html/company/award.html" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">와인</div>
+                        <div class="card-score">2.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Shinsegae L&amp;B</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>KR</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+
+                    
+
+                    <a href="https://www.shinsegae-lnb.com/html/product/wine.html" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">위스키&amp;스피릿</div>
+                        <div class="card-score">2.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Shinsegae L&amp;B</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>KR</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+
+                    
+
+                    <a href="https://www.shinsegae-lnb.com/html/product/whisky.html" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">맥주&amp;기타주류</div>
+                        <div class="card-score">2.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Shinsegae L&amp;B</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>KR</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+
+                    
+
+                    <a href="https://www.shinsegae-lnb.com/html/product/beer.html" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">프로모션</div>
+                        <div class="card-score">2.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Shinsegae L&amp;B</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>KR</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+
+                    
+
+                    <a href="https://www.shinsegae-lnb.com/html/news/promotion.html" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">매장소식</div>
+                        <div class="card-score">2.6</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Shinsegae L&amp;B</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>KR</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+
+                    
+
+                    <a href="https://www.shinsegae-lnb.com/html/news/storeEvent.html" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+            </div>
+            
+        </div>
+        
+        <div class="section" data-category="entity">
+            <h2 class="section-title">🍇 Grape Varieties</h2>
+            
+            <p class="section-description">News about specific grape varieties and styles</p>
+            
+
+            
+            <div class="cards">
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Cellar Collection 2025 at the Decanter Fine Wine Encounter London: A journey through iconic wines</div>
+                        <div class="card-score">4.2</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-19</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;figure&gt;&lt;img alt=&#34;Cellar Collection 2025 - Decanter Fine Wine Encouter London&#34; class=&#34;attachment-medium size-medium&#34; height=&#34;198&#34; src=&#34;https://keyassets.timeincuk.net/inspirewp/live/wp-content/uploads/sites/34/2025/11/Close-Ellen-Richardson-LFWE-Saturday-hi-res-9-300x198.jpg&#34; width=&#34;300&#34; /&gt;&lt;figcaption&gt;After visiting each of the 21 stands in the Cellar Collection room, guests received a stamp in their tasting &#39;passport&#39;.&lt;/figcaption&gt;&lt;/figure&gt;&lt;p&gt;A mini vertical from 21 producers…&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.decanter.com/wine-news/cellar-collection-2025-at-the-decanter-fine-wine-encounter-london-a-journey-through-iconic-wines-570495/&#34; rel=&#34;nofollow&#34;&gt;Cellar Collection 2025 at the Decanter Fine Wine Encounter London: A journey through iconic wines&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.decanter.com&#34; rel=&#34;nofollow&#34;&gt;Decanter&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Riesling</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Alsace</span>
+                            
+                            <span class="entity-tag region">📍 Bordeaux</span>
+                            
+                            <span class="entity-tag region">📍 Champagne</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 &gt;Domaine de Chevalier&lt;/strong&gt;.&lt;/p&gt;</span>
+                            
+                            <span class="entity-tag winery">🏰 Bordeaux</span>
+                            
+                            <span class="entity-tag winery">🏰 Cellar Collection</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/wine-news/cellar-collection-2025-at-the-decanter-fine-wine-encounter-london-a-journey-through-iconic-wines-570495/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">DWWA winners impress at Decanter&#39;s flagship Fine Wine Encounter in London</div>
+                        <div class="card-score">3.8</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-17</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;figure&gt;&lt;img alt=&#34;&#34; class=&#34;attachment-medium size-medium&#34; height=&#34;198&#34; src=&#34;https://keyassets.timeincuk.net/inspirewp/live/wp-content/uploads/sites/34/2025/10/DWWA_1-300x198.jpg&#34; width=&#34;300&#34; /&gt;&lt;figcaption&gt;Winners from the 2025 competition were showcased at Decanter&#39;s two-day event in London. Credit: Ellen Richardson&lt;/figcaption&gt;&lt;/figure&gt;&lt;p&gt;A standout DWWA showcase with a diverse selection of top-scoring wines to try...&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/&#34; rel=&#34;nofollow&#34;&gt;DWWA winners impress at Decanter&amp;#039;s flagship Fine Wine Encounter in London&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.decanter.com&#34; rel=&#34;nofollow&#34;&gt;Decanter&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Cabernet Sauvignon</span>
+                            
+                            <span class="entity-tag grape">🍇 Chardonnay</span>
+                            
+                            <span class="entity-tag grape">🍇 Chenin Blanc</span>
+                            
+                            <span class="entity-tag grape">🍇 Grüner Veltliner</span>
+                            
+                            <span class="entity-tag grape">🍇 Malbec</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Western Australia</span>
+                            
+                            <span class="entity-tag region">📍 Bordeaux</span>
+                            
+                            <span class="entity-tag region">📍 Burgundy</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Alto Adige / Südtirol Riserva</span>
+                            
+                            <span class="entity-tag winery">🏰 Alto Hungrao Tempranillo</span>
+                            
+                            <span class="entity-tag winery">🏰 Amarone</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">DWWA winners impress at Decanter&#39;s flagship Fine Wine Encounter in London</div>
+                        <div class="card-score">3.8</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-17</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;figure&gt;&lt;img alt=&#34;&#34; class=&#34;attachment-medium size-medium&#34; height=&#34;198&#34; src=&#34;https://keyassets.timeincuk.net/inspirewp/live/wp-content/uploads/sites/34/2025/10/DWWA_1-300x198.jpg&#34; width=&#34;300&#34; /&gt;&lt;figcaption&gt;Winners from the 2025 competition were showcased at Decanter&#39;s two-day event in London. Credit: Ellen Richardson&lt;/figcaption&gt;&lt;/figure&gt;&lt;p&gt;A standout DWWA showcase with a diverse selection of top-scoring wines to try...&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/&#34; rel=&#34;nofollow&#34;&gt;DWWA winners impress at Decanter&amp;#039;s flagship Fine Wine Encounter in London&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.decanter.com&#34; rel=&#34;nofollow&#34;&gt;Decanter&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Cabernet Sauvignon</span>
+                            
+                            <span class="entity-tag grape">🍇 Chardonnay</span>
+                            
+                            <span class="entity-tag grape">🍇 Chenin Blanc</span>
+                            
+                            <span class="entity-tag grape">🍇 Grüner Veltliner</span>
+                            
+                            <span class="entity-tag grape">🍇 Malbec</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Western Australia</span>
+                            
+                            <span class="entity-tag region">📍 Bordeaux</span>
+                            
+                            <span class="entity-tag region">📍 Burgundy</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Alto Adige / Südtirol Riserva</span>
+                            
+                            <span class="entity-tag winery">🏰 Alto Hungrao Tempranillo</span>
+                            
+                            <span class="entity-tag winery">🏰 Amarone</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">DWWA winners impress at Decanter&#39;s flagship Fine Wine Encounter in London</div>
+                        <div class="card-score">3.8</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-17</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;figure&gt;&lt;img alt=&#34;&#34; class=&#34;attachment-medium size-medium&#34; height=&#34;198&#34; src=&#34;https://keyassets.timeincuk.net/inspirewp/live/wp-content/uploads/sites/34/2025/10/DWWA_1-300x198.jpg&#34; width=&#34;300&#34; /&gt;&lt;figcaption&gt;Winners from the 2025 competition were showcased at Decanter&#39;s two-day event in London. Credit: Ellen Richardson&lt;/figcaption&gt;&lt;/figure&gt;&lt;p&gt;A standout DWWA showcase with a diverse selection of top-scoring wines to try...&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/&#34; rel=&#34;nofollow&#34;&gt;DWWA winners impress at Decanter&amp;#039;s flagship Fine Wine Encounter in London&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.decanter.com&#34; rel=&#34;nofollow&#34;&gt;Decanter&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Cabernet Sauvignon</span>
+                            
+                            <span class="entity-tag grape">🍇 Chardonnay</span>
+                            
+                            <span class="entity-tag grape">🍇 Chenin Blanc</span>
+                            
+                            <span class="entity-tag grape">🍇 Grüner Veltliner</span>
+                            
+                            <span class="entity-tag grape">🍇 Malbec</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Western Australia</span>
+                            
+                            <span class="entity-tag region">📍 Bordeaux</span>
+                            
+                            <span class="entity-tag region">📍 Burgundy</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Alto Adige / Südtirol Riserva</span>
+                            
+                            <span class="entity-tag winery">🏰 Alto Hungrao Tempranillo</span>
+                            
+                            <span class="entity-tag winery">🏰 Amarone</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">DWWA winners impress at Decanter&#39;s flagship Fine Wine Encounter in London</div>
+                        <div class="card-score">3.8</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-17</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;figure&gt;&lt;img alt=&#34;&#34; class=&#34;attachment-medium size-medium&#34; height=&#34;198&#34; src=&#34;https://keyassets.timeincuk.net/inspirewp/live/wp-content/uploads/sites/34/2025/10/DWWA_1-300x198.jpg&#34; width=&#34;300&#34; /&gt;&lt;figcaption&gt;Winners from the 2025 competition were showcased at Decanter&#39;s two-day event in London. Credit: Ellen Richardson&lt;/figcaption&gt;&lt;/figure&gt;&lt;p&gt;A standout DWWA showcase with a diverse selection of top-scoring wines to try...&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/&#34; rel=&#34;nofollow&#34;&gt;DWWA winners impress at Decanter&amp;#039;s flagship Fine Wine Encounter in London&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.decanter.com&#34; rel=&#34;nofollow&#34;&gt;Decanter&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Cabernet Sauvignon</span>
+                            
+                            <span class="entity-tag grape">🍇 Chardonnay</span>
+                            
+                            <span class="entity-tag grape">🍇 Chenin Blanc</span>
+                            
+                            <span class="entity-tag grape">🍇 Grüner Veltliner</span>
+                            
+                            <span class="entity-tag grape">🍇 Malbec</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Western Australia</span>
+                            
+                            <span class="entity-tag region">📍 Bordeaux</span>
+                            
+                            <span class="entity-tag region">📍 Burgundy</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Alto Adige / Südtirol Riserva</span>
+                            
+                            <span class="entity-tag winery">🏰 Alto Hungrao Tempranillo</span>
+                            
+                            <span class="entity-tag winery">🏰 Amarone</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">DWWA winners impress at Decanter&#39;s flagship Fine Wine Encounter in London</div>
+                        <div class="card-score">3.8</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-17</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;figure&gt;&lt;img alt=&#34;&#34; class=&#34;attachment-medium size-medium&#34; height=&#34;198&#34; src=&#34;https://keyassets.timeincuk.net/inspirewp/live/wp-content/uploads/sites/34/2025/10/DWWA_1-300x198.jpg&#34; width=&#34;300&#34; /&gt;&lt;figcaption&gt;Winners from the 2025 competition were showcased at Decanter&#39;s two-day event in London. Credit: Ellen Richardson&lt;/figcaption&gt;&lt;/figure&gt;&lt;p&gt;A standout DWWA showcase with a diverse selection of top-scoring wines to try...&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/&#34; rel=&#34;nofollow&#34;&gt;DWWA winners impress at Decanter&amp;#039;s flagship Fine Wine Encounter in London&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.decanter.com&#34; rel=&#34;nofollow&#34;&gt;Decanter&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Cabernet Sauvignon</span>
+                            
+                            <span class="entity-tag grape">🍇 Chardonnay</span>
+                            
+                            <span class="entity-tag grape">🍇 Chenin Blanc</span>
+                            
+                            <span class="entity-tag grape">🍇 Grüner Veltliner</span>
+                            
+                            <span class="entity-tag grape">🍇 Malbec</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Western Australia</span>
+                            
+                            <span class="entity-tag region">📍 Bordeaux</span>
+                            
+                            <span class="entity-tag region">📍 Burgundy</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Alto Adige / Südtirol Riserva</span>
+                            
+                            <span class="entity-tag winery">🏰 Alto Hungrao Tempranillo</span>
+                            
+                            <span class="entity-tag winery">🏰 Amarone</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">DWWA winners impress at Decanter&#39;s flagship Fine Wine Encounter in London</div>
+                        <div class="card-score">3.8</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-17</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;figure&gt;&lt;img alt=&#34;&#34; class=&#34;attachment-medium size-medium&#34; height=&#34;198&#34; src=&#34;https://keyassets.timeincuk.net/inspirewp/live/wp-content/uploads/sites/34/2025/10/DWWA_1-300x198.jpg&#34; width=&#34;300&#34; /&gt;&lt;figcaption&gt;Winners from the 2025 competition were showcased at Decanter&#39;s two-day event in London. Credit: Ellen Richardson&lt;/figcaption&gt;&lt;/figure&gt;&lt;p&gt;A standout DWWA showcase with a diverse selection of top-scoring wines to try...&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/&#34; rel=&#34;nofollow&#34;&gt;DWWA winners impress at Decanter&amp;#039;s flagship Fine Wine Encounter in London&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.decanter.com&#34; rel=&#34;nofollow&#34;&gt;Decanter&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Cabernet Sauvignon</span>
+                            
+                            <span class="entity-tag grape">🍇 Chardonnay</span>
+                            
+                            <span class="entity-tag grape">🍇 Chenin Blanc</span>
+                            
+                            <span class="entity-tag grape">🍇 Grüner Veltliner</span>
+                            
+                            <span class="entity-tag grape">🍇 Malbec</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Western Australia</span>
+                            
+                            <span class="entity-tag region">📍 Bordeaux</span>
+                            
+                            <span class="entity-tag region">📍 Burgundy</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Alto Adige / Südtirol Riserva</span>
+                            
+                            <span class="entity-tag winery">🏰 Alto Hungrao Tempranillo</span>
+                            
+                            <span class="entity-tag winery">🏰 Amarone</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">DWWA winners impress at Decanter&#39;s flagship Fine Wine Encounter in London</div>
+                        <div class="card-score">3.8</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-17</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;figure&gt;&lt;img alt=&#34;&#34; class=&#34;attachment-medium size-medium&#34; height=&#34;198&#34; src=&#34;https://keyassets.timeincuk.net/inspirewp/live/wp-content/uploads/sites/34/2025/10/DWWA_1-300x198.jpg&#34; width=&#34;300&#34; /&gt;&lt;figcaption&gt;Winners from the 2025 competition were showcased at Decanter&#39;s two-day event in London. Credit: Ellen Richardson&lt;/figcaption&gt;&lt;/figure&gt;&lt;p&gt;A standout DWWA showcase with a diverse selection of top-scoring wines to try...&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/&#34; rel=&#34;nofollow&#34;&gt;DWWA winners impress at Decanter&amp;#039;s flagship Fine Wine Encounter in London&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.decanter.com&#34; rel=&#34;nofollow&#34;&gt;Decanter&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Cabernet Sauvignon</span>
+                            
+                            <span class="entity-tag grape">🍇 Chardonnay</span>
+                            
+                            <span class="entity-tag grape">🍇 Chenin Blanc</span>
+                            
+                            <span class="entity-tag grape">🍇 Grüner Veltliner</span>
+                            
+                            <span class="entity-tag grape">🍇 Malbec</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Western Australia</span>
+                            
+                            <span class="entity-tag region">📍 Bordeaux</span>
+                            
+                            <span class="entity-tag region">📍 Burgundy</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Alto Adige / Südtirol Riserva</span>
+                            
+                            <span class="entity-tag winery">🏰 Alto Hungrao Tempranillo</span>
+                            
+                            <span class="entity-tag winery">🏰 Amarone</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">DWWA winners impress at Decanter&#39;s flagship Fine Wine Encounter in London</div>
+                        <div class="card-score">3.8</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-17</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;figure&gt;&lt;img alt=&#34;&#34; class=&#34;attachment-medium size-medium&#34; height=&#34;198&#34; src=&#34;https://keyassets.timeincuk.net/inspirewp/live/wp-content/uploads/sites/34/2025/10/DWWA_1-300x198.jpg&#34; width=&#34;300&#34; /&gt;&lt;figcaption&gt;Winners from the 2025 competition were showcased at Decanter&#39;s two-day event in London. Credit: Ellen Richardson&lt;/figcaption&gt;&lt;/figure&gt;&lt;p&gt;A standout DWWA showcase with a diverse selection of top-scoring wines to try...&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/&#34; rel=&#34;nofollow&#34;&gt;DWWA winners impress at Decanter&amp;#039;s flagship Fine Wine Encounter in London&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.decanter.com&#34; rel=&#34;nofollow&#34;&gt;Decanter&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Cabernet Sauvignon</span>
+                            
+                            <span class="entity-tag grape">🍇 Chardonnay</span>
+                            
+                            <span class="entity-tag grape">🍇 Chenin Blanc</span>
+                            
+                            <span class="entity-tag grape">🍇 Grüner Veltliner</span>
+                            
+                            <span class="entity-tag grape">🍇 Malbec</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Western Australia</span>
+                            
+                            <span class="entity-tag region">📍 Bordeaux</span>
+                            
+                            <span class="entity-tag region">📍 Burgundy</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Alto Adige / Südtirol Riserva</span>
+                            
+                            <span class="entity-tag winery">🏰 Alto Hungrao Tempranillo</span>
+                            
+                            <span class="entity-tag winery">🏰 Amarone</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">DWWA winners impress at Decanter&#39;s flagship Fine Wine Encounter in London</div>
+                        <div class="card-score">3.8</div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="card-meta-item">
+                            <span>📰</span>
+                            <span>Decanter</span>
+                        </div>
+                        
+                        <div class="card-meta-item">
+                            <span>🌍</span>
+                            <span>GB</span>
+                        </div>
+                        
+                        
+                        <div class="card-meta-item">
+                            <span>📅</span>
+                            <span>2025-11-17</span>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div class="card-summary">&lt;figure&gt;&lt;img alt=&#34;&#34; class=&#34;attachment-medium size-medium&#34; height=&#34;198&#34; src=&#34;https://keyassets.timeincuk.net/inspirewp/live/wp-content/uploads/sites/34/2025/10/DWWA_1-300x198.jpg&#34; width=&#34;300&#34; /&gt;&lt;figcaption&gt;Winners from the 2025 competition were showcased at Decanter&#39;s two-day event in London. Credit: Ellen Richardson&lt;/figcaption&gt;&lt;/figure&gt;&lt;p&gt;A standout DWWA showcase with a diverse selection of top-scoring wines to try...&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/&#34; rel=&#34;nofollow&#34;&gt;DWWA winners impress at Decanter&amp;#039;s flagship Fine Wine Encounter in London&lt;/a&gt; appeared first on &lt;a href=&#34;https://www.decanter.com&#34; rel=&#34;nofollow&#34;&gt;Decanter&lt;/a&gt;.&lt;/p&gt;</div>
+                    
+
+                    
+                    <div class="card-entities">
+                        
+                            
+                            <span class="entity-tag grape">🍇 Cabernet Sauvignon</span>
+                            
+                            <span class="entity-tag grape">🍇 Chardonnay</span>
+                            
+                            <span class="entity-tag grape">🍇 Chenin Blanc</span>
+                            
+                            <span class="entity-tag grape">🍇 Grüner Veltliner</span>
+                            
+                            <span class="entity-tag grape">🍇 Malbec</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag region">📍 Western Australia</span>
+                            
+                            <span class="entity-tag region">📍 Bordeaux</span>
+                            
+                            <span class="entity-tag region">📍 Burgundy</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag winery">🏰 Alto Adige / Südtirol Riserva</span>
+                            
+                            <span class="entity-tag winery">🏰 Alto Hungrao Tempranillo</span>
+                            
+                            <span class="entity-tag winery">🏰 Amarone</span>
+                            
+                        
+                        
+                            
+                            <span class="entity-tag climate">🌡️ Continental</span>
+                            
+                            <span class="entity-tag climate">🌡️ Mediterranean</span>
+                            
+                        
+                    </div>
+                    
+
+                    <a href="https://www.decanter.com/decanter-world-wine-awards/dwwa-winners-impress-at-decanters-flagship-fine-wine-encounter-in-london-569239/" class="card-link" target="_blank" rel="noopener">Read more →</a>
+                </div>
+                
+            </div>
+            
+        </div>
+        
+
+        <!-- Charts Section -->
+        
+        <div class="section">
+            <h2 class="section-title">📊 Data Visualization</h2>
+            <p class="section-description">Interactive charts showing data distribution and trends</p>
+
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>Source Distribution</h3>
+                    <canvas id="sourceChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Continent Distribution</h3>
+                    <canvas id="continentChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Entity Types</h3>
+                    <canvas id="entityChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Score Distribution</h3>
+                    <canvas id="scoreChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+
+        <footer>
+            <p><strong>WineRadar</strong> - Wine Industry Intelligence</p>
+            <p>Generated on 2025-11-19 07:59 UTC</p>
+            <p><a href="https://github.com/zzragida/WineRadar" target="_blank">GitHub Repository</a></p>
+        </footer>
+    </div>
+
+    <!-- View Filter JavaScript -->
+    <script>
+        // Category filtering
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const sections = document.querySelectorAll('.section[data-category]');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const category = button.dataset.category;
+
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // Filter sections
+                sections.forEach(section => {
+                    if (category === 'all' || section.dataset.category === category) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                });
+
+                // Smooth scroll to first visible section
+                const firstVisible = document.querySelector('.section[data-category]:not(.hidden)');
+                if (firstVisible && category !== 'all') {
+                    firstVisible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- Chart Initialization -->
+    
+    <script>
+        // Color palette
+        const colors = [
+            'rgba(102, 126, 234, 0.8)',
+            'rgba(118, 75, 162, 0.8)',
+            'rgba(237, 100, 166, 0.8)',
+            'rgba(255, 154, 158, 0.8)',
+            'rgba(250, 208, 196, 0.8)',
+            'rgba(184, 233, 148, 0.8)',
+            'rgba(120, 224, 143, 0.8)',
+            'rgba(56, 178, 172, 0.8)',
+        ];
+
+        // Source Distribution Chart
+        new Chart(document.getElementById('sourceChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ["Decanter", "Gambero Rosso", "Federdoc", "Wines of South Africa", "Shinsegae L\u0026B"],
+                datasets: [{
+                    data: [15, 5, 4, 1, 10],
+                    backgroundColor: colors,
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Continent Distribution Chart
+        new Chart(document.getElementById('continentChart'), {
+            type: 'pie',
+            data: {
+                labels: ["OLD_WORLD", "NEW_WORLD", "ASIA"],
+                datasets: [{
+                    data: [24, 1, 10],
+                    backgroundColor: colors.slice(0, 3),
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Entity Types Chart
+        new Chart(document.getElementById('entityChart'), {
+            type: 'bar',
+            data: {
+                labels: ["grape_variety", "region", "climate_zone", "winery"],
+                datasets: [{
+                    label: 'Count',
+                    data: [132, 171, 39, 876],
+                    backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Score Distribution Chart
+        new Chart(document.getElementById('scoreChart'), {
+            type: 'bar',
+            data: {
+                labels: ["0-1", "1-2", "2-3", "3-4", "4-5"],
+                datasets: [{
+                    label: 'Articles',
+                    data: [0, 0, 15, 16, 4],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(255, 159, 64, 0.8)',
+                        'rgba(255, 205, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(54, 162, 235, 0.8)'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+    
+</body>
+</html>
