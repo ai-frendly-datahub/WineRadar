@@ -1,4 +1,6 @@
 # NOTE: 이 워크플로우는 레거시입니다. 정기 수집은 crawler.yml을 사용하세요.
+# DISABLED: This workflow uses Standard Tier syntax incompatible with this Advanced Tier repo
+# Use crawler.yml instead
 name: Radar Crawler (Legacy - Manual Only)
 
 on:
