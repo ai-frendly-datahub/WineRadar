@@ -280,6 +280,35 @@
             max-height: 300px;
         }
 
+        .network-graph-wrapper {
+            margin-top: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .network-graph-wrapper h3 {
+            margin-bottom: 10px;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        .network-description {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .network-graph {
+            width: 100%;
+            min-height: 520px;
+        }
+
+        .network-graph > div {
+            width: 100% !important;
+        }
+
         /* Category Filter Buttons */
         .view-filter {
             background: #f8f9fa;
@@ -489,6 +518,16 @@
                     <canvas id="scoreChart"></canvas>
                 </div>
             </div>
+
+            {% if network_graph_html %}
+            <div class="network-graph-wrapper">
+                <h3>Variety-Region Co-occurrence Network</h3>
+                <p class="network-description">
+                    Nodes represent grape varieties and regions, and links show co-occurrence in the same article.
+                </p>
+                <div class="network-graph">{{ network_graph_html | safe }}</div>
+            </div>
+            {% endif %}
         </div>
         {% endif %}
 
