@@ -6,6 +6,8 @@ Collector 구현:
 - HTMLCollector: HTML 페이지 수집 (C2_html_simple)
 """
 
+from __future__ import annotations
+
 from collectors.base import RawItem, Collector
 from collectors.rss_collector import RSSCollector
 from collectors.html_collector import HTMLCollector

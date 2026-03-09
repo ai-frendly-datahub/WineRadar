@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 """Collector 프로토콜 및 공통 타입 정의."""
 
-from typing import Protocol, Iterable, TypedDict, Literal
-from datetime import datetime
+from __future__ import annotations
 
-# 메타데이터 타입 정의 (sources.yaml과 일치)
+from datetime import datetime
+from typing import Optional, Any, Iterable, Literal, Protocol, TypedDict
+
+import requests
+
+from resilience import SourceCircuitBreakerManager
+
 Continent = Literal["OLD_WORLD", "NEW_WORLD", "ASIA"]
 ProducerRole = Literal[
     "government",
@@ -37,40 +42,100 @@ CollectionTier = Literal[
 ]
 
 
+class BaseCollector:
+    def __init__(self, source_meta: dict[str, Any]) -> None:
+        self.source_meta = source_meta
+        self.breaker_manager = SourceCircuitBreakerManager()
+
+    def _resolve_source_name(self) -> str:
+        source_name = self.source_meta.get("name")
+        if isinstance(source_name, str) and source_name:
+            return source_name
+
+        source_id = self.source_meta.get("id")
+        if isinstance(source_id, str) and source_id:
+            return source_id
+
+        return "unknown_source"
+
+    def _resolve_timeout(self) -> float:
+        config = self.source_meta.get("config")
+        if not isinstance(config, dict):
+            return 10.0
+
+        timeout = config.get("request_timeout", config.get("timeout", 10.0))
+        if isinstance(timeout, (int, float)):
+            return float(timeout)
+        return 10.0
+
+    def _fetch(self, url: str) -> requests.Response:
+        source_name = self._resolve_source_name()
+        breaker = self.breaker_manager.get_breaker(source_name)
+
+        def _fetch_impl() -> requests.Response:
+            response = requests.get(url, timeout=self._resolve_timeout())
+            response.raise_for_status()
+            return response
+
+        return breaker.call(
+            lambda source=source_name: _fetch_impl(),
+            source=source_name,
+        )
+
+    def _fetch_html(self, url: str) -> Optional[str]:
+        source_name = self._resolve_source_name()
+        breaker = self.breaker_manager.get_breaker(source_name)
+
+        def _fetch_html_impl() -> Optional[str]:
+            response = requests.get(url, timeout=self._resolve_timeout())
+            response.raise_for_status()
+            response.encoding = response.apparent_encoding or "utf-8"
+            return response.text
+
+        return breaker.call(
+            lambda source=source_name: _fetch_html_impl(),
+            source=source_name,
+        )
+
+    def _fetch_json(self, url: str) -> dict[str, Any] | list[Any]:
+        source_name = self._resolve_source_name()
+        breaker = self.breaker_manager.get_breaker(source_name)
+
+        def _fetch_json_impl() -> dict[str, Any] | list[Any]:
+            response = requests.get(url, timeout=self._resolve_timeout())
+            response.raise_for_status()
+            return response.json()
+
+        return breaker.call(
+            lambda source=source_name: _fetch_json_impl(),
+            source=source_name,
+        )
+
+
 class RawItem(TypedDict):
     """Collector가 수집한 원시 아이템.
 
     sources.yaml의 사용자 뷰 중심 메타데이터를 포함하여
     Graph Store까지 일관된 분류체계를 적용한다.
     """
-    # 콘텐츠 필드
+
     id: str
     url: str
     title: str
-    summary: str | None
-    content: str | None
+    summary: Optional[str]
+    content: Optional[str]
     published_at: datetime
     source_name: str
     source_type: str
-    language: str | None
-    content_type: str  # news_review, statistics, education, market_report
+    language: Optional[str]
+    content_type: str
 
-    # === 사용자 뷰 중심 메타데이터 (sources.yaml과 동일) ===
-    # 1. 지리적 메타데이터
-    country: str  # ISO 3166-1 alpha-2 (KR, FR, US 등)
-    continent: Continent  # OLD_WORLD, NEW_WORLD, ASIA
-    region: str  # 계층적 경로 (Europe/Western/France, Asia/East/Korea)
-
-    # 2. 생산자 역할
+    country: str
+    continent: Continent
+    region: str
     producer_role: ProducerRole
-
-    # 3. 신뢰도 등급
     trust_tier: TrustTier
-
-    # 4. 정보 목적 (배열)
     info_purpose: list[InfoPurpose]
-
-    # 5. 수집 난이도
     collection_tier: CollectionTier
 
 
@@ -79,9 +144,5 @@ class Collector(Protocol):
     source_type: str
 
     def collect(self) -> Iterable[RawItem]:
-        """해당 소스에서 RawItem 시퀀스를 수집한다.
-
-        - 네트워크/파싱 에러는 내부에서 처리하고,
-          문제가 되는 아이템은 건너뛰는 방향으로 설계한다.
-        """
+        """해당 소스에서 RawItem 시퀀스를 수집한다."""
         ...

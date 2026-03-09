@@ -1,6 +1,7 @@
 """Unit tests for HTMLCollector with multilingual fixtures."""
 
 from __future__ import annotations
+from typing import Optional
 
 from datetime import datetime, timezone
 
@@ -253,7 +254,7 @@ def test_default_fetcher_retries_then_succeeds(monkeypatch: pytest.MonkeyPatch, 
 
     call_count = {"count": 0}
 
-    def fake_get(url: str, headers: dict | None = None, timeout: float | None = None) -> DummyResponse:
+    def fake_get(url: str, headers: Optional[dict] = None, timeout: Optional[float] = None) -> DummyResponse:
         call_count["count"] += 1
         if call_count["count"] == 1:
             raise requests.HTTPError("boom")

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import get_type_hints
+from typing import Optional, get_type_hints
 
 import pytest
 
@@ -65,7 +65,7 @@ def test_view_item_metadata_types() -> None:
     assert type_hints["collection_tier"] == str
 
     # Optional 문자열 필드
-    assert type_hints["summary"] == str | None
+    assert type_hints["summary"] == Optional[str]
 
     # datetime 필드
     assert type_hints["published_at"] == datetime
@@ -249,7 +249,7 @@ def test_view_item_optional_fields() -> None:
     type_hints = get_type_hints(ViewItem)
 
     # summary만 Optional
-    assert type_hints["summary"] == str | None
+    assert type_hints["summary"] == Optional[str]
 
 
 def test_view_type_literal_values() -> None:

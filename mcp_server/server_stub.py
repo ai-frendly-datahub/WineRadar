@@ -9,12 +9,12 @@ from __future__ import annotations
 import json
 from datetime import timedelta
 from pathlib import Path
-from typing import Any
+from typing import Optional, Any
 
 from graph.graph_queries import get_view, get_top_entities
 
 
-def load_manifest(manifest_path: Path | str | None = None) -> dict[str, Any]:
+def load_manifest(manifest_path: Optional[Path | str] = None) -> dict[str, Any]:
     """manifest.json을 로드하고 파싱합니다."""
     if manifest_path is None:
         manifest_path = Path(__file__).resolve().parent / "manifest.json"

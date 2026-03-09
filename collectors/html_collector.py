@@ -1,13 +1,13 @@
-"""HTML collector for sources that expose structured article lists."""
-
 from __future__ import annotations
+
+"""HTML collector for sources that expose structured article lists."""
 
 import logging
 import re
 from datetime import datetime, timezone
 import random
 import time
-from typing import Any, Callable, Iterable
+from typing import Optional, Any, Callable, Iterable
 from urllib.parse import urljoin
 
 import requests
@@ -27,7 +27,7 @@ DEFAULT_USER_AGENTS = [
 class HTMLCollector:
     """Collector implementation dedicated to collection_tier=C2_html_simple."""
 
-    def __init__(self, source_meta: dict[str, Any], fetcher: PageFetcher | None = None):
+    def __init__(self, source_meta: dict[str, Any], fetcher: Optional[PageFetcher] = None):
         self.source_meta = source_meta
         self.source_name = source_meta["name"]
         self.source_type = source_meta["type"]
@@ -38,9 +38,7 @@ class HTMLCollector:
             raise ValueError("list_url must be provided in config")
 
         self.article_selector = (
-            self.config.get("article_selector")
-            or self.config.get("item_selector")
-            or "a"
+            self.config.get("article_selector") or self.config.get("item_selector") or "a"
         )
         self.link_selector = self.config.get("link_selector")
         self.url_attr = self.config.get("url_attr", "href")
@@ -59,14 +57,14 @@ class HTMLCollector:
         self.session = requests.Session()
         self._sleep = time.sleep
         self._now = time.monotonic
-        self._last_fetch_at: float | None = None
+        self._last_fetch_at: Optional[float] = None
 
         self.fetcher = fetcher or self._default_fetcher
         self.logger = logging.getLogger(f"{__name__}.{self.source_meta['id']}")
 
     def _default_fetcher(self, url: str) -> bytes:
         attempt = 0
-        last_exc: Exception | None = None
+        last_exc: Optional[Exception] = None
 
         while attempt < self.max_retries:
             if self.request_interval > 0:
@@ -138,11 +136,11 @@ class HTMLCollector:
             # Handle JavaScript links (e.g., javascript:goNewsViewDirect(12345))
             if href.startswith("javascript:"):
                 # Extract article ID from JavaScript function
-                js_match = re.search(r'goNewsViewDirect\((\d+)\)', href)
+                js_match = re.search(r"goNewsViewDirect\((\d+)\)", href)
                 if js_match:
                     article_id = js_match.group(1)
                     # Build actual URL based on source
-                    if 'wine21.com' in self.list_url:
+                    if "wine21.com" in self.list_url:
                         href = f"https://www.wine21.com/11_news/news_view.html?news_no={article_id}"
                     else:
                         # Skip unknown JavaScript patterns
@@ -195,7 +193,7 @@ class HTMLCollector:
 
         return articles
 
-    def _create_raw_item(self, article: dict[str, Any], now: datetime) -> RawItem | None:
+    def _create_raw_item(self, article: dict[str, Any], now: datetime) -> Optional[RawItem]:
         url = article["url"]
         title = article["title"]
         summary = article.get("summary")
@@ -239,7 +237,7 @@ class HTMLCollector:
         }
         return raw_item
 
-    def _extract_article_content(self, soup: BeautifulSoup) -> str | None:
+    def _extract_article_content(self, soup: BeautifulSoup) -> Optional[str]:
         content_selector = self.config.get("content_selector")
         if not content_selector:
             return None
@@ -250,7 +248,7 @@ class HTMLCollector:
             tag.decompose()
         return content_elem.get_text(separator="\n", strip=True)
 
-    def _extract_summary(self, soup: BeautifulSoup) -> str | None:
+    def _extract_summary(self, soup: BeautifulSoup) -> Optional[str]:
         summary_selector = self.config.get("detail_summary_selector") or self.summary_selector
         if summary_selector:
             summary_elem = soup.select_one(summary_selector)
@@ -258,7 +256,7 @@ class HTMLCollector:
                 return summary_elem.get_text(strip=True)
         return None
 
-    def _extract_published_date(self, soup: BeautifulSoup) -> str | None:
+    def _extract_published_date(self, soup: BeautifulSoup) -> Optional[str]:
         date_selector = self.config.get("date_selector")
         if not date_selector:
             return None
@@ -269,7 +267,7 @@ class HTMLCollector:
             return date_elem.get_text(strip=True)
         return None
 
-    def _parse_date(self, date_str: str) -> datetime | None:
+    def _parse_date(self, date_str: str) -> Optional[datetime]:
         patterns = [
             (r"(\d{4})-(\d{1,2})-(\d{1,2})", "%Y-%m-%d"),
             (r"(\d{4})\.(\d{1,2})\.(\d{1,2})", "%Y.%m.%d"),
@@ -296,7 +294,7 @@ class HTMLCollector:
                     continue
         return None
 
-    def _generate_summary(self, content: str | None, title: str | None) -> str | None:
+    def _generate_summary(self, content: Optional[str], title: Optional[str]) -> Optional[str]:
         """Fallback summary using content snippet or title."""
         if content:
             normalized = " ".join(content.split())

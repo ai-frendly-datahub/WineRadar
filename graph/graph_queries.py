@@ -7,7 +7,7 @@ import json
 import os
 from datetime import timedelta, datetime, timezone
 from pathlib import Path
-from typing import TypedDict, Literal, Any
+from typing import Optional, TypedDict, Literal, Any
 
 import duckdb
 
@@ -16,7 +16,7 @@ DB_ENV_VAR = "WINERADAR_DB_PATH"
 DEFAULT_DB_PATH = Path("data") / "wineradar.duckdb"
 
 
-def _resolve_db_path(db_path: Path | str | None = None) -> Path:
+def _resolve_db_path(db_path: Optional[Path | str] = None) -> Path:
     """Resolve database path from parameter, environment, or default."""
     if db_path is not None:
         return Path(db_path)
@@ -29,7 +29,7 @@ def _resolve_db_path(db_path: Path | str | None = None) -> Path:
 class ViewItem(TypedDict):
     url: str
     title: str
-    summary: str | None
+    summary: Optional[str]
     published_at: datetime
     source_name: str
     source_type: str
@@ -46,7 +46,7 @@ class ViewItem(TypedDict):
 
 
 def get_view(
-    db_path: Path | str | None = None,
+    db_path: Optional[Path | str] = None,
     view_type: Literal[
         "winery",
         "importer",
@@ -64,7 +64,7 @@ def get_view(
         "climate_zone",
         "content_type",
     ] = "info_purpose",
-    focus_id: str | None = None,
+    focus_id: Optional[str] = None,
     time_window: timedelta = timedelta(days=7),
     limit: int = 50,
     source_filter: list[str] | None = None,
@@ -197,7 +197,7 @@ class TopEntity(TypedDict):
 
 
 def get_top_entities(
-    db_path: Path | str | None = None,
+    db_path: Optional[Path | str] = None,
     entity_type: str = "winery",
     time_window: timedelta = timedelta(days=30),
     limit: int = 10,

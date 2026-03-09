@@ -6,7 +6,7 @@ from __future__ import annotations
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Optional, Any
 
 import requests
 import feedparser
@@ -168,7 +168,7 @@ class SourceMonitor:
             })
             print(f"OK - {article_count} links")
 
-    def generate_report(self, output_path: str | Path | None = None) -> str:
+    def generate_report(self, output_path: Optional[str | Path] = None) -> str:
         """모니터링 결과 리포트를 생성한다."""
         output_path = Path(output_path or "docs/SOURCE_MONITORING.md")
 

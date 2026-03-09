@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Literal
+from typing import Optional, Literal
 
 # Trust tier별 가중치 (sources.yaml의 weight 범위 참고)
 TRUST_TIER_WEIGHTS = {
@@ -30,7 +30,7 @@ def calculate_score(
     trust_tier: TrustTier,
     info_purposes: list[InfoPurpose],
     published_at: datetime,
-    now: datetime | None = None,
+    now: Optional[datetime] = None,
 ) -> float:
     """콘텐츠 스코어 계산.
 

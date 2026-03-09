@@ -1,9 +1,9 @@
-"""RSS 기반 Collector 구현."""
-
 from __future__ import annotations
 
+"""RSS 기반 Collector 구현."""
+
 from datetime import datetime, timezone
-from typing import Callable, Iterable, Any
+from typing import Optional, Callable, Iterable, Any
 
 import calendar
 
@@ -20,7 +20,7 @@ FeedFetcher = Callable[[str], bytes]
 class RSSCollector:
     """supports_rss=true 소스를 위한 범용 Collector."""
 
-    def __init__(self, source_meta: dict[str, Any], fetcher: FeedFetcher | None = None):
+    def __init__(self, source_meta: dict[str, Any], fetcher: Optional[FeedFetcher] = None):
         self.source_meta = source_meta
         self.source_name = source_meta["name"]
         self.source_type = source_meta["type"]
@@ -76,21 +76,21 @@ class RSSCollector:
             )
             yield raw_item
 
-    def _published_at(self, entry: Any) -> datetime | None:
+    def _published_at(self, entry: Any) -> Optional[datetime]:
         published = entry.get("published_parsed") or entry.get("updated_parsed")
         if published:
             return datetime.fromtimestamp(calendar.timegm(published), tz=timezone.utc)
         return None
 
-    def _extract_content(self, entry: Any) -> str | None:
+    def _extract_content(self, entry: Any) -> Optional[str]:
         if "content" in entry and entry.content:
             first = entry.content[0]
             return first.get("value")
         return entry.get("summary")
 
     def _generate_summary(
-        self, summary: str | None, content: str | None, title: str | None
-    ) -> str | None:
+        self, summary: Optional[str], content: Optional[str], title: Optional[str]
+    ) -> Optional[str]:
         if summary:
             normalized = summary.strip()
             if normalized:

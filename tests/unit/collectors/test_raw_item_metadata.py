@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Any, get_type_hints
+from typing import Optional, Any, get_type_hints
 
 import pytest
 
@@ -68,9 +68,9 @@ def test_raw_item_metadata_types() -> None:
     assert type_hints["region"] == str
 
     # Optional 문자열 필드
-    assert type_hints["summary"] == str | None
-    assert type_hints["content"] == str | None
-    assert type_hints["language"] == str | None
+    assert type_hints["summary"] == Optional[str]
+    assert type_hints["content"] == Optional[str]
+    assert type_hints["language"] == Optional[str]
 
     # datetime 필드
     assert type_hints["published_at"] == datetime
@@ -270,7 +270,7 @@ def test_raw_item_optional_fields() -> None:
     for field in optional_fields:
         field_type = type_hints[field]
         # str | None 타입인지 확인
-        assert field_type == str | None, (
+        assert field_type == Optional[str], (
             f"{field}는 str | None 타입이어야 함 (현재: {field_type})"
         )
 

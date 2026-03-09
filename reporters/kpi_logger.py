@@ -6,7 +6,7 @@ from __future__ import annotations
 import json
 from datetime import date, datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Optional, Any
 
 import duckdb
 
@@ -79,7 +79,7 @@ class KPILogger:
         report_sections: int,
         runtime_seconds: float,
         errors: list[str] | None = None,
-        notes: str | None = None,
+        notes: Optional[str] = None,
     ) -> None:
         """일일 실행 KPI를 기록한다."""
         # Calculate derived metrics

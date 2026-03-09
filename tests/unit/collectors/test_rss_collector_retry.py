@@ -1,5 +1,6 @@
 # pyright: reportPrivateUsage=false
 from __future__ import annotations
+from typing import Optional
 
 from unittest.mock import Mock, patch
 
@@ -10,9 +11,9 @@ from collectors.rss_collector import RSSCollector
 
 
 class _BytesResponse:
-    def __init__(self, content: bytes, error: Exception | None = None) -> None:
+    def __init__(self, content: bytes, error: Optional[Exception] = None) -> None:
         self.content: bytes = content
-        self._error: Exception | None = error
+        self._error: Optional[Exception] = error
 
     def raise_for_status(self) -> None:
         if self._error:

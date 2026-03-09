@@ -6,7 +6,7 @@ from __future__ import annotations
 import os
 from datetime import date, datetime, timezone
 from pathlib import Path
-from typing import Any, Tuple
+from typing import Optional, Any, Tuple
 
 import yaml
 
@@ -32,7 +32,7 @@ DEFAULT_RAW_DIR = PROJECT_ROOT / "data" / "raw"
 DEFAULT_SEARCH_DB_PATH = PROJECT_ROOT / "data" / "search_index.db"
 
 
-def load_sources_config(path: Path | None = None) -> dict[str, Any]:
+def load_sources_config(path: Optional[Path] = None) -> dict[str, Any]:
     """sources.yaml 로드."""
     config_path = Path(path or os.environ.get(CONFIG_ENV_VAR, DEFAULT_CONFIG_PATH))
     with config_path.open(encoding="utf-8") as fp:
@@ -41,7 +41,7 @@ def load_sources_config(path: Path | None = None) -> dict[str, Any]:
 
 def _generate_html_reports(
     target_date: date,
-    db_path: Path | None,
+    db_path: Optional[Path],
     output_dir: Path,
     stats: dict[str, Any],
 ) -> None:
@@ -174,8 +174,8 @@ def _update_index_page(output_dir: Path, target_date: date, stats: dict[str, Any
 def collect_and_store(
     sources_config: dict[str, Any],
     *,
-    fetcher_factory: FetcherFactory | None = None,
-    db_path: Path | None = None,
+    fetcher_factory: Optional[FetcherFactory] = None,
+    db_path: Optional[Path] = None,
 ) -> Tuple[int, int, int, int, int, list[str]]:
     """Collector를 실행하고 DuckDB에 저장.
 
@@ -259,11 +259,11 @@ def collect_and_store(
 def run_once(
     execute_collectors: bool = False,
     *,
-    config_path: Path | None = None,
-    fetcher_factory: FetcherFactory | None = None,
-    db_path: Path | None = None,
+    config_path: Optional[Path] = None,
+    fetcher_factory: Optional[FetcherFactory] = None,
+    db_path: Optional[Path] = None,
     generate_report: bool = False,
-    report_output_dir: Path | None = None,
+    report_output_dir: Optional[Path] = None,
 ) -> None:
     """하루 파이프라인을 한 번 실행한다."""
     import time
@@ -423,9 +423,9 @@ def _send_pipeline_notification(
 def run_scheduler(
     interval_hours: int = 24,
     *,
-    config_path: Path | None = None,
-    fetcher_factory: FetcherFactory | None = None,
-    db_path: Path | None = None,
+    config_path: Optional[Path] = None,
+    fetcher_factory: Optional[FetcherFactory] = None,
+    db_path: Optional[Path] = None,
 ) -> None:
     """정기적으로 데이터를 수집하는 스케줄러.
 
