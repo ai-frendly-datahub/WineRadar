@@ -4,66 +4,71 @@ from __future__ import annotations
 
 from datetime import date, datetime, timezone
 from pathlib import Path
+from typing import cast
 
 import pytest
 
+from graph.graph_queries import ViewItem
 from reporters.html_reporter import generate_daily_report, generate_index_page
 
 
 @pytest.fixture
-def sample_sections() -> dict:
+def sample_sections() -> dict[str, list[ViewItem]]:
     """샘플 섹션 데이터."""
-    return {
-        "top_issues": [
-            {
-                "url": "https://example.com/article1",
-                "title": "Bordeaux 2024 Vintage Review",
-                "summary": "The 2024 vintage shows exceptional quality...",
-                "source_name": "Decanter",
-                "country": "GB",
-                "published_at": "2025-11-19T10:00:00Z",
-                "score": 95.5,
-                "entities": {
-                    "grape_variety": ["Cabernet Sauvignon", "Merlot"],
-                    "region": ["Bordeaux"],
+    return cast(
+        dict[str, list[ViewItem]],
+        {
+            "top_issues": [
+                {
+                    "url": "https://example.com/article1",
+                    "title": "Bordeaux 2024 Vintage Review",
+                    "summary": "The 2024 vintage shows exceptional quality...",
+                    "source_name": "Decanter",
+                    "country": "GB",
+                    "published_at": "2025-11-19T10:00:00Z",
+                    "score": 95.5,
+                    "entities": {
+                        "grape_variety": ["Cabernet Sauvignon", "Merlot"],
+                        "region": ["Bordeaux"],
+                    },
                 },
-            },
-            {
-                "url": "https://example.com/article2",
-                "title": "Burgundy Market Update",
-                "summary": "Prices continue to rise...",
-                "source_name": "Wine Spectator",
-                "country": "US",
-                "published_at": "2025-11-19T09:00:00Z",
-                "score": 88.2,
-                "entities": {
-                    "grape_variety": ["Pinot Noir"],
-                    "region": ["Burgundy"],
-                    "winery": ["Domaine de la Romanée-Conti"],
+                {
+                    "url": "https://example.com/article2",
+                    "title": "Burgundy Market Update",
+                    "summary": "Prices continue to rise...",
+                    "source_name": "Wine Spectator",
+                    "country": "US",
+                    "published_at": "2025-11-19T09:00:00Z",
+                    "score": 88.2,
+                    "entities": {
+                        "grape_variety": ["Pinot Noir"],
+                        "region": ["Burgundy"],
+                        "winery": ["Domaine de la Romanée-Conti"],
+                    },
                 },
-            },
-        ],
-        "by_grape": [
-            {
-                "url": "https://example.com/article3",
-                "title": "Riesling Renaissance",
-                "summary": "German Riesling making a comeback...",
-                "source_name": "Wine Review",
-                "country": "KR",
-                "published_at": "2025-11-18T15:00:00Z",
-                "score": 82.0,
-                "entities": {
-                    "grape_variety": ["Riesling"],
-                    "region": ["Mosel"],
-                    "climate_zone": ["Cool Climate"],
+            ],
+            "by_grape": [
+                {
+                    "url": "https://example.com/article3",
+                    "title": "Riesling Renaissance",
+                    "summary": "German Riesling making a comeback...",
+                    "source_name": "Wine Review",
+                    "country": "KR",
+                    "published_at": "2025-11-18T15:00:00Z",
+                    "score": 82.0,
+                    "entities": {
+                        "grape_variety": ["Riesling"],
+                        "region": ["Mosel"],
+                        "climate_zone": ["Cool Climate"],
+                    },
                 },
-            },
-        ],
-    }
+            ],
+        },
+    )
 
 
 @pytest.fixture
-def sample_stats() -> dict:
+def sample_stats() -> dict[str, int]:
     """샘플 통계 데이터."""
     return {
         "total_items": 150,
@@ -125,12 +130,51 @@ def test_generate_daily_report_contains_content(tmp_path: Path, sample_sections,
     assert "Cabernet Sauvignon" in html_content
     assert "Bordeaux" in html_content
 
+    assert "Variety-Region Co-occurrence Network" in html_content
+    assert "plotly" in html_content.lower()
+
+
+def test_generate_daily_report_skips_network_without_variety_region_pairs(
+    tmp_path: Path, sample_stats
+):
+    target_date = date(2025, 11, 19)
+    output_path = tmp_path / "no_network_report.html"
+    sections = cast(
+        dict[str, list[ViewItem]],
+        {
+            "top_issues": [
+                {
+                    "url": "https://example.com/article-no-region",
+                    "title": "Merlot Demand Update",
+                    "summary": "Merlot demand increased in premium segments.",
+                    "source_name": "Wine Business",
+                    "country": "US",
+                    "published_at": "2025-11-19T12:00:00Z",
+                    "score": 87.0,
+                    "entities": {
+                        "grape_variety": ["Merlot"],
+                    },
+                },
+            ],
+        },
+    )
+
+    generate_daily_report(
+        target_date=target_date,
+        sections=sections,
+        stats=sample_stats,
+        output_path=output_path,
+    )
+
+    html_content = output_path.read_text(encoding="utf-8")
+    assert "Variety-Region Co-occurrence Network" not in html_content
+
 
 def test_generate_daily_report_with_empty_sections(tmp_path: Path):
     """빈 섹션으로 리포트를 생성할 수 있는지 테스트."""
     target_date = date(2025, 11, 19)
     output_path = tmp_path / "empty_report.html"
-    sections = {"top_issues": []}
+    sections: dict[str, list[ViewItem]] = {"top_issues": []}
     stats = {
         "total_items": 0,
         "active_sources": 0,
@@ -155,18 +199,21 @@ def test_generate_daily_report_escapes_html(tmp_path: Path, sample_stats):
     """HTML 특수 문자가 올바르게 이스케이프되는지 테스트."""
     target_date = date(2025, 11, 19)
     output_path = tmp_path / "escape_test.html"
-    sections = {
-        "top_issues": [
-            {
-                "url": "https://example.com/article",
-                "title": "Test <script>alert('XSS')</script>",
-                "summary": "Summary with <b>tags</b>",
-                "source_name": "Test Source",
-                "score": 90.0,
-                "entities": {},
-            },
-        ],
-    }
+    sections = cast(
+        dict[str, list[ViewItem]],
+        {
+            "top_issues": [
+                {
+                    "url": "https://example.com/article",
+                    "title": "Test <script>alert('XSS')</script>",
+                    "summary": "Summary with <b>tags</b>",
+                    "source_name": "Test Source",
+                    "score": 90.0,
+                    "entities": {},
+                },
+            ],
+        },
+    )
 
     generate_daily_report(
         target_date=target_date,
