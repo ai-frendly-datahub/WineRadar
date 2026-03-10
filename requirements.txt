@@ -11,3 +11,4 @@ feedparser==6.0.11
 tenacity==8.2.3
 structlog>=24.1.0
 mcp>=1.0.0
+pybreaker>=1.0.0
