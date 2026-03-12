@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 
 import pytest
 
+import analyzers.entity_extractor as entity_extractor_module
 from collectors.base import RawItem
 from analyzers.entity_extractor import (
     extract_grape_varieties,
@@ -113,7 +114,7 @@ def test_extract_wineries() -> None:
 def test_infer_climate_zone() -> None:
     """지역으로부터 기후대 추론."""
     # Bordeaux -> Mediterranean
-    region_entities = [
+    region_entities: list[entity_extractor_module.Entity] = [
         {
             "type": "region",
             "value": "Bordeaux",
@@ -171,6 +172,26 @@ def test_extract_all_entities_comprehensive() -> None:
     # 기후대 (추론)
     assert "climate_zone" in entities
     assert "Mediterranean" in entities["climate_zone"] or "Continental" in entities["climate_zone"]
+
+
+def test_keyword_in_text_uses_kiwi_for_non_ascii(monkeypatch) -> None:
+    class _KiwiAnalyzerStub:
+        def __init__(self) -> None:
+            self._kiwi = object()
+            self.called = False
+
+        def match_keyword(self, text: str, keyword: str) -> bool:
+            self.called = True
+            return keyword == "샤또마고" and "샤또 마고" in text
+
+    kiwi_stub = _KiwiAnalyzerStub()
+    monkeypatch.setattr(entity_extractor_module, "_korean_analyzer", kiwi_stub, raising=False)
+    monkeypatch.setattr(
+        entity_extractor_module, "_korean_analyzer_initialized", True, raising=False
+    )
+
+    assert entity_extractor_module._keyword_in_text("샤또마고", "샤또 마고 출시", "샤또 마고 출시")
+    assert kiwi_stub.called is True
 
 
 def test_extract_all_entities_empty_text() -> None:

@@ -11,7 +11,8 @@
 - topic: 키워드/토픽 (예: 빈티지, 수상, 페어링)
 """
 
-from typing import Optional, TypedDict
+from importlib import import_module
+from typing import Optional, Protocol, TypedDict, cast
 import re
 from collectors.base import RawItem
 
@@ -48,6 +49,30 @@ KNOWN_WINERIES = KNOWN_WINERIES_EXPANDED
 _keyword_pattern_cache: dict[str, Optional[re.Pattern[str]]] = {}
 
 
+class _KoreanAnalyzerLike(Protocol):
+    _kiwi: Optional[object]
+
+    def match_keyword(self, text: str, keyword: str) -> bool: ...
+
+
+def _load_korean_analyzer_constructor() -> Optional[type[_KoreanAnalyzerLike]]:
+    try:
+        korean_analyzer_module = import_module("radar_core.common.korean_analyzer")
+    except ModuleNotFoundError:
+        return None
+
+    korean_analyzer_constructor = getattr(korean_analyzer_module, "KoreanAnalyzer", None)
+    if korean_analyzer_constructor is None:
+        return None
+
+    return cast(type[_KoreanAnalyzerLike], korean_analyzer_constructor)
+
+
+_KOREAN_ANALYZER_CONSTRUCTOR = _load_korean_analyzer_constructor()
+_korean_analyzer: Optional[_KoreanAnalyzerLike] = None
+_korean_analyzer_initialized = False
+
+
 def _is_ascii_only(keyword: str) -> bool:
     return all(ord(char) < 128 for char in keyword)
 
@@ -65,6 +90,20 @@ def _get_keyword_pattern(keyword: str) -> Optional[re.Pattern[str]]:
     return pattern
 
 
+def _get_korean_analyzer() -> Optional[_KoreanAnalyzerLike]:
+    global _korean_analyzer
+    global _korean_analyzer_initialized
+
+    if _korean_analyzer_initialized:
+        return _korean_analyzer
+
+    _korean_analyzer_initialized = True
+    if _KOREAN_ANALYZER_CONSTRUCTOR is not None:
+        _korean_analyzer = _KOREAN_ANALYZER_CONSTRUCTOR()
+
+    return _korean_analyzer
+
+
 def _keyword_in_text(keyword: str, text: str, text_lower: str) -> bool:
     normalized = keyword.lower()
     if not normalized:
@@ -73,6 +112,10 @@ def _keyword_in_text(keyword: str, text: str, text_lower: str) -> bool:
     pattern = _get_keyword_pattern(normalized)
     if pattern is not None and pattern.search(text):
         return True
+
+    korean_analyzer = _get_korean_analyzer()
+    if korean_analyzer is not None and getattr(korean_analyzer, "_kiwi", None) is not None:
+        return korean_analyzer.match_keyword(text, keyword)
 
     if normalized in text_lower:
         return True
@@ -84,8 +127,6 @@ def _keyword_in_text(keyword: str, text: str, text_lower: str) -> bool:
 
 # spaCy 모델(옵션)
 try:  # pragma: no cover - 모델이 없으면 규칙만 사용
-    from importlib import import_module
-
     spacy_module = import_module("spacy")
     _nlp = spacy_module.load("en_core_web_sm")
 except Exception:  # pragma: no cover
