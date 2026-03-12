@@ -7,10 +7,18 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+import structlog
 import yaml
 
 from collectors.base import RawItem
 from graph.graph_queries import ViewItem
+
+
+@pytest.fixture(autouse=True)
+def reset_structlog() -> object:
+    structlog.reset_defaults()
+    yield
+    structlog.reset_defaults()
 
 
 @pytest.fixture(scope="session")
