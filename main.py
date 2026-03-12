@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Optional, Any, Tuple
@@ -11,6 +12,7 @@ from typing import Optional, Any, Tuple
 import yaml
 
 from collectors.registry import build_collectors, FetcherFactory
+from collectors.base import resolve_max_workers
 from analyzers.entity_extractor import extract_all_entities
 from graph import graph_store
 from graph.graph_queries import get_view
@@ -135,7 +137,7 @@ def _generate_html_reports(
     stats["sections_count"] = len([s for s in sections.values() if s])
 
     # 일일 리포트 생성
-    report_filename = f"{target_date.isoformat()}.html"
+    report_filename = "daily_report.html"
     report_path = output_dir / report_filename
 
     generate_daily_report(
@@ -176,6 +178,7 @@ def collect_and_store(
     *,
     fetcher_factory: Optional[FetcherFactory] = None,
     db_path: Optional[Path] = None,
+    keep_days: int = 90,
 ) -> Tuple[int, int, int, int, int, list[str]]:
     """Collector를 실행하고 DuckDB에 저장.
 
@@ -193,57 +196,74 @@ def collect_and_store(
     search_index = SearchIndex(DEFAULT_SEARCH_DB_PATH)
 
     try:
-        for collector in collectors:
-            collector_success = False
+        workers = resolve_max_workers()
+
+        def _collect(collector: Any) -> tuple[Any, list[dict[str, Any]], Optional[str]]:
             try:
-                collected_items = list(collector.collect())
-                raw_logger.log_raw_items(collected_items, source_name=collector.source_name)
+                return collector, list(collector.collect()), None
+            except Exception as exc:
+                return collector, [], str(exc)
 
-                validated_items = []
-                for item in collected_items:
-                    is_valid, validation_errors = validate_article(item)
-                    rating = item.get("rating") if isinstance(item, dict) else None
-                    vintage = item.get("vintage") if isinstance(item, dict) else None
+        if workers == 1:
+            collection_results = [_collect(collector) for collector in collectors]
+        else:
+            collection_results = []
+            with ThreadPoolExecutor(max_workers=workers) as executor:
+                futures = [executor.submit(_collect, collector) for collector in collectors]
+                for future in as_completed(futures):
+                    collection_results.append(future.result())
 
-                    if not validate_rating(rating):
-                        validation_errors.append(f"rating out of range: {rating}")
-                    if not validate_vintage(vintage):
-                        validation_errors.append(f"vintage out of range: {vintage}")
-
-                    if validation_errors:
-                        errors.append(
-                            f"{collector.__class__.__name__}: {item.get('url', 'unknown')} -> "
-                            f"{'; '.join(validation_errors)}"
-                        )
-                        continue
-
-                    if is_valid:
-                        validated_items.append(item)
-
-                for item in validated_items:
-                    entities = extract_all_entities(item)
-                    graph_store.upsert_url_and_entities(item, entities, now, db_path=db_path)
-                    search_index.upsert(
-                        link=item["url"],
-                        title=item["title"],
-                        body=item.get("summary") or "",
-                    )
-
-                    total_items += 1
-                    collector_success = True
-                    if entities:
-                        total_entities += sum(len(v) for v in entities.values())
-
-                if collector_success:
-                    sources_succeeded += 1
-                else:
-                    sources_failed += 1
-                    errors.append(f"{collector.__class__.__name__}: No items collected")
-            except Exception as e:
+        for collector, collected_items, collect_error in collection_results:
+            collector_success = False
+            if collect_error is not None:
                 sources_failed += 1
-                errors.append(f"{collector.__class__.__name__}: {str(e)[:100]}")
+                errors.append(f"{collector.__class__.__name__}: {collect_error[:100]}")
+                continue
 
-        graph_store.prune_expired_urls(now, db_path=db_path)
+            raw_logger.log_raw_items(collected_items, source_name=collector.source_name)
+
+            validated_items = []
+            for item in collected_items:
+                is_valid, validation_errors = validate_article(item)
+                rating = item.get("rating") if isinstance(item, dict) else None
+                vintage = item.get("vintage") if isinstance(item, dict) else None
+
+                if not validate_rating(rating):
+                    validation_errors.append(f"rating out of range: {rating}")
+                if not validate_vintage(vintage):
+                    validation_errors.append(f"vintage out of range: {vintage}")
+
+                if validation_errors:
+                    errors.append(
+                        f"{collector.__class__.__name__}: {item.get('url', 'unknown')} -> "
+                        f"{'; '.join(validation_errors)}"
+                    )
+                    continue
+
+                if is_valid:
+                    validated_items.append(item)
+
+            for item in validated_items:
+                entities = extract_all_entities(item)
+                graph_store.upsert_url_and_entities(item, entities, now, db_path=db_path)
+                search_index.upsert(
+                    link=item["url"],
+                    title=item["title"],
+                    body=item.get("summary") or "",
+                )
+
+                total_items += 1
+                collector_success = True
+                if entities:
+                    total_entities += sum(len(v) for v in entities.values())
+
+            if collector_success:
+                sources_succeeded += 1
+            else:
+                sources_failed += 1
+                errors.append(f"{collector.__class__.__name__}: No items collected")
+
+        graph_store.prune_expired_urls(now, ttl_days=keep_days, db_path=db_path)
         return (
             total_items,
             len(collectors),
@@ -264,6 +284,7 @@ def run_once(
     db_path: Optional[Path] = None,
     generate_report: bool = False,
     report_output_dir: Optional[Path] = None,
+    keep_days: int = 90,
 ) -> None:
     """하루 파이프라인을 한 번 실행한다."""
     import time
@@ -287,6 +308,7 @@ def run_once(
             sources_config,
             fetcher_factory=fetcher_factory,
             db_path=db_path,
+            keep_days=keep_days,
         )
     )
     print(f"  - 활성 Collector: {collector_count}개")
@@ -318,7 +340,7 @@ def run_once(
             report_generated = True
 
             # Count cards from report (approximate - will refactor later)
-            report_file = report_dir / f"{now.date()}.html"
+            report_file = report_dir / "daily_report.html"
             if report_file.exists():
                 content = report_file.read_text(encoding="utf-8")
                 report_cards = content.count('class="card"')
@@ -379,7 +401,13 @@ def _send_pipeline_notification(
     if not email_to and not webhook_url:
         return
 
-    from notifier import Notifier, NotificationConfig
+    from notifier import (
+        CompositeNotifier,
+        EmailNotifier,
+        NotificationConfig,
+        NotificationPayload,
+        WebhookNotifier,
+    )
 
     config = NotificationConfig(
         enabled=True,
@@ -400,23 +428,35 @@ def _send_pipeline_notification(
     if webhook_url:
         config.channels.append("webhook")
 
-    notifier = Notifier(config)
+    notifiers: list[object] = []
+    channels = {channel.strip().lower() for channel in config.channels}
+    if "email" in channels and config.email_settings:
+        email_settings = config.email_settings
+        to_addresses = email_settings.get("to_addresses", [])
+        if isinstance(to_addresses, list):
+            notifiers.append(
+                EmailNotifier(
+                    smtp_host=str(email_settings.get("smtp_host", "")),
+                    smtp_port=int(email_settings.get("smtp_port", 587)),
+                    smtp_user=str(email_settings.get("username", "")),
+                    smtp_password=str(email_settings.get("password", "")),
+                    from_addr=str(email_settings.get("from_address", "")),
+                    to_addrs=[str(address) for address in to_addresses],
+                )
+            )
+    if "webhook" in channels and config.webhook_url:
+        notifiers.append(WebhookNotifier(url=config.webhook_url))
+
+    notifier = CompositeNotifier(notifiers)
     notifier.send(
-        title="[WineRadar] Pipeline Complete",
-        message=(
-            f"Items: {total_items}, Entities: {total_entities}\n"
-            f"Sources: {sources_succeeded} OK / {sources_failed} failed\n"
-            f"Errors: {len(errors)}"
-        ),
-        priority="high" if sources_failed > 0 else "normal",
-        metadata={
-            "total_items": total_items,
-            "collector_count": collector_count,
-            "total_entities": total_entities,
-            "sources_succeeded": sources_succeeded,
-            "sources_failed": sources_failed,
-            "errors_count": len(errors),
-        },
+        NotificationPayload(
+            category_name="[WineRadar] Pipeline Complete",
+            sources_count=collector_count,
+            collected_count=total_items,
+            matched_count=total_entities,
+            errors_count=len(errors),
+            timestamp=datetime.now(timezone.utc),
+        )
     )
 
 
@@ -492,6 +532,12 @@ if __name__ == "__main__":
         default=DEFAULT_REPORT_DIR,
         help=f"리포트 출력 디렉토리 (기본값: {DEFAULT_REPORT_DIR})",
     )
+    parser.add_argument(
+        "--keep-days",
+        type=int,
+        default=90,
+        help="보존 기간 (일 단위, 기본값: 90)",
+    )
 
     args = parser.parse_args()
 
@@ -500,6 +546,7 @@ if __name__ == "__main__":
             execute_collectors=not args.dry_run,
             generate_report=args.generate_report,
             report_output_dir=args.report_dir,
+            keep_days=args.keep_days,
         )
     else:
         if args.dry_run:

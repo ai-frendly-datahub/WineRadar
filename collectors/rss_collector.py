@@ -2,14 +2,16 @@ from __future__ import annotations
 
 """RSS 기반 Collector 구현."""
 
-from datetime import datetime, timezone
-from typing import Optional, Callable, Iterable, Any
-
 import calendar
+from datetime import datetime, timezone
+import time
+from typing import Any, Callable, Iterable, Optional
 
 import feedparser
 import requests
+from requests.adapters import HTTPAdapter
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from urllib3.util.retry import Retry
 
 from collectors.base import RawItem
 
@@ -17,14 +19,50 @@ from collectors.base import RawItem
 FeedFetcher = Callable[[str], bytes]
 
 
-class RSSCollector:
-    """supports_rss=true 소스를 위한 범용 Collector."""
+class RateLimiter:
+    def __init__(self, min_interval: float = 0.5):
+        self._min_interval = min_interval
+        self._last_request = 0.0
 
+    def acquire(self) -> None:
+        now = time.monotonic()
+        elapsed = now - self._last_request
+        if elapsed < self._min_interval:
+            time.sleep(self._min_interval - elapsed)
+        self._last_request = time.monotonic()
+
+
+def _create_session() -> requests.Session:
+    session = requests.Session()
+    session.headers.update(
+        {
+            "User-Agent": "Mozilla/5.0 (compatible; WineRadarBot/1.0; +https://github.com/zzragida/ai-frendly-datahub)",
+        }
+    )
+    retry_strategy = Retry(
+        total=3,
+        backoff_factor=1,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=frozenset(["GET"]),
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    return session
+
+
+class RSSCollector:
     def __init__(self, source_meta: dict[str, Any], fetcher: Optional[FeedFetcher] = None):
         self.source_meta = source_meta
         self.source_name = source_meta["name"]
         self.source_type = source_meta["type"]
         self.list_url = source_meta["config"]["list_url"]
+        self._session = _create_session()
+        interval = source_meta.get("config", {}).get("request_interval", 0.5)
+        self._rate_limiter = RateLimiter(
+            float(interval) if isinstance(interval, (int, float)) else 0.5
+        )
         self.fetcher = fetcher or self._default_fetcher
 
     @retry(
@@ -34,11 +72,11 @@ class RSSCollector:
         reraise=True,
     )
     def _default_fetcher(self, url: str) -> bytes:
-        """Fetch RSS feed with retry and User-Agent."""
         headers = {
             "User-Agent": "Mozilla/5.0 (compatible; WineRadarBot/1.0; +https://github.com/zzragida/ai-frendly-datahub)",
         }
-        response = requests.get(url, timeout=10, headers=headers)
+        self._rate_limiter.acquire()
+        response = self._session.get(url, timeout=10, headers=headers)
         response.raise_for_status()
         return response.content
 
