@@ -1,27 +1,47 @@
 {
   "name": "wineradar",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "WineRadar 그래프/뷰 조회를 위한 MCP 서버",
   "tools": [
     {
-      "name": "wineradar.get_view",
-      "description": "그래프에서 특정 view_type, focus_id, 기간을 기준으로 이슈 리스트를 조회",
+      "name": "get_view",
+      "description": "WineRadar 데이터베이스에서 특정 관점(view)으로 기사를 조회합니다.",
       "input_schema": {
         "type": "object",
         "properties": {
           "view_type": {
             "type": "string",
-            "enum": ["winery", "importer", "wine", "topic", "community"]
+            "description": "조회할 관점 유형",
+            "enum": [
+              "continent",
+              "country",
+              "trust_tier",
+              "info_purpose",
+              "grape_variety",
+              "region",
+              "winery",
+              "climate_zone",
+              "content_type",
+              "producer_role",
+              "collection_tier",
+              "wine",
+              "topic",
+              "community",
+              "importer"
+            ]
           },
           "focus_id": {
-            "type": "string"
+            "type": "string",
+            "description": "필터링할 특정 엔티티 ID (선택사항)"
           },
           "time_window_days": {
             "type": "integer",
+            "description": "조회 기간 (일 단위)",
             "default": 7
           },
           "limit": {
             "type": "integer",
+            "description": "반환할 최대 항목 수",
             "default": 20
           }
         },
@@ -29,25 +49,69 @@
       }
     },
     {
-      "name": "wineradar.top_entities",
-      "description": "특정 기간 동안 가장 많이 언급된 엔티티 조회",
+      "name": "search_by_keyword",
+      "description": "FTS5 검색 인덱스로 키워드 기반 검색을 수행합니다.",
       "input_schema": {
         "type": "object",
         "properties": {
-          "entity_type": {
+          "keyword": {
             "type": "string",
-            "enum": ["winery", "importer", "wine", "topic"]
-          },
-          "time_window_days": {
-            "type": "integer",
-            "default": 30
+            "description": "검색할 키워드"
           },
           "limit": {
             "type": "integer",
-            "default": 10
+            "description": "반환할 최대 항목 수",
+            "default": 20
           }
         },
-        "required": ["entity_type"]
+        "required": ["keyword"]
+      }
+    },
+    {
+      "name": "recent_updates",
+      "description": "최근 수집된 와인 관련 기사 목록을 조회합니다.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "time_window_days": {
+            "type": "integer",
+            "description": "조회 기간 (일 단위)",
+            "default": 3
+          },
+          "limit": {
+            "type": "integer",
+            "description": "반환할 최대 항목 수",
+            "default": 50
+          }
+        }
+      }
+    },
+    {
+      "name": "sql",
+      "description": "DuckDB에 읽기 전용 SQL(SELECT/WITH/EXPLAIN) 질의를 수행합니다. INSERT/UPDATE/DELETE 등 변경 쿼리는 거부됩니다.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "실행할 읽기 전용 SQL 쿼리 (SELECT/WITH/EXPLAIN만 허용)"
+          }
+        },
+        "required": ["query"]
+      }
+    },
+    {
+      "name": "top_trends",
+      "description": "url_entities 기준 엔티티 빈도 상위 트렌드를 조회합니다.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "반환할 최대 트렌드 수",
+            "default": 20
+          }
+        }
       }
     }
   ]
