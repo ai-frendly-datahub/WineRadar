@@ -7,6 +7,7 @@ import json
 from collections import Counter
 from datetime import date, datetime, timezone
 from pathlib import Path
+import shutil
 from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -15,6 +16,16 @@ from graph.graph_queries import ViewItem
 
 # 템플릿 디렉토리
 TEMPLATE_DIR = Path(__file__).parent / "templates"
+
+
+def _copy_static_assets(report_dir: Path) -> None:
+    src = TEMPLATE_DIR / "static"
+    dst = report_dir / "static"
+    if not src.is_dir():
+        return
+    if dst.exists():
+        shutil.rmtree(dst)
+    shutil.copytree(src, dst)
 
 
 def _generate_chart_data(
@@ -351,9 +362,15 @@ def generate_daily_report(
         generation_time=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
     )
 
-    # 파일 저장
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(html_content, encoding="utf-8")
+    date_stamp = target_date.strftime("%Y%m%d")
+    category_name = output_path.stem or "daily_report"
+    dated_path = output_path.parent / f"{category_name}_{date_stamp}.html"
+
+    dated_path.write_text(html_content, encoding="utf-8")
+    if dated_path != output_path:
+        shutil.copy2(dated_path, output_path)
+    _copy_static_assets(output_path.parent)
 
     return output_path
 

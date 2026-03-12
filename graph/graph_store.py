@@ -11,6 +11,7 @@ from typing import Optional, Any
 import duckdb
 
 from collectors.base import RawItem
+from exceptions import StorageError
 from graph.scoring import calculate_score, calculate_entity_boost
 
 DB_ENV_VAR = "WINERADAR_DB_PATH"
@@ -107,7 +108,10 @@ def _connect(db_path: Optional[Path | str] = None) -> duckdb.DuckDBPyConnection:
 
 
 def upsert_url_and_entities(
-    item: RawItem, entities: dict[str, list[str]], now: datetime, db_path: Optional[Path | str] = None
+    item: RawItem,
+    entities: dict[str, list[str]],
+    now: datetime,
+    db_path: Optional[Path | str] = None,
 ) -> None:
     """URL과 연관 엔터티를 upsert한다.
 
@@ -127,6 +131,7 @@ def upsert_url_and_entities(
 
     conn = _connect(db_path)
     try:
+        conn.execute("BEGIN TRANSACTION")
         conn.execute(
             """
             INSERT INTO urls (
@@ -201,15 +206,21 @@ def upsert_url_and_entities(
                         now,
                     ),
                 )
+        conn.execute("COMMIT")
+    except duckdb.Error as exc:
+        raise StorageError(f"Failed to upsert WineRadar URL/entities: {exc}") from exc
     finally:
         conn.close()
 
 
-def prune_expired_urls(now: datetime, ttl_days: int = 30, db_path: Optional[Path | str] = None) -> None:
+def prune_expired_urls(
+    now: datetime, ttl_days: int = 30, db_path: Optional[Path | str] = None
+) -> None:
     """ttl_days 이전 URL/엔터티 레코드를 삭제한다."""
     threshold = now - timedelta(days=ttl_days)
     conn = _connect(db_path)
     try:
+        conn.execute("BEGIN TRANSACTION")
         conn.execute(
             """
             DELETE FROM url_entities
@@ -223,5 +234,8 @@ def prune_expired_urls(now: datetime, ttl_days: int = 30, db_path: Optional[Path
             "DELETE FROM urls WHERE last_seen_at < ?",
             (threshold,),
         )
+        conn.execute("COMMIT")
+    except duckdb.Error as exc:
+        raise StorageError(f"Failed to prune WineRadar expired URLs: {exc}") from exc
     finally:
         conn.close()
