@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
 """신규 데이터 소스 발굴 및 검증."""
 
 from __future__ import annotations
 
-import requests
-import feedparser
 from typing import Any
+
+import feedparser
+import requests
 
 
 # 발굴 대상 소스 목록
@@ -47,7 +47,6 @@ CANDIDATE_SOURCES = [
         "tier": "T2_expert",
         "note": "Napa Valley official news",
     },
-
     # === 유럽 소스 추가 (구대륙 균형) ===
     {
         "name": "The Wine Merchant",
@@ -76,7 +75,6 @@ CANDIDATE_SOURCES = [
         "tier": "T3_professional",
         "note": "French wine news",
     },
-
     # === 신대륙 추가 (호주/뉴질랜드/남미) ===
     {
         "name": "Wine Australia",
@@ -105,7 +103,6 @@ CANDIDATE_SOURCES = [
         "tier": "T2_expert",
         "note": "Argentine wine research",
     },
-
     # === 전문가 소스 (T2 tier 강화) ===
     {
         "name": "Jamie Goode's Wine Blog",
@@ -134,7 +131,6 @@ CANDIDATE_SOURCES = [
         "tier": "T2_expert",
         "note": "Independent wine critic",
     },
-
     # === Gambero Rosso 비중 감소용 (이탈리아 대안) ===
     {
         "name": "Intravino",
@@ -173,7 +169,9 @@ def test_source(source: dict[str, Any]) -> dict[str, Any]:
             response = requests.get(
                 source["url"],
                 timeout=10,
-                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+                headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                },
             )
             response.raise_for_status()
 
@@ -192,7 +190,9 @@ def test_source(source: dict[str, Any]) -> dict[str, Any]:
             response = requests.get(
                 source["url"],
                 timeout=10,
-                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+                headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                },
             )
             response.raise_for_status()
             result["status"] = "success"

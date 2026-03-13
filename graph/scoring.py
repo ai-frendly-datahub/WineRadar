@@ -2,35 +2,38 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Optional, Literal
+from datetime import UTC, datetime
+from typing import Literal
+
 
 # Trust tier별 가중치 (sources.yaml의 weight 범위 참고)
 TRUST_TIER_WEIGHTS = {
     "T1_authoritative": 2.25,  # 2.0-2.5 범위의 중간값
-    "T2_expert": 2.9,          # 2.8-3.0 범위의 중간값
-    "T3_professional": 2.4,    # 2.0-2.8 범위의 중간값
-    "T4_community": 2.0,       # 1.5-2.5 범위의 중간값
+    "T2_expert": 2.9,  # 2.8-3.0 범위의 중간값
+    "T3_professional": 2.4,  # 2.0-2.8 범위의 중간값
+    "T4_community": 2.0,  # 1.5-2.5 범위의 중간값
 }
 
 # Info purpose별 보너스 (사용자 관심도)
 INFO_PURPOSE_BONUS = {
-    "P1_daily_briefing": 1.2,      # 일일 브리핑 - 높은 관심
-    "P2_market_analysis": 1.1,     # 시장 분석 - 중상 관심
-    "P3_investment": 1.15,         # 투자 정보 - 중상 관심
-    "P4_trend_discovery": 1.1,     # 트렌드 발견 - 중상 관심
-    "P5_education": 1.0,           # 교육 - 기본 관심
+    "P1_daily_briefing": 1.2,  # 일일 브리핑 - 높은 관심
+    "P2_market_analysis": 1.1,  # 시장 분석 - 중상 관심
+    "P3_investment": 1.15,  # 투자 정보 - 중상 관심
+    "P4_trend_discovery": 1.1,  # 트렌드 발견 - 중상 관심
+    "P5_education": 1.0,  # 교육 - 기본 관심
 }
 
 TrustTier = Literal["T1_authoritative", "T2_expert", "T3_professional", "T4_community"]
-InfoPurpose = Literal["P1_daily_briefing", "P2_market_analysis", "P3_investment", "P4_trend_discovery", "P5_education"]
+InfoPurpose = Literal[
+    "P1_daily_briefing", "P2_market_analysis", "P3_investment", "P4_trend_discovery", "P5_education"
+]
 
 
 def calculate_score(
     trust_tier: TrustTier,
     info_purposes: list[InfoPurpose],
     published_at: datetime,
-    now: Optional[datetime] = None,
+    now: datetime | None = None,
 ) -> float:
     """콘텐츠 스코어 계산.
 
@@ -57,7 +60,7 @@ def calculate_score(
         1.74  # 2.9 * 0.5 * 1.2 (7일 = 50% 감쇠)
     """
     if now is None:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
     # 1. Base weight (trust_tier 기반)
     base_weight = TRUST_TIER_WEIGHTS.get(trust_tier, 2.0)

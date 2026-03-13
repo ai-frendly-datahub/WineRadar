@@ -6,6 +6,7 @@ from typing import Any
 
 import pytest
 
+
 pytestmark = pytest.mark.unit
 
 REQUIRED_KEYS = {
@@ -57,9 +58,9 @@ def test_enabled_sources_have_list_url(sources_config: dict[str, Any]) -> None:
         if not source.get("enabled", False):
             continue
         list_url = source["config"].get("list_url")
-        assert (
-            isinstance(list_url, str) and list_url.startswith("https://")
-        ), f"list_url 형식 오류: {source['id']}"
+        assert isinstance(list_url, str) and list_url.startswith("https://"), (
+            f"list_url 형식 오류: {source['id']}"
+        )
 
 
 def test_at_least_one_rss_source_is_enabled(sources_config: dict[str, Any]) -> None:

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """WineRadar MCP server tools."""
 
 from __future__ import annotations
@@ -14,6 +13,7 @@ import duckdb
 
 from graph.graph_queries import get_view
 from graph.search_index import SearchIndex
+
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 

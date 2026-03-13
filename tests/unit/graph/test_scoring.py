@@ -2,17 +2,18 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
 from graph.scoring import (
+    INFO_PURPOSE_BONUS,
+    TRUST_TIER_WEIGHTS,
+    calculate_entity_boost,
     calculate_score,
     calculate_time_decay,
-    calculate_entity_boost,
-    TRUST_TIER_WEIGHTS,
-    INFO_PURPOSE_BONUS,
 )
+
 
 pytestmark = pytest.mark.unit
 
@@ -36,7 +37,7 @@ def test_info_purpose_bonus_defined() -> None:
 
 def test_calculate_time_decay_24hours() -> None:
     """24시간 이내: 100% 감쇠 계수."""
-    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
     recent = now - timedelta(hours=12)
 
     decay = calculate_time_decay(recent, now)
@@ -45,7 +46,7 @@ def test_calculate_time_decay_24hours() -> None:
 
 def test_calculate_time_decay_3days() -> None:
     """1-3일: 90% 감쇠 계수."""
-    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
     two_days_ago = now - timedelta(days=2)
 
     decay = calculate_time_decay(two_days_ago, now)
@@ -54,7 +55,7 @@ def test_calculate_time_decay_3days() -> None:
 
 def test_calculate_time_decay_7days() -> None:
     """3-7일: 70% 감쇠 계수."""
-    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
     five_days_ago = now - timedelta(days=5)
 
     decay = calculate_time_decay(five_days_ago, now)
@@ -63,7 +64,7 @@ def test_calculate_time_decay_7days() -> None:
 
 def test_calculate_time_decay_14days() -> None:
     """7-14일: 50% 감쇠 계수."""
-    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
     ten_days_ago = now - timedelta(days=10)
 
     decay = calculate_time_decay(ten_days_ago, now)
@@ -72,7 +73,7 @@ def test_calculate_time_decay_14days() -> None:
 
 def test_calculate_time_decay_30days() -> None:
     """14-30일: 30% 감쇠 계수."""
-    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
     twenty_days_ago = now - timedelta(days=20)
 
     decay = calculate_time_decay(twenty_days_ago, now)
@@ -81,7 +82,7 @@ def test_calculate_time_decay_30days() -> None:
 
 def test_calculate_time_decay_old() -> None:
     """30일 이상: 10% 감쇠 계수."""
-    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
     sixty_days_ago = now - timedelta(days=60)
 
     decay = calculate_time_decay(sixty_days_ago, now)
@@ -90,7 +91,7 @@ def test_calculate_time_decay_old() -> None:
 
 def test_calculate_time_decay_requires_timezone() -> None:
     """timezone-aware datetime 필요."""
-    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
     naive = datetime(2025, 1, 14, 12, 0, 0)  # timezone 없음
 
     with pytest.raises(ValueError, match="timezone-aware"):
@@ -99,7 +100,7 @@ def test_calculate_time_decay_requires_timezone() -> None:
 
 def test_calculate_score_t2_expert_recent() -> None:
     """T2 전문가, 최근 콘텐츠 스코어."""
-    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
     recent = now - timedelta(hours=1)
 
     # T2_expert: 2.9, time_decay: 1.0, P1: 1.2
@@ -110,7 +111,7 @@ def test_calculate_score_t2_expert_recent() -> None:
 
 def test_calculate_score_t1_authoritative_old() -> None:
     """T1 권위, 오래된 콘텐츠 스코어."""
-    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
     old = now - timedelta(days=7)
 
     # T1_authoritative: 2.25, time_decay: 0.5, P2: 1.1
@@ -121,17 +122,12 @@ def test_calculate_score_t1_authoritative_old() -> None:
 
 def test_calculate_score_multiple_purposes_uses_max() -> None:
     """여러 info_purpose 중 최대 보너스 사용."""
-    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
     recent = now - timedelta(hours=1)
 
     # P5_education: 1.0, P1_daily_briefing: 1.2
     # 최대값인 1.2 사용
-    score = calculate_score(
-        "T3_professional",
-        ["P5_education", "P1_daily_briefing"],
-        recent,
-        now
-    )
+    score = calculate_score("T3_professional", ["P5_education", "P1_daily_briefing"], recent, now)
 
     # T3_professional: 2.4, time_decay: 1.0, max_bonus: 1.2
     # 예상: 2.4 * 1.0 * 1.2 = 2.88
@@ -140,7 +136,7 @@ def test_calculate_score_multiple_purposes_uses_max() -> None:
 
 def test_calculate_score_empty_purposes() -> None:
     """info_purpose가 빈 배열인 경우."""
-    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
     recent = now - timedelta(hours=1)
 
     # 빈 배열 -> purpose_bonus = 1.0
@@ -153,7 +149,7 @@ def test_calculate_score_empty_purposes() -> None:
 
 def test_calculate_score_defaults_to_now() -> None:
     """now 파라미터가 없으면 현재 시각 사용."""
-    recent = datetime.now(timezone.utc) - timedelta(hours=1)
+    recent = datetime.now(UTC) - timedelta(hours=1)
 
     # now=None이면 내부적으로 datetime.now(timezone.utc) 사용
     score = calculate_score("T2_expert", ["P1_daily_briefing"], recent, now=None)
@@ -215,9 +211,9 @@ def test_trust_tier_weight_mapping(trust_tier: str, expected_weight: float) -> N
 @pytest.mark.parametrize(
     "age_days,expected_decay",
     [
-        (0.5, 1.0),   # 12시간
-        (2.0, 0.9),   # 2일
-        (5.0, 0.7),   # 5일
+        (0.5, 1.0),  # 12시간
+        (2.0, 0.9),  # 2일
+        (5.0, 0.7),  # 5일
         (10.0, 0.5),  # 10일
         (20.0, 0.3),  # 20일
         (60.0, 0.1),  # 60일
@@ -225,7 +221,7 @@ def test_trust_tier_weight_mapping(trust_tier: str, expected_weight: float) -> N
 )
 def test_time_decay_parameterized(age_days: float, expected_decay: float) -> None:
     """시간 감쇠 함수 파라미터화 테스트."""
-    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
     published = now - timedelta(days=age_days)
 
     decay = calculate_time_decay(published, now)

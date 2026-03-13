@@ -8,6 +8,7 @@ import pytest
 
 from graph.graph_queries import get_view
 
+
 pytestmark = pytest.mark.integration
 
 

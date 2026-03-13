@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from datetime import datetime
 from difflib import SequenceMatcher
-from typing import Any, Optional
+from typing import Any
 from urllib.parse import urlparse
 
 
@@ -113,13 +113,13 @@ def validate_article(article: Any) -> tuple[bool, list[str]]:
     return len(errors) == 0, errors
 
 
-def validate_rating(rating: Optional[float]) -> bool:
+def validate_rating(rating: float | None) -> bool:
     if rating is None:
         return True
     return 0.0 <= rating <= 5.0
 
 
-def validate_vintage(vintage: Optional[int]) -> bool:
+def validate_vintage(vintage: int | None) -> bool:
     if vintage is None:
         return True
     return 1900 <= vintage <= datetime.now().year

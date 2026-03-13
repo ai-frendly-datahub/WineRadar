@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import duckdb
@@ -17,12 +17,14 @@ from graph.graph_queries import get_view
 def populated_db(tmp_path: Path, sample_raw_item: RawItem) -> Path:
     db_path = tmp_path / "test.duckdb"
     graph_store.init_database(db_path)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     first_item: RawItem = RawItem(dict(sample_raw_item))
     first_item["published_at"] = now
 
-    graph_store.upsert_url_and_entities(first_item, {"winery": ["Sample Winery"]}, now, db_path=db_path)
+    graph_store.upsert_url_and_entities(
+        first_item, {"winery": ["Sample Winery"]}, now, db_path=db_path
+    )
 
     other_item: RawItem = RawItem(
         id="sample-item-2",

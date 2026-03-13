@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """WineRadar MCP server."""
 
 from __future__ import annotations
@@ -7,9 +6,11 @@ from __future__ import annotations
 import asyncio
 import importlib
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
+
 
 try:
     _mcp_server_module = importlib.import_module("mcp.server")
@@ -80,6 +81,7 @@ from mcp_server.tools import (
     handle_sql,
     handle_top_trends,
 )
+
 
 app = Server("wineradar")
 

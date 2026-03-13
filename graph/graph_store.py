@@ -6,12 +6,12 @@ import os
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional, Any
 
 import duckdb
 
 from collectors.base import RawItem
-from graph.scoring import calculate_score, calculate_entity_boost
+from graph.scoring import calculate_entity_boost, calculate_score
+
 
 DB_ENV_VAR = "WINERADAR_DB_PATH"
 DEFAULT_DB_PATH = Path("data") / "wineradar.duckdb"
@@ -30,7 +30,7 @@ class DatabasePaths:
     path: Path
 
 
-def _resolve_db_path(db_path: Optional[Path | str] = None) -> Path:
+def _resolve_db_path(db_path: Path | str | None = None) -> Path:
     if db_path is not None:
         path = Path(db_path)
     elif db_env := os.environ.get(DB_ENV_VAR):
@@ -41,7 +41,7 @@ def _resolve_db_path(db_path: Optional[Path | str] = None) -> Path:
     return path
 
 
-def init_database(db_path: Optional[Path | str] = None) -> DatabasePaths:
+def init_database(db_path: Path | str | None = None) -> DatabasePaths:
     """DuckDB 파일과 기본 테이블을 생성한다."""
     path = _resolve_db_path(db_path)
     with duckdb.connect(str(path)) as conn:
@@ -100,14 +100,14 @@ def init_database(db_path: Optional[Path | str] = None) -> DatabasePaths:
     return DatabasePaths(path=path)
 
 
-def _connect(db_path: Optional[Path | str] = None) -> duckdb.DuckDBPyConnection:
+def _connect(db_path: Path | str | None = None) -> duckdb.DuckDBPyConnection:
     path = _resolve_db_path(db_path)
     init_database(path)
     return duckdb.connect(str(path))
 
 
 def upsert_url_and_entities(
-    item: RawItem, entities: dict[str, list[str]], now: datetime, db_path: Optional[Path | str] = None
+    item: RawItem, entities: dict[str, list[str]], now: datetime, db_path: Path | str | None = None
 ) -> None:
     """URL과 연관 엔터티를 upsert한다.
 
@@ -205,7 +205,9 @@ def upsert_url_and_entities(
         conn.close()
 
 
-def prune_expired_urls(now: datetime, ttl_days: int = 30, db_path: Optional[Path | str] = None) -> None:
+def prune_expired_urls(
+    now: datetime, ttl_days: int = 30, db_path: Path | str | None = None
+) -> None:
     """ttl_days 이전 URL/엔터티 레코드를 삭제한다."""
     threshold = now - timedelta(days=ttl_days)
     conn = _connect(db_path)

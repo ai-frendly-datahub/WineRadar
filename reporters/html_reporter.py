@@ -1,17 +1,17 @@
-# -*- coding: utf-8 -*-
 """HTML 리포트 생성."""
 
 from __future__ import annotations
 
 import json
 from collections import Counter
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from graph.graph_queries import ViewItem
+
 
 # 템플릿 디렉토리
 TEMPLATE_DIR = Path(__file__).parent / "templates"
@@ -348,7 +348,7 @@ def generate_daily_report(
         stats=stats,
         chart_data=chart_data,
         network_graph_html=network_graph_html,
-        generation_time=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        generation_time=datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC"),
     )
 
     # 파일 저장
@@ -548,7 +548,7 @@ def generate_index_page(
             [
                 '            <li class="report-item">',
                 f'                <a href="{report_path}" class="report-link">{report_date}</a>',
-                f'                <div class="report-stats">',
+                '                <div class="report-stats">',
                 f"                    {stats.get('total_items', 0)} items · "
                 f"{stats.get('active_sources', 0)} sources · "
                 f"{stats.get('entities_extracted', 0)} entities",
@@ -576,7 +576,7 @@ def generate_index_page(
 
 def generate_index_html(report_dir: Path) -> Path:
     """Generate an index.html that lists all available report files."""
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     report_dir.mkdir(parents=True, exist_ok=True)
 
@@ -591,7 +591,7 @@ def generate_index_html(report_dir: Path) -> Path:
         display_name = name.replace("_report", "").replace("_", " ").title()
         reports.append({"filename": html_file.name, "display_name": display_name})
 
-    generated_at = datetime.now(timezone.utc).isoformat()
+    generated_at = datetime.now(UTC).isoformat()
 
     if reports:
         cards_html = "\n    ".join(

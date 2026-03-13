@@ -4,14 +4,15 @@ from __future__ import annotations
 
 import json
 import tempfile
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import duckdb
 import pytest
 
 from collectors.base import RawItem
-from graph.graph_store import init_database, upsert_url_and_entities, prune_expired_urls
+from graph.graph_store import init_database, prune_expired_urls, upsert_url_and_entities
+
 
 pytestmark = pytest.mark.unit
 
@@ -37,7 +38,7 @@ def test_upsert_with_empty_info_purpose(temp_db_path: Path) -> None:
     """info_purpose가 빈 배열인 경우 처리 검증."""
     init_database(temp_db_path)
 
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
     item: RawItem = {
         "id": "test_001",
         "url": "https://example.com/test",
@@ -74,7 +75,7 @@ def test_upsert_with_multiple_info_purposes(temp_db_path: Path) -> None:
     """info_purpose가 여러 개인 경우 모두 저장되는지 검증."""
     init_database(temp_db_path)
 
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
     item: RawItem = {
         "id": "test_001",
         "url": "https://example.com/test",
@@ -117,7 +118,7 @@ def test_upsert_with_null_optional_fields(temp_db_path: Path) -> None:
     """Optional 필드가 None인 경우 처리 검증."""
     init_database(temp_db_path)
 
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
     item: RawItem = {
         "id": "test_001",
         "url": "https://example.com/test",
@@ -154,7 +155,7 @@ def test_prune_expired_urls(temp_db_path: Path) -> None:
     """만료된 URL이 삭제되는지 검증."""
     init_database(temp_db_path)
 
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
     old_date = now - timedelta(days=35)
 
     # 최근 URL
@@ -223,7 +224,7 @@ def test_prune_expired_urls_with_entities(temp_db_path: Path) -> None:
     """만료된 URL의 엔터티도 함께 삭제되는지 검증."""
     init_database(temp_db_path)
 
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
     old_date = now - timedelta(days=35)
 
     old_item: RawItem = {
@@ -274,7 +275,7 @@ def test_upsert_with_special_characters_in_url(temp_db_path: Path) -> None:
     """URL에 특수문자가 있는 경우 처리 검증."""
     init_database(temp_db_path)
 
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
     item: RawItem = {
         "id": "test_001",
         "url": "https://example.com/test?param=value&foo=bar#section",
@@ -306,7 +307,7 @@ def test_upsert_with_unicode_content(temp_db_path: Path) -> None:
     """유니코드 콘텐츠 처리 검증."""
     init_database(temp_db_path)
 
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
     item: RawItem = {
         "id": "test_001",
         "url": "https://example.com/test",
@@ -343,8 +344,8 @@ def test_upsert_preserves_created_at_on_update(temp_db_path: Path) -> None:
     """업데이트 시 created_at은 유지되고 updated_at만 변경되는지 검증."""
     init_database(temp_db_path)
 
-    initial_time = datetime(2025, 1, 1, 10, 0, 0, tzinfo=timezone.utc)
-    update_time = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    initial_time = datetime(2025, 1, 1, 10, 0, 0, tzinfo=UTC)
+    update_time = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
 
     item: RawItem = {
         "id": "test_001",
@@ -395,7 +396,7 @@ def test_concurrent_upserts_same_url(temp_db_path: Path) -> None:
     """동일 URL에 대한 연속 upsert가 정상 동작하는지 검증."""
     init_database(temp_db_path)
 
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
 
     item: RawItem = {
         "id": "test_001",
@@ -434,7 +435,7 @@ def test_prune_with_custom_ttl(temp_db_path: Path) -> None:
     """커스텀 TTL 값이 정상 동작하는지 검증."""
     init_database(temp_db_path)
 
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
     days_7_ago = now - timedelta(days=7)
     days_8_ago = now - timedelta(days=8)
 

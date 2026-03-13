@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Iterable
-from collections.abc import Mapping
-from datetime import datetime, timezone
+from collections.abc import Iterable, Mapping
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -12,7 +11,7 @@ class RawLogger:
         self.raw_dir: Path = raw_dir
 
     def log_raw_items(self, items: Iterable[Mapping[str, object]], *, source_name: str) -> Path:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         date_dir = self.raw_dir / now.date().isoformat()
         safe_source_name = source_name.replace("/", "_").replace("\\", "_")
         output_path = date_dir / f"{safe_source_name}.jsonl"
