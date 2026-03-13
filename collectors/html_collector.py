@@ -127,7 +127,9 @@ class HTMLCollector:
                     if raw_item and raw_item["url"]:
                         yield raw_item
                 except ValueError as exc:
-                    self.logger.warning("Validation error for article %s: %s", article.get("url"), exc)
+                    self.logger.warning(
+                        "Validation error for article %s: %s", article.get("url"), exc
+                    )
                     continue
                 except KeyError as exc:
                     self.logger.warning("Missing key in article %s: %s", article.get("url"), exc)

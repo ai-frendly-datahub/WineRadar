@@ -59,21 +59,23 @@ class BaseCollector:
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=1, max=10),
-        retry=retry_if_exception_type((requests.Timeout, requests.ConnectionError, requests.HTTPError)),
+        retry=retry_if_exception_type(
+            (requests.Timeout, requests.ConnectionError, requests.HTTPError)
+        ),
         reraise=True,
     )
     def _fetch_with_retry(self, url: str, timeout: float) -> requests.Response:
         """Fetch URL with exponential backoff retry.
-        
+
         Retries on: 408, 429, 500, 502, 503, 504, 522, 524
-        
+
         Args:
             url: URL to fetch
             timeout: Request timeout in seconds
-            
+
         Returns:
             requests.Response object
-            
+
         Raises:
             requests.Timeout: When request exceeds timeout after retries
             requests.ConnectionError: When connection fails after retries
