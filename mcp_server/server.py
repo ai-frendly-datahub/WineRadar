@@ -74,7 +74,7 @@ except ModuleNotFoundError:
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from mcp_server.tools import (
+from mcp_server.tools import (  # noqa: E402
     handle_get_view,
     handle_recent_updates,
     handle_search_by_keyword,

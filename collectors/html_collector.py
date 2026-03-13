@@ -3,19 +3,19 @@ from __future__ import annotations
 
 """HTML collector for sources that expose structured article lists."""
 
-import logging
-import random
-import re
-import time
-from collections.abc import Callable, Iterable
-from datetime import UTC, datetime
-from typing import Any
-from urllib.parse import urljoin
+import logging  # noqa: E402
+import random  # noqa: E402
+import re  # noqa: E402
+import time  # noqa: E402
+from collections.abc import Callable, Iterable  # noqa: E402
+from datetime import UTC, datetime  # noqa: E402
+from typing import Any  # noqa: E402
+from urllib.parse import urljoin  # noqa: E402
 
-import requests
-from bs4 import BeautifulSoup
+import requests  # noqa: E402
+from bs4 import BeautifulSoup  # noqa: E402
 
-from collectors.base import RawItem
+from collectors.base import RawItem  # noqa: E402
 
 
 PageFetcher = Callable[[str], bytes]
@@ -287,11 +287,11 @@ class HTMLCollector:
                     if fmt == "%d %b %Y":
                         day, month_str, year = match.groups()
                         normalized = f"{day} {month_str} {year}"
-                        dt = datetime.strptime(normalized, fmt)
+                        dt = datetime.strptime(normalized, fmt).replace(tzinfo=UTC)
                     else:
                         year, month, day = match.groups()
                         normalized = f"{year}-{month.zfill(2)}-{day.zfill(2)}"
-                        dt = datetime.strptime(normalized, "%Y-%m-%d")
+                        dt = datetime.strptime(normalized, "%Y-%m-%d").replace(tzinfo=UTC)
                     return dt.replace(tzinfo=UTC)
                 except ValueError:
                     continue

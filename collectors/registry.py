@@ -3,11 +3,11 @@ from __future__ import annotations
 
 """Collector registry / factory."""
 
-from collections.abc import Callable
-from typing import Any
+from collections.abc import Callable  # noqa: E402
+from typing import Any  # noqa: E402
 
-from collectors.html_collector import HTMLCollector, PageFetcher
-from collectors.rss_collector import FeedFetcher, RSSCollector
+from collectors.html_collector import HTMLCollector, PageFetcher  # noqa: E402
+from collectors.rss_collector import FeedFetcher, RSSCollector  # noqa: E402
 
 
 CollectorInstance = Any  # Union of supported collector implementations

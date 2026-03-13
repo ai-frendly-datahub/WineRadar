@@ -25,10 +25,10 @@ class Entity(TypedDict):
 
 
 # Import expanded entity dictionaries
-from analyzers.entity_normalizer import (
+from analyzers.entity_normalizer import (  # noqa: E402
     deduplicate_entities,
 )
-from analyzers.wine_entities_data import (
+from analyzers.wine_entities_data import (  # noqa: E402
     CLIMATE_ZONE_MAPPING_EXPANDED,
     GRAPE_VARIETIES_EXPANDED,
     KNOWN_WINERIES_EXPANDED,

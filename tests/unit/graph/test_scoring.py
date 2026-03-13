@@ -92,7 +92,7 @@ def test_calculate_time_decay_old() -> None:
 def test_calculate_time_decay_requires_timezone() -> None:
     """timezone-aware datetime 필요."""
     now = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
-    naive = datetime(2025, 1, 14, 12, 0, 0)  # timezone 없음
+    naive = datetime(2025, 1, 14, 12, 0, 0, tzinfo=UTC)  # timezone 없음
 
     with pytest.raises(ValueError, match="timezone-aware"):
         calculate_time_decay(naive, now)

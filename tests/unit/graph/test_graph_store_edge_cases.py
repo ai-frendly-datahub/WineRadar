@@ -374,8 +374,8 @@ def test_upsert_preserves_created_at_on_update(temp_db_path: Path) -> None:
         result = conn.execute(
             "SELECT created_at, updated_at FROM urls WHERE url = ?", (item["url"],)
         ).fetchone()
-        original_created_at = result[0]
-        original_updated_at = result[1]
+        _ = result[0]
+        _ = result[1]
 
     # 업데이트
     updated_item = item.copy()

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 import pytest
 
@@ -127,9 +127,9 @@ def test_validate_rating(rating: float | None, expected: bool) -> None:
     [
         (None, True),
         (1900, True),
-        (datetime.now().year, True),
+        (datetime.now(tz=UTC).year, True),
         (1899, False),
-        (datetime.now().year + 1, False),
+        (datetime.now(tz=UTC).year + 1, False),
     ],
 )
 def test_validate_vintage(vintage: int | None, expected: bool) -> None:

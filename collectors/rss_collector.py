@@ -3,16 +3,21 @@ from __future__ import annotations
 
 """RSS 기반 Collector 구현."""
 
-import calendar
-from collections.abc import Callable, Iterable
-from datetime import UTC, datetime
-from typing import Any
+import calendar  # noqa: E402
+from collections.abc import Callable, Iterable  # noqa: E402
+from datetime import UTC, datetime  # noqa: E402
+from typing import Any  # noqa: E402
 
-import feedparser
-import requests
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+import feedparser  # noqa: E402
+import requests  # noqa: E402
+from tenacity import (  # noqa: E402
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
-from collectors.base import RawItem
+from collectors.base import RawItem  # noqa: E402
 
 
 FeedFetcher = Callable[[str], bytes]

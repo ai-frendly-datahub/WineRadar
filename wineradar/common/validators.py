@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime
+from datetime import UTC, datetime
 from difflib import SequenceMatcher
 from typing import Any
 from urllib.parse import urlparse
@@ -122,4 +122,4 @@ def validate_rating(rating: float | None) -> bool:
 def validate_vintage(vintage: int | None) -> bool:
     if vintage is None:
         return True
-    return 1900 <= vintage <= datetime.now().year
+    return 1900 <= vintage <= datetime.now(tz=UTC).year
