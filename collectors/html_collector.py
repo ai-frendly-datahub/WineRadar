@@ -15,7 +15,7 @@ from urllib.parse import urljoin  # noqa: E402
 import requests  # noqa: E402
 from bs4 import BeautifulSoup  # noqa: E402
 
-from collectors.base import RawItem  # noqa: E402
+from collectors.base import RawItem, validate_raw_item  # noqa: E402
 
 
 PageFetcher = Callable[[str], bytes]
@@ -114,11 +114,36 @@ class HTMLCollector:
             for article in articles:
                 try:
                     raw_item = self._create_raw_item(article, now)
+                    # Validate required fields
+                    if raw_item:
+                        validation_errors = validate_raw_item(raw_item, self.source_name)
+                        if validation_errors:
+                            self.logger.warning(
+                                "Validation errors for %s: %s",
+                                raw_item.get("url"),
+                                validation_errors,
+                            )
+                            continue
                     if raw_item and raw_item["url"]:
                         yield raw_item
+                except ValueError as exc:
+                    self.logger.warning("Validation error for article %s: %s", article.get("url"), exc)
+                    continue
+                except KeyError as exc:
+                    self.logger.warning("Missing key in article %s: %s", article.get("url"), exc)
+                    continue
                 except Exception as exc:  # pragma: no cover
                     self.logger.warning("Failed to process article %s: %s", article.get("url"), exc)
                     continue
+        except requests.Timeout as exc:
+            self.logger.error("Timeout fetching list page %s: %s", self.list_url, exc)
+            return []
+        except requests.ConnectionError as exc:
+            self.logger.error("Connection error fetching list page %s: %s", self.list_url, exc)
+            return []
+        except requests.HTTPError as exc:
+            self.logger.error("HTTP error fetching list page %s: %s", self.list_url, exc)
+            return []
         except Exception as exc:
             self.logger.error("Failed to fetch list page %s: %s", self.list_url, exc)
             return []

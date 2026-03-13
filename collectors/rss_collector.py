@@ -17,7 +17,7 @@ from tenacity import (  # noqa: E402
     wait_exponential,
 )
 
-from collectors.base import RawItem  # noqa: E402
+from collectors.base import RawItem, validate_raw_item  # noqa: E402
 
 
 FeedFetcher = Callable[[str], bytes]
@@ -36,11 +36,20 @@ class RSSCollector:
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=1, max=10),
-        retry=retry_if_exception_type(requests.exceptions.RequestException),
+        retry=retry_if_exception_type(
+            (
+                requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError,
+                requests.exceptions.HTTPError,
+            )
+        ),
         reraise=True,
     )
     def _default_fetcher(self, url: str) -> bytes:
-        """Fetch RSS feed with retry and User-Agent."""
+        """Fetch RSS feed with retry and User-Agent.
+
+        Retries on timeout, connection errors, and HTTP errors (408, 429, 500+).
+        """
         headers = {
             "User-Agent": "Mozilla/5.0 (compatible; WineRadarBot/1.0; +https://github.com/zzragida/ai-frendly-datahub)",
         }
@@ -75,6 +84,12 @@ class RSSCollector:
                 "info_purpose": list(self.source_meta.get("info_purpose", [])),
                 "collection_tier": self.source_meta.get("collection_tier", "C1_rss"),
             }
+            # Validate required fields
+            validation_errors = validate_raw_item(raw_item, self.source_name)
+            if validation_errors:
+                for error in validation_errors:
+                    print(f"Validation error: {error}")
+                continue
             if not raw_item["url"]:
                 continue
             raw_item["summary"] = self._generate_summary(
