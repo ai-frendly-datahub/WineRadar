@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """엔티티 추출 모듈.
 
 와인 관련 텍스트에서 다양한 엔티티를 추출한다:
@@ -12,11 +11,13 @@
 """
 
 from typing import TypedDict
+
 from collectors.base import RawItem
 
 
 class Entity(TypedDict):
     """추출된 엔티티."""
+
     type: str  # winery, grape_variety, climate_zone 등
     value: str  # 엔티티 값 (예: "Cabernet Sauvignon")
     confidence: float  # 신뢰도 (0.0 ~ 1.0)
@@ -24,17 +25,16 @@ class Entity(TypedDict):
 
 
 # Import expanded entity dictionaries
-from analyzers.wine_entities_data import (
-    GRAPE_VARIETIES_EXPANDED,
-    WINE_REGIONS_EXPANDED,
-    CLIMATE_ZONE_MAPPING_EXPANDED,
-    KNOWN_WINERIES_EXPANDED,
-)
 from analyzers.entity_normalizer import (
-    normalize_entity,
-    calculate_entity_confidence,
     deduplicate_entities,
 )
+from analyzers.wine_entities_data import (
+    CLIMATE_ZONE_MAPPING_EXPANDED,
+    GRAPE_VARIETIES_EXPANDED,
+    KNOWN_WINERIES_EXPANDED,
+    WINE_REGIONS_EXPANDED,
+)
+
 
 # Use expanded dictionaries
 GRAPE_VARIETIES = GRAPE_VARIETIES_EXPANDED
@@ -81,7 +81,7 @@ def extract_grape_varieties(item: RawItem) -> list[Entity]:
 
         for variety in GRAPE_VARIETIES:
             # 단어 경계를 고려한 매칭
-            pattern = r'\b' + re.escape(variety.lower()) + r'\b'
+            pattern = r"\b" + re.escape(variety.lower()) + r"\b"
             if re.search(pattern, text_lower):
                 # 이미 발견된 품종이면 더 높은 신뢰도로 업데이트
                 if variety not in found_varieties or confidence > found_varieties[variety][1]:
@@ -89,12 +89,14 @@ def extract_grape_varieties(item: RawItem) -> list[Entity]:
 
     # Entity 리스트로 변환
     for variety, (source, confidence) in found_varieties.items():
-        entities.append({
-            "type": "grape_variety",
-            "value": variety,
-            "confidence": confidence,
-            "source": source,
-        })
+        entities.append(
+            {
+                "type": "grape_variety",
+                "value": variety,
+                "confidence": confidence,
+                "source": source,
+            }
+        )
 
     return entities
 
@@ -127,18 +129,20 @@ def extract_regions(item: RawItem) -> list[Entity]:
         text_lower = text.lower()
 
         for region in WINE_REGIONS:
-            pattern = r'\b' + re.escape(region.lower()) + r'\b'
+            pattern = r"\b" + re.escape(region.lower()) + r"\b"
             if re.search(pattern, text_lower):
                 if region not in found_regions or confidence > found_regions[region][1]:
                     found_regions[region] = (source_name, confidence)
 
     for region, (source, confidence) in found_regions.items():
-        entities.append({
-            "type": "region",
-            "value": region,
-            "confidence": confidence,
-            "source": source,
-        })
+        entities.append(
+            {
+                "type": "region",
+                "value": region,
+                "confidence": confidence,
+                "source": source,
+            }
+        )
 
     return entities
 
@@ -165,18 +169,23 @@ def infer_climate_zone(regions: list[Entity]) -> list[Entity]:
                 inferred_confidence = region_confidence * 0.9  # 추론이므로 90%로 감소
 
                 # 더 높은 신뢰도로 업데이트
-                if climate_zone not in climate_zones or inferred_confidence > climate_zones[climate_zone][1]:
+                if (
+                    climate_zone not in climate_zones
+                    or inferred_confidence > climate_zones[climate_zone][1]
+                ):
                     climate_zones[climate_zone] = (region_source, inferred_confidence)
 
     # Entity 리스트로 변환
     entities: list[Entity] = []
     for zone, (source, confidence) in climate_zones.items():
-        entities.append({
-            "type": "climate_zone",
-            "value": zone,
-            "confidence": confidence,
-            "source": source,
-        })
+        entities.append(
+            {
+                "type": "climate_zone",
+                "value": zone,
+                "confidence": confidence,
+                "source": source,
+            }
+        )
 
     return entities
 
@@ -209,18 +218,20 @@ def extract_wineries(item: RawItem) -> list[Entity]:
         # 알려진 와이너리 매칭 (대소문자 무시)
         text_lower = text.lower()
         for winery in KNOWN_WINERIES:
-            pattern = r'\b' + re.escape(winery.lower()) + r'\b'
+            pattern = r"\b" + re.escape(winery.lower()) + r"\b"
             if re.search(pattern, text_lower):
                 if winery not in found_wineries or confidence > found_wineries[winery][1]:
                     found_wineries[winery] = (source_name, confidence)
 
     for winery, (source, confidence) in found_wineries.items():
-        entities.append({
-            "type": "winery",
-            "value": winery,
-            "confidence": confidence,
-            "source": source,
-        })
+        entities.append(
+            {
+                "type": "winery",
+                "value": winery,
+                "confidence": confidence,
+                "source": source,
+            }
+        )
 
     return entities
 
@@ -247,12 +258,20 @@ def extract_all_entities(item: RawItem) -> dict[str, list[str]]:
     climate_entities = infer_climate_zone(region_entities)
 
     if _NLP:
-        doc = _NLP(" ".join(filter(None, [item.get("title"), item.get("summary"), item.get("content", "")])))
+        doc = _NLP(
+            " ".join(
+                filter(None, [item.get("title"), item.get("summary"), item.get("content", "")])
+            )
+        )
         for ent in doc.ents:
             if ent.label_ in {"ORG", "PERSON"}:
-                winery_entities.append({"type": "winery", "value": ent.text, "confidence": 0.55, "source": "spacy"})
+                winery_entities.append(
+                    {"type": "winery", "value": ent.text, "confidence": 0.55, "source": "spacy"}
+                )
             if ent.label_ == "LOC":
-                region_entities.append({"type": "region", "value": ent.text, "confidence": 0.55, "source": "spacy"})
+                region_entities.append(
+                    {"type": "region", "value": ent.text, "confidence": 0.55, "source": "spacy"}
+                )
 
     # 모든 엔티티 통합
     all_entities = grape_entities + region_entities + winery_entities + climate_entities

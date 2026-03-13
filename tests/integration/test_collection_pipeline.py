@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import tempfile
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -12,6 +12,7 @@ import pytest
 
 from collectors.rss_collector import RSSCollector
 from graph.graph_store import init_database, upsert_url_and_entities
+
 
 pytestmark = pytest.mark.integration
 
@@ -29,21 +30,20 @@ def temp_db_path() -> Path:
         pass
 
 
-def test_rss_collection_to_graph_storage(sources_config: dict[str, Any], temp_db_path: Path) -> None:
+def test_rss_collection_to_graph_storage(
+    sources_config: dict[str, Any], temp_db_path: Path
+) -> None:
     """RSS 수집 → DuckDB 저장 파이프라인 검증."""
     # Step 1: sources.yaml에서 enabled=true인 RSS 소스 찾기
     sources = sources_config.get("sources", [])
-    rss_sources = [
-        s for s in sources
-        if s.get("enabled") and s.get("collection_tier") == "C1_rss"
-    ]
+    rss_sources = [s for s in sources if s.get("enabled") and s.get("collection_tier") == "C1_rss"]
 
     assert len(rss_sources) >= 1, "최소 1개의 활성화된 RSS 소스가 필요함"
 
     # Phase 1 소스 선택 (Decanter 또는 Gambero)
     test_source = next(
         (s for s in rss_sources if s.get("id") in ["media_decanter_global", "media_gambero_it"]),
-        rss_sources[0]
+        rss_sources[0],
     )
 
     # Step 2: RSS Collector로 데이터 수집
@@ -64,13 +64,14 @@ def test_rss_collection_to_graph_storage(sources_config: dict[str, Any], temp_db
 
     # Step 4: DuckDB에 저장
     init_database(temp_db_path)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     for item in items[:5]:  # 처음 5개만 저장 (속도 고려)
         upsert_url_and_entities(item, {}, now, temp_db_path)
 
     # Step 5: 저장 검증
     import duckdb
+
     with duckdb.connect(str(temp_db_path)) as conn:
         result = conn.execute("SELECT COUNT(*) FROM urls").fetchone()
         assert result[0] >= 1, "최소 1개의 URL이 저장되어야 함"
@@ -93,13 +94,10 @@ def test_rss_collection_to_graph_storage(sources_config: dict[str, Any], temp_db
 def test_multi_source_collection(sources_config: dict[str, Any], temp_db_path: Path) -> None:
     """여러 소스로부터 데이터를 수집하고 메타데이터 일관성 검증."""
     sources = sources_config.get("sources", [])
-    rss_sources = [
-        s for s in sources
-        if s.get("enabled") and s.get("collection_tier") == "C1_rss"
-    ]
+    rss_sources = [s for s in sources if s.get("enabled") and s.get("collection_tier") == "C1_rss"]
 
     init_database(temp_db_path)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     total_collected = 0
 
@@ -113,6 +111,7 @@ def test_multi_source_collection(sources_config: dict[str, Any], temp_db_path: P
 
     # 저장 검증
     import duckdb
+
     with duckdb.connect(str(temp_db_path)) as conn:
         result = conn.execute("SELECT COUNT(*) FROM urls").fetchone()
         assert result[0] == total_collected
@@ -130,7 +129,9 @@ def test_multi_source_collection(sources_config: dict[str, Any], temp_db_path: P
         assert len(tier_counts) >= 1, "최소 1개의 trust_tier가 있어야 함"
 
 
-def test_rss_metadata_consistency_end_to_end(sources_config: dict[str, Any], temp_db_path: Path) -> None:
+def test_rss_metadata_consistency_end_to_end(
+    sources_config: dict[str, Any], temp_db_path: Path
+) -> None:
     """sources.yaml → RawItem → DuckDB 전체 메타데이터 일관성 검증."""
     sources = sources_config.get("sources", [])
     decanter = next((s for s in sources if s.get("id") == "media_decanter_global"), None)
@@ -146,12 +147,13 @@ def test_rss_metadata_consistency_end_to_end(sources_config: dict[str, Any], tem
 
     # DuckDB 저장
     init_database(temp_db_path)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     first_item = items[0]
     upsert_url_and_entities(first_item, {}, now, temp_db_path)
 
     # 메타데이터 체인 검증
     import duckdb
+
     with duckdb.connect(str(temp_db_path)) as conn:
         stored = conn.execute(
             """
@@ -161,7 +163,7 @@ def test_rss_metadata_consistency_end_to_end(sources_config: dict[str, Any], tem
             FROM urls
             WHERE url = ?
             """,
-            (first_item["url"],)
+            (first_item["url"],),
         ).fetchone()
 
         # sources.yaml → RawItem → DuckDB 일관성

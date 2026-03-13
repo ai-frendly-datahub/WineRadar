@@ -1,19 +1,22 @@
 from __future__ import annotations
 
+
 """HTML collector for sources that expose structured article lists."""
 
 import logging
-import re
-from datetime import datetime, timezone
 import random
+import re
 import time
-from typing import Optional, Any, Callable, Iterable
+from collections.abc import Callable, Iterable
+from datetime import UTC, datetime
+from typing import Any
 from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
 
 from collectors.base import RawItem
+
 
 PageFetcher = Callable[[str], bytes]
 
@@ -27,7 +30,7 @@ DEFAULT_USER_AGENTS = [
 class HTMLCollector:
     """Collector implementation dedicated to collection_tier=C2_html_simple."""
 
-    def __init__(self, source_meta: dict[str, Any], fetcher: Optional[PageFetcher] = None):
+    def __init__(self, source_meta: dict[str, Any], fetcher: PageFetcher | None = None):
         self.source_meta = source_meta
         self.source_name = source_meta["name"]
         self.source_type = source_meta["type"]
@@ -57,14 +60,14 @@ class HTMLCollector:
         self.session = requests.Session()
         self._sleep = time.sleep
         self._now = time.monotonic
-        self._last_fetch_at: Optional[float] = None
+        self._last_fetch_at: float | None = None
 
         self.fetcher = fetcher or self._default_fetcher
         self.logger = logging.getLogger(f"{__name__}.{self.source_meta['id']}")
 
     def _default_fetcher(self, url: str) -> bytes:
         attempt = 0
-        last_exc: Optional[Exception] = None
+        last_exc: Exception | None = None
 
         while attempt < self.max_retries:
             if self.request_interval > 0:
@@ -107,7 +110,7 @@ class HTMLCollector:
                 self.logger.warning("No articles extracted from %s", self.list_url)
                 return []
 
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
             for article in articles:
                 try:
                     raw_item = self._create_raw_item(article, now)
@@ -193,7 +196,7 @@ class HTMLCollector:
 
         return articles
 
-    def _create_raw_item(self, article: dict[str, Any], now: datetime) -> Optional[RawItem]:
+    def _create_raw_item(self, article: dict[str, Any], now: datetime) -> RawItem | None:
         url = article["url"]
         title = article["title"]
         summary = article.get("summary")
@@ -237,7 +240,7 @@ class HTMLCollector:
         }
         return raw_item
 
-    def _extract_article_content(self, soup: BeautifulSoup) -> Optional[str]:
+    def _extract_article_content(self, soup: BeautifulSoup) -> str | None:
         content_selector = self.config.get("content_selector")
         if not content_selector:
             return None
@@ -248,7 +251,7 @@ class HTMLCollector:
             tag.decompose()
         return content_elem.get_text(separator="\n", strip=True)
 
-    def _extract_summary(self, soup: BeautifulSoup) -> Optional[str]:
+    def _extract_summary(self, soup: BeautifulSoup) -> str | None:
         summary_selector = self.config.get("detail_summary_selector") or self.summary_selector
         if summary_selector:
             summary_elem = soup.select_one(summary_selector)
@@ -256,7 +259,7 @@ class HTMLCollector:
                 return summary_elem.get_text(strip=True)
         return None
 
-    def _extract_published_date(self, soup: BeautifulSoup) -> Optional[str]:
+    def _extract_published_date(self, soup: BeautifulSoup) -> str | None:
         date_selector = self.config.get("date_selector")
         if not date_selector:
             return None
@@ -267,7 +270,7 @@ class HTMLCollector:
             return date_elem.get_text(strip=True)
         return None
 
-    def _parse_date(self, date_str: str) -> Optional[datetime]:
+    def _parse_date(self, date_str: str) -> datetime | None:
         patterns = [
             (r"(\d{4})-(\d{1,2})-(\d{1,2})", "%Y-%m-%d"),
             (r"(\d{4})\.(\d{1,2})\.(\d{1,2})", "%Y.%m.%d"),
@@ -289,12 +292,12 @@ class HTMLCollector:
                         year, month, day = match.groups()
                         normalized = f"{year}-{month.zfill(2)}-{day.zfill(2)}"
                         dt = datetime.strptime(normalized, "%Y-%m-%d")
-                    return dt.replace(tzinfo=timezone.utc)
+                    return dt.replace(tzinfo=UTC)
                 except ValueError:
                     continue
         return None
 
-    def _generate_summary(self, content: Optional[str], title: Optional[str]) -> Optional[str]:
+    def _generate_summary(self, content: str | None, title: str | None) -> str | None:
         """Fallback summary using content snippet or title."""
         if content:
             normalized = " ".join(content.split())

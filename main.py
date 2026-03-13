@@ -1,17 +1,16 @@
-# -*- coding: utf-8 -*-
 """WineRadar 메인 실행 스크립트."""
 
 from __future__ import annotations
 
 import os
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from pathlib import Path
-from typing import Optional, Any, Tuple
+from typing import Any
 
 import yaml
 
-from collectors.registry import build_collectors, FetcherFactory
 from analyzers.entity_extractor import extract_all_entities
+from collectors.registry import FetcherFactory, build_collectors
 from graph import graph_store
 from graph.graph_queries import get_view
 from graph.search_index import SearchIndex
@@ -24,6 +23,7 @@ from wineradar.common.validators import (
     validate_vintage,
 )
 
+
 CONFIG_ENV_VAR = "WINERADAR_SOURCES_PATH"
 PROJECT_ROOT = Path(__file__).resolve().parent
 DEFAULT_CONFIG_PATH = PROJECT_ROOT / "config" / "sources.yaml"
@@ -32,7 +32,7 @@ DEFAULT_RAW_DIR = PROJECT_ROOT / "data" / "raw"
 DEFAULT_SEARCH_DB_PATH = PROJECT_ROOT / "data" / "search_index.db"
 
 
-def load_sources_config(path: Optional[Path] = None) -> dict[str, Any]:
+def load_sources_config(path: Path | None = None) -> dict[str, Any]:
     """sources.yaml 로드."""
     config_path = Path(path or os.environ.get(CONFIG_ENV_VAR, DEFAULT_CONFIG_PATH))
     with config_path.open(encoding="utf-8") as fp:
@@ -41,7 +41,7 @@ def load_sources_config(path: Optional[Path] = None) -> dict[str, Any]:
 
 def _generate_html_reports(
     target_date: date,
-    db_path: Optional[Path],
+    db_path: Path | None,
     output_dir: Path,
     stats: dict[str, Any],
 ) -> None:
@@ -174,16 +174,16 @@ def _update_index_page(output_dir: Path, target_date: date, stats: dict[str, Any
 def collect_and_store(
     sources_config: dict[str, Any],
     *,
-    fetcher_factory: Optional[FetcherFactory] = None,
-    db_path: Optional[Path] = None,
-) -> Tuple[int, int, int, int, int, list[str]]:
+    fetcher_factory: FetcherFactory | None = None,
+    db_path: Path | None = None,
+) -> tuple[int, int, int, int, int, list[str]]:
     """Collector를 실행하고 DuckDB에 저장.
 
     Returns:
         (수집된 아이템 수, Collector 수, 추출된 엔티티 수, 성공한 소스 수, 실패한 소스 수, 에러 목록)
     """
     collectors = build_collectors(sources_config, fetcher_factory=fetcher_factory)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     total_items = 0
     total_entities = 0
     sources_succeeded = 0
@@ -259,18 +259,18 @@ def collect_and_store(
 def run_once(
     execute_collectors: bool = False,
     *,
-    config_path: Optional[Path] = None,
-    fetcher_factory: Optional[FetcherFactory] = None,
-    db_path: Optional[Path] = None,
+    config_path: Path | None = None,
+    fetcher_factory: FetcherFactory | None = None,
+    db_path: Path | None = None,
     generate_report: bool = False,
-    report_output_dir: Optional[Path] = None,
+    report_output_dir: Path | None = None,
 ) -> None:
     """하루 파이프라인을 한 번 실행한다."""
     import time
 
     start_time = time.time()
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     print(f"[{now.isoformat()}] WineRadar run_once 시작")
 
     if not execute_collectors:
@@ -379,7 +379,7 @@ def _send_pipeline_notification(
     if not email_to and not webhook_url:
         return
 
-    from notifier import Notifier, NotificationConfig
+    from notifier import NotificationConfig, Notifier
 
     config = NotificationConfig(
         enabled=True,
@@ -423,9 +423,9 @@ def _send_pipeline_notification(
 def run_scheduler(
     interval_hours: int = 24,
     *,
-    config_path: Optional[Path] = None,
-    fetcher_factory: Optional[FetcherFactory] = None,
-    db_path: Optional[Path] = None,
+    config_path: Path | None = None,
+    fetcher_factory: FetcherFactory | None = None,
+    db_path: Path | None = None,
 ) -> None:
     """정기적으로 데이터를 수집하는 스케줄러.
 
@@ -438,7 +438,7 @@ def run_scheduler(
     import time
 
     print(f"WineRadar 스케줄러 시작 (수집 간격: {interval_hours}시간)")
-    print(f"중단하려면 Ctrl+C를 누르세요")
+    print("중단하려면 Ctrl+C를 누르세요")
 
     while True:
         try:
@@ -456,7 +456,7 @@ def run_scheduler(
             break
         except Exception as e:
             print(f"오류 발생: {e}")
-            print(f"10분 후 재시도...")
+            print("10분 후 재시도...")
             time.sleep(600)  # 10분 대기 후 재시도
 
 

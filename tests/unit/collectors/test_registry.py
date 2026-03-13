@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from collectors.html_collector import HTMLCollector
 from collectors.registry import build_collectors
 from collectors.rss_collector import RSSCollector
-from collectors.html_collector import HTMLCollector
 
 
 def test_build_collectors_returns_enabled_rss_sources(sources_config):

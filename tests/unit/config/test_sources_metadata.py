@@ -1,10 +1,11 @@
-﻿"""sources.yaml 사용자 뷰 중심 메타데이터 검증 테스트."""
+"""sources.yaml 사용자 뷰 중심 메타데이터 검증 테스트."""
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Any
 
 import pytest
+
 
 pytestmark = pytest.mark.unit
 
@@ -70,8 +71,7 @@ def test_continent_values_are_valid(sources_config: dict[str, Any]) -> None:
         source_id = source.get("id", "unknown")
         continent = source.get("continent")
         assert continent in VALID_CONTINENTS, (
-            f"{source_id}: 잘못된 continent 값 '{continent}'. "
-            f"허용: {VALID_CONTINENTS}"
+            f"{source_id}: 잘못된 continent 값 '{continent}'. 허용: {VALID_CONTINENTS}"
         )
 
 
@@ -85,9 +85,7 @@ def test_country_is_iso_alpha2(sources_config: dict[str, Any]) -> None:
         assert isinstance(country, str) and len(country) == 2, (
             f"{source_id}: country는 2글자 ISO alpha-2 코드여야 함 (현재: '{country}')"
         )
-        assert country.isupper(), (
-            f"{source_id}: country는 대문자여야 함 (현재: '{country}')"
-        )
+        assert country.isupper(), f"{source_id}: country는 대문자여야 함 (현재: '{country}')"
 
 
 def test_region_is_hierarchical_path(sources_config: dict[str, Any]) -> None:
@@ -111,8 +109,7 @@ def test_producer_role_values_are_valid(sources_config: dict[str, Any]) -> None:
         source_id = source.get("id", "unknown")
         producer_role = source.get("producer_role")
         assert producer_role in VALID_PRODUCER_ROLES, (
-            f"{source_id}: 잘못된 producer_role 값 '{producer_role}'. "
-            f"허용: {VALID_PRODUCER_ROLES}"
+            f"{source_id}: 잘못된 producer_role 값 '{producer_role}'. 허용: {VALID_PRODUCER_ROLES}"
         )
 
 
@@ -124,8 +121,7 @@ def test_trust_tier_values_are_valid(sources_config: dict[str, Any]) -> None:
         source_id = source.get("id", "unknown")
         trust_tier = source.get("trust_tier")
         assert trust_tier in VALID_TRUST_TIERS, (
-            f"{source_id}: 잘못된 trust_tier 값 '{trust_tier}'. "
-            f"허용: {VALID_TRUST_TIERS}"
+            f"{source_id}: 잘못된 trust_tier 값 '{trust_tier}'. 허용: {VALID_TRUST_TIERS}"
         )
 
 
@@ -143,15 +139,12 @@ def test_info_purpose_is_array_with_valid_values(sources_config: dict[str, Any])
         )
 
         # 최소 1개 이상
-        assert len(info_purpose) >= 1, (
-            f"{source_id}: info_purpose는 최소 1개 이상의 값을 가져야 함"
-        )
+        assert len(info_purpose) >= 1, f"{source_id}: info_purpose는 최소 1개 이상의 값을 가져야 함"
 
         # 각 값이 허용된 값인지 검증
         for purpose in info_purpose:
             assert purpose in VALID_INFO_PURPOSES, (
-                f"{source_id}: 잘못된 info_purpose 값 '{purpose}'. "
-                f"허용: {VALID_INFO_PURPOSES}"
+                f"{source_id}: 잘못된 info_purpose 값 '{purpose}'. 허용: {VALID_INFO_PURPOSES}"
             )
 
 
@@ -268,9 +261,7 @@ def test_phase1_sources_are_enabled(sources_config: dict[str, Any]) -> None:
         source_id = source.get("id", "unknown")
         if source_id in phase1_sources:
             enabled = source.get("enabled", False)
-            assert enabled, (
-                f"{source_id}: Phase 1 소스이므로 enabled=true여야 함 (현재: {enabled})"
-            )
+            assert enabled, f"{source_id}: Phase 1 소스이므로 enabled=true여야 함 (현재: {enabled})"
 
             # RSS 피드 확인
             collection_tier = source.get("collection_tier")
@@ -353,7 +344,14 @@ def test_metadata_field_types(sources_config: dict[str, Any]) -> None:
         source_id = source.get("id", "unknown")
 
         # 문자열 필드
-        for field in ["country", "continent", "region", "producer_role", "trust_tier", "collection_tier"]:
+        for field in [
+            "country",
+            "continent",
+            "region",
+            "producer_role",
+            "trust_tier",
+            "collection_tier",
+        ]:
             value = source.get(field)
             assert isinstance(value, str), (
                 f"{source_id}: {field}는 문자열이어야 함 (현재: {type(value)})"
@@ -386,9 +384,7 @@ def test_weight_range(sources_config: dict[str, Any]) -> None:
         source_id = source.get("id", "unknown")
         weight = source.get("weight", 0)
 
-        assert 1.0 <= weight <= 3.0, (
-            f"{source_id}: weight는 1.0 ~ 3.0 범위여야 함 (현재: {weight})"
-        )
+        assert 1.0 <= weight <= 3.0, f"{source_id}: weight는 1.0 ~ 3.0 범위여야 함 (현재: {weight})"
 
 
 def test_trust_tier_weight_consistency(sources_config: dict[str, Any]) -> None:
@@ -419,7 +415,9 @@ def test_trust_tier_weight_consistency(sources_config: dict[str, Any]) -> None:
 
 def test_sources_include_multiple_languages(sources_config: dict[str, Any]) -> None:
     sources = sources_config.get("sources", [])
-    languages = {src.get("language") for src in sources if src.get("enabled") and src.get("language")}
+    languages = {
+        src.get("language") for src in sources if src.get("enabled") and src.get("language")
+    }
 
     required = {
         "ko": "한국어 소스가 활성화되어야 합니다.",
@@ -439,11 +437,15 @@ def test_all_sources_define_language_field(sources_config: dict[str, Any]) -> No
     for source in sources:
         source_id = source.get("id", "unknown")
         language = source.get("language")
-        assert isinstance(language, str) and language, f"{source_id}: language 필드가 누락되었거나 비어 있음"
+        assert isinstance(language, str) and language, (
+            f"{source_id}: language 필드가 누락되었거나 비어 있음"
+        )
 
         normalized = language.replace("-", "")
         assert normalized.isalpha(), f"{source_id}: language '{language}'는 알파벳 이어야 함"
-        assert language == language.lower(), f"{source_id}: language '{language}'는 소문자 형식을 사용해야 함"
-        assert len(language.split("-")[0]) == 2, f"{source_id}: language '{language}'는 ISO 639-1 코드여야 함"
-
-
+        assert language == language.lower(), (
+            f"{source_id}: language '{language}'는 소문자 형식을 사용해야 함"
+        )
+        assert len(language.split("-")[0]) == 2, (
+            f"{source_id}: language '{language}'는 ISO 639-1 코드여야 함"
+        )

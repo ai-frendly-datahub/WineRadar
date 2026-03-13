@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-from typing import Optional, cast
+from typing import cast
 
 import duckdb
+
 
 NULL_CONDITIONS: dict[str, str] = {
     "title": "title IS NULL OR length(trim(title)) = 0",
@@ -32,7 +33,7 @@ def _fetchone_required(
     query: str,
     params: list[object] | None = None,
 ) -> tuple[object, ...]:
-    row = cast(Optional[tuple[object, ...]], con.execute(query, params or []).fetchone())
+    row = cast(tuple[object, ...] | None, con.execute(query, params or []).fetchone())
     if row is None:
         raise RuntimeError("DuckDB query returned no rows")
     return row
@@ -48,11 +49,11 @@ def _to_int(value: object) -> int:
     raise TypeError(f"Expected int-compatible value, got {type(value).__name__}")
 
 
-def _to_optional_int(value: object) -> Optional[int]:
+def _to_optional_int(value: object) -> int | None:
     return None if value is None else _to_int(value)
 
 
-def _to_optional_float(value: object) -> Optional[float]:
+def _to_optional_float(value: object) -> float | None:
     if value is None:
         return None
     if isinstance(value, bool):
@@ -114,7 +115,7 @@ def check_duplicate_urls(
             [limit],
         ).fetchall(),
     )
-    rows: list[tuple[Optional[str], int]] = [
+    rows: list[tuple[str | None, int]] = [
         (None if row[0] is None else str(row[0]), _to_int(row[1])) for row in raw_rows
     ]
 
@@ -177,7 +178,7 @@ def check_language_values(
         """
         ).fetchall(),
     )
-    rows: list[tuple[Optional[str], int]] = [
+    rows: list[tuple[str | None, int]] = [
         (None if row[0] is None else str(row[0]), _to_int(row[1])) for row in raw_rows
     ]
 

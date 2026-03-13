@@ -1,17 +1,17 @@
-# -*- coding: utf-8 -*-
 """데이터 소스 자동 모니터링 및 알림."""
 
 from __future__ import annotations
 
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Optional, Any
+from typing import Any
 
-import requests
 import feedparser
+import requests
 import yaml
 from bs4 import BeautifulSoup
+
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -25,7 +25,7 @@ class SourceMonitor:
         self.config_path = Path(sources_config_path)
         self.sources = self._load_sources()
         self.results = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "total_sources": 0,
             "enabled_sources": 0,
             "tested_sources": 0,
@@ -42,10 +42,7 @@ class SourceMonitor:
 
     def check_all_sources(self, enabled_only: bool = True) -> dict[str, Any]:
         """모든 소스를 검사한다."""
-        sources_to_check = [
-            s for s in self.sources
-            if not enabled_only or s.get("enabled", False)
-        ]
+        sources_to_check = [s for s in self.sources if not enabled_only or s.get("enabled", False)]
 
         self.results["total_sources"] = len(self.sources)
         self.results["enabled_sources"] = len([s for s in self.sources if s.get("enabled", False)])
@@ -64,19 +61,23 @@ class SourceMonitor:
                 elif collection_method == "html":
                     self._check_html_source(source)
                 else:
-                    self.results["warnings"].append({
-                        "id": source_id,
-                        "name": source_name,
-                        "issue": f"Unknown collection method: {collection_method}",
-                    })
+                    self.results["warnings"].append(
+                        {
+                            "id": source_id,
+                            "name": source_name,
+                            "issue": f"Unknown collection method: {collection_method}",
+                        }
+                    )
                     print("SKIP")
             except Exception as e:
-                self.results["failed"].append({
-                    "id": source_id,
-                    "name": source_name,
-                    "error": str(e)[:200],
-                    "method": collection_method,
-                })
+                self.results["failed"].append(
+                    {
+                        "id": source_id,
+                        "name": source_name,
+                        "error": str(e)[:200],
+                        "method": collection_method,
+                    }
+                )
                 print(f"FAIL - {str(e)[:50]}")
 
         return self.results
@@ -94,7 +95,7 @@ class SourceMonitor:
         response = requests.get(
             list_url,
             timeout=10,
-            headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+            headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
         )
         response.raise_for_status()
 
@@ -103,21 +104,25 @@ class SourceMonitor:
         entry_count = len(feed.entries)
 
         if entry_count == 0:
-            self.results["warnings"].append({
-                "id": source_id,
-                "name": source_name,
-                "issue": "RSS feed has 0 entries",
-                "url": list_url,
-            })
-            print(f"WARN - 0 entries")
+            self.results["warnings"].append(
+                {
+                    "id": source_id,
+                    "name": source_name,
+                    "issue": "RSS feed has 0 entries",
+                    "url": list_url,
+                }
+            )
+            print("WARN - 0 entries")
         else:
-            self.results["passed"].append({
-                "id": source_id,
-                "name": source_name,
-                "method": "rss",
-                "entries": entry_count,
-                "url": list_url,
-            })
+            self.results["passed"].append(
+                {
+                    "id": source_id,
+                    "name": source_name,
+                    "method": "rss",
+                    "entries": entry_count,
+                    "url": list_url,
+                }
+            )
             print(f"OK - {entry_count} entries")
 
     def _check_html_source(self, source: dict[str, Any]) -> None:
@@ -134,7 +139,7 @@ class SourceMonitor:
         response = requests.get(
             list_url,
             timeout=10,
-            headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+            headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
         )
         response.raise_for_status()
 
@@ -151,24 +156,28 @@ class SourceMonitor:
             article_count = len(articles)
 
         if article_count == 0:
-            self.results["warnings"].append({
-                "id": source_id,
-                "name": source_name,
-                "issue": f"No articles found with selector: {article_selector or 'a'}",
-                "url": list_url,
-            })
-            print(f"WARN - 0 articles")
+            self.results["warnings"].append(
+                {
+                    "id": source_id,
+                    "name": source_name,
+                    "issue": f"No articles found with selector: {article_selector or 'a'}",
+                    "url": list_url,
+                }
+            )
+            print("WARN - 0 articles")
         else:
-            self.results["passed"].append({
-                "id": source_id,
-                "name": source_name,
-                "method": "html",
-                "articles": article_count,
-                "url": list_url,
-            })
+            self.results["passed"].append(
+                {
+                    "id": source_id,
+                    "name": source_name,
+                    "method": "html",
+                    "articles": article_count,
+                    "url": list_url,
+                }
+            )
             print(f"OK - {article_count} links")
 
-    def generate_report(self, output_path: Optional[str | Path] = None) -> str:
+    def generate_report(self, output_path: str | Path | None = None) -> str:
         """모니터링 결과 리포트를 생성한다."""
         output_path = Path(output_path or "docs/SOURCE_MONITORING.md")
 
@@ -204,11 +213,11 @@ class SourceMonitor:
 """
 
         for source in self.results["passed"]:
-            content += f"""### {source['name']}
-- **ID**: `{source['id']}`
-- **Method**: {source['method']}
-- **Items**: {source.get('entries', source.get('articles', 'N/A'))}
-- **URL**: {source['url']}
+            content += f"""### {source["name"]}
+- **ID**: `{source["id"]}`
+- **Method**: {source["method"]}
+- **Items**: {source.get("entries", source.get("articles", "N/A"))}
+- **URL**: {source["url"]}
 
 """
 
@@ -222,10 +231,10 @@ class SourceMonitor:
             content += "No failed sources! 🎉\n\n"
         else:
             for source in self.results["failed"]:
-                content += f"""### {source['name']}
-- **ID**: `{source['id']}`
-- **Method**: {source['method']}
-- **Error**: `{source['error']}`
+                content += f"""### {source["name"]}
+- **ID**: `{source["id"]}`
+- **Method**: {source["method"]}
+- **Error**: `{source["error"]}`
 - **Action Required**: Investigate and update configuration
 
 """
@@ -240,10 +249,10 @@ class SourceMonitor:
             content += "No warnings!\n\n"
         else:
             for source in self.results["warnings"]:
-                content += f"""### {source['name']}
-- **ID**: `{source['id']}`
-- **Issue**: {source['issue']}
-- **URL**: {source.get('url', 'N/A')}
+                content += f"""### {source["name"]}
+- **ID**: `{source["id"]}`
+- **Issue**: {source["issue"]}
+- **URL**: {source.get("url", "N/A")}
 
 """
 
@@ -295,7 +304,7 @@ Multiple sources are failing. Immediate action required.
 3. **GitHub Actions integration**: Consider adding to CI workflow
 4. **Alerting**: Set up notifications for critical failures
 
-**Last updated**: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}
+**Last updated**: {datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")}
 """
 
         output_path.write_text(content, encoding="utf-8")
@@ -310,17 +319,15 @@ def main():
     parser.add_argument(
         "--config",
         default="config/sources.yaml",
-        help="Path to sources.yaml (default: config/sources.yaml)"
+        help="Path to sources.yaml (default: config/sources.yaml)",
     )
     parser.add_argument(
-        "--all",
-        action="store_true",
-        help="Test all sources, including disabled ones"
+        "--all", action="store_true", help="Test all sources, including disabled ones"
     )
     parser.add_argument(
         "--output",
         default="docs/SOURCE_MONITORING.md",
-        help="Output report path (default: docs/SOURCE_MONITORING.md)"
+        help="Output report path (default: docs/SOURCE_MONITORING.md)",
     )
 
     args = parser.parse_args()
@@ -348,7 +355,7 @@ def main():
     print()
 
     # Exit with error code if there are failures
-    if len(results['failed']) > 0:
+    if len(results["failed"]) > 0:
         sys.exit(1)
 
 

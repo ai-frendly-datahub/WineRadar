@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """WineRadar collectors 패키지.
 
 Collector 구현:
@@ -8,10 +7,11 @@ Collector 구현:
 
 from __future__ import annotations
 
-from collectors.base import RawItem, Collector
-from collectors.rss_collector import RSSCollector
+from collectors.base import Collector, RawItem
 from collectors.html_collector import HTMLCollector
 from collectors.registry import build_collectors
+from collectors.rss_collector import RSSCollector
+
 
 __all__ = [
     "RawItem",

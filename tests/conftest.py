@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -30,7 +30,7 @@ def sources_config(project_root: Path) -> dict[str, Any]:
 @pytest.fixture()
 def sample_raw_item() -> RawItem:
     """Collector가 반환해야 하는 RawItem 예시."""
-    published_at = datetime(2024, 1, 1, 12, tzinfo=timezone.utc)
+    published_at = datetime(2024, 1, 1, 12, tzinfo=UTC)
     return RawItem(
         id="sample-item-1",
         url="https://example.com/articles/1",

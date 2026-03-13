@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+
 """RSS 기반 Collector 구현."""
 
-from datetime import datetime, timezone
-from typing import Optional, Callable, Iterable, Any
-
 import calendar
+from collections.abc import Callable, Iterable
+from datetime import UTC, datetime
+from typing import Any
 
 import feedparser
 import requests
@@ -20,7 +21,7 @@ FeedFetcher = Callable[[str], bytes]
 class RSSCollector:
     """supports_rss=true 소스를 위한 범용 Collector."""
 
-    def __init__(self, source_meta: dict[str, Any], fetcher: Optional[FeedFetcher] = None):
+    def __init__(self, source_meta: dict[str, Any], fetcher: FeedFetcher | None = None):
         self.source_meta = source_meta
         self.source_name = source_meta["name"]
         self.source_type = source_meta["type"]
@@ -45,7 +46,7 @@ class RSSCollector:
     def collect(self) -> Iterable[RawItem]:
         raw_feed = self.fetcher(self.list_url)
         feed = feedparser.parse(raw_feed)
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         for entry in feed.entries:
             published_at = self._published_at(entry) or now
             raw_item: RawItem = {
@@ -76,21 +77,21 @@ class RSSCollector:
             )
             yield raw_item
 
-    def _published_at(self, entry: Any) -> Optional[datetime]:
+    def _published_at(self, entry: Any) -> datetime | None:
         published = entry.get("published_parsed") or entry.get("updated_parsed")
         if published:
-            return datetime.fromtimestamp(calendar.timegm(published), tz=timezone.utc)
+            return datetime.fromtimestamp(calendar.timegm(published), tz=UTC)
         return None
 
-    def _extract_content(self, entry: Any) -> Optional[str]:
+    def _extract_content(self, entry: Any) -> str | None:
         if "content" in entry and entry.content:
             first = entry.content[0]
             return first.get("value")
         return entry.get("summary")
 
     def _generate_summary(
-        self, summary: Optional[str], content: Optional[str], title: Optional[str]
-    ) -> Optional[str]:
+        self, summary: str | None, content: str | None, title: str | None
+    ) -> str | None:
         if summary:
             normalized = summary.strip()
             if normalized:

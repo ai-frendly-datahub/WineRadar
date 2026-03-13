@@ -8,6 +8,7 @@ import pytest
 
 from reporters.html_reporter import generate_daily_report
 
+
 pytestmark = pytest.mark.integration
 
 

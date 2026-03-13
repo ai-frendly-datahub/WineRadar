@@ -6,6 +6,7 @@ from typing import Any
 
 import pytest
 
+
 pytestmark = pytest.mark.unit
 
 
@@ -190,7 +191,9 @@ def test_country_codes_are_uppercase(sources_config: dict[str, Any], country_cod
         ("weight", (int, float)),
     ],
 )
-def test_metadata_field_type(sources_config: dict[str, Any], field_name: str, expected_type: type | tuple) -> None:
+def test_metadata_field_type(
+    sources_config: dict[str, Any], field_name: str, expected_type: type | tuple
+) -> None:
     """각 메타데이터 필드의 타입이 올바른지 검증."""
     sources = sources_config.get("sources", [])
 
@@ -199,8 +202,7 @@ def test_metadata_field_type(sources_config: dict[str, Any], field_name: str, ex
         value = source.get(field_name)
 
         assert isinstance(value, expected_type), (
-            f"{source_id}: {field_name}는 {expected_type} 타입이어야 함 "
-            f"(현재: {type(value)})"
+            f"{source_id}: {field_name}는 {expected_type} 타입이어야 함 (현재: {type(value)})"
         )
 
 
@@ -230,7 +232,9 @@ def test_key_sources_exist(sources_config: dict[str, Any], source_id: str) -> No
         "media_gambero_it",
     ],
 )
-def test_phase1_sources_configuration(sources_config: dict[str, Any], phase1_source_id: str) -> None:
+def test_phase1_sources_configuration(
+    sources_config: dict[str, Any], phase1_source_id: str
+) -> None:
     """Phase 1 소스가 올바르게 설정되었는지 검증."""
     sources = sources_config.get("sources", [])
 
@@ -238,9 +242,7 @@ def test_phase1_sources_configuration(sources_config: dict[str, Any], phase1_sou
     assert source is not None, f"Phase 1 소스 '{phase1_source_id}'가 존재하지 않음"
 
     # enabled=true
-    assert source.get("enabled") is True, (
-        f"{phase1_source_id}: Phase 1 소스는 enabled=true여야 함"
-    )
+    assert source.get("enabled") is True, f"{phase1_source_id}: Phase 1 소스는 enabled=true여야 함"
 
     # collection_tier=C1_rss
     assert source.get("collection_tier") == "C1_rss", (

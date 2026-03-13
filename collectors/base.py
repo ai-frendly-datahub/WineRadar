@@ -1,14 +1,15 @@
-# -*- coding: utf-8 -*-
 """Collector 프로토콜 및 공통 타입 정의."""
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Optional, Any, Iterable, Literal, Protocol, TypedDict
+from typing import Any, Literal, Protocol, TypedDict
 
 import requests
 
 from resilience import SourceCircuitBreakerManager
+
 
 Continent = Literal["OLD_WORLD", "NEW_WORLD", "ASIA"]
 ProducerRole = Literal[
@@ -82,11 +83,11 @@ class BaseCollector:
             source=source_name,
         )
 
-    def _fetch_html(self, url: str) -> Optional[str]:
+    def _fetch_html(self, url: str) -> str | None:
         source_name = self._resolve_source_name()
         breaker = self.breaker_manager.get_breaker(source_name)
 
-        def _fetch_html_impl() -> Optional[str]:
+        def _fetch_html_impl() -> str | None:
             response = requests.get(url, timeout=self._resolve_timeout())
             response.raise_for_status()
             response.encoding = response.apparent_encoding or "utf-8"
@@ -122,12 +123,12 @@ class RawItem(TypedDict):
     id: str
     url: str
     title: str
-    summary: Optional[str]
-    content: Optional[str]
+    summary: str | None
+    content: str | None
     published_at: datetime
     source_name: str
     source_type: str
-    language: Optional[str]
+    language: str | None
     content_type: str
 
     country: str

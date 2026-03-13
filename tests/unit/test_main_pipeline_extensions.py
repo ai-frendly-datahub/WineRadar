@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -19,13 +19,15 @@ class _FakeCollector:
 
 
 @pytest.mark.unit
-def test_collect_and_store_logs_raw_items_per_source(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_collect_and_store_logs_raw_items_per_source(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     item = {
         "url": "https://example.com/a",
         "title": "Title A",
         "source_name": "Wine Source",
         "summary": "Summary A",
-        "published_at": datetime.now(timezone.utc),
+        "published_at": datetime.now(UTC),
         "trust_tier": "T2_expert",
         "info_purpose": ["P1_daily_briefing"],
     }
@@ -74,7 +76,7 @@ def test_collect_and_store_syncs_items_to_search_index(
             "title": "Title A",
             "source_name": "Wine Source",
             "summary": "Summary A",
-            "published_at": datetime.now(timezone.utc),
+            "published_at": datetime.now(UTC),
             "trust_tier": "T2_expert",
             "info_purpose": ["P1_daily_briefing"],
         },
@@ -83,7 +85,7 @@ def test_collect_and_store_syncs_items_to_search_index(
             "title": "Title B",
             "source_name": "Wine Source",
             "summary": None,
-            "published_at": datetime.now(timezone.utc),
+            "published_at": datetime.now(UTC),
             "trust_tier": "T2_expert",
             "info_purpose": ["P1_daily_briefing"],
         },

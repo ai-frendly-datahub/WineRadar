@@ -15,7 +15,9 @@ def _run(coro: Any) -> Any:
 
 
 @pytest.mark.unit
-def test_search_by_keyword_uses_search_index(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_search_by_keyword_uses_search_index(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     calls: dict[str, Any] = {}
 
     class FakeResult:

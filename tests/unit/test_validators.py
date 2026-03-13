@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Optional
 
 from datetime import datetime
 
@@ -118,7 +117,7 @@ def test_validate_article_invalid_cases(article: dict[str, str]) -> None:
         (5.1, False),
     ],
 )
-def test_validate_rating(rating: Optional[float], expected: bool) -> None:
+def test_validate_rating(rating: float | None, expected: bool) -> None:
     assert validate_rating(rating) is expected
 
 
@@ -133,5 +132,5 @@ def test_validate_rating(rating: Optional[float], expected: bool) -> None:
         (datetime.now().year + 1, False),
     ],
 )
-def test_validate_vintage(vintage: Optional[int], expected: bool) -> None:
+def test_validate_vintage(vintage: int | None, expected: bool) -> None:
     assert validate_vintage(vintage) is expected

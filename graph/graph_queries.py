@@ -1,22 +1,22 @@
-# -*- coding: utf-8 -*-
 """그래프 조회 모듈."""
 
 from __future__ import annotations
 
 import json
 import os
-from datetime import timedelta, datetime, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Optional, TypedDict, Literal, Any
+from typing import Literal, TypedDict
 
 import duckdb
+
 
 # Default database path (same as graph_store)
 DB_ENV_VAR = "WINERADAR_DB_PATH"
 DEFAULT_DB_PATH = Path("data") / "wineradar.duckdb"
 
 
-def _resolve_db_path(db_path: Optional[Path | str] = None) -> Path:
+def _resolve_db_path(db_path: Path | str | None = None) -> Path:
     """Resolve database path from parameter, environment, or default."""
     if db_path is not None:
         return Path(db_path)
@@ -29,7 +29,7 @@ def _resolve_db_path(db_path: Optional[Path | str] = None) -> Path:
 class ViewItem(TypedDict):
     url: str
     title: str
-    summary: Optional[str]
+    summary: str | None
     published_at: datetime
     source_name: str
     source_type: str
@@ -46,7 +46,7 @@ class ViewItem(TypedDict):
 
 
 def get_view(
-    db_path: Optional[Path | str] = None,
+    db_path: Path | str | None = None,
     view_type: Literal[
         "winery",
         "importer",
@@ -64,7 +64,7 @@ def get_view(
         "climate_zone",
         "content_type",
     ] = "info_purpose",
-    focus_id: Optional[str] = None,
+    focus_id: str | None = None,
     time_window: timedelta = timedelta(days=7),
     limit: int = 50,
     source_filter: list[str] | None = None,
@@ -92,7 +92,7 @@ def get_view(
     }
     entity_views = set(entity_view_map.keys())
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     threshold = now - time_window
 
     resolved_path = _resolve_db_path(db_path)
@@ -197,13 +197,13 @@ class TopEntity(TypedDict):
 
 
 def get_top_entities(
-    db_path: Optional[Path | str] = None,
+    db_path: Path | str | None = None,
     entity_type: str = "winery",
     time_window: timedelta = timedelta(days=30),
     limit: int = 10,
 ) -> list[TopEntity]:
     """특정 기간 동안 가장 많이 언급된 엔티티를 조회합니다."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     threshold = now - time_window
 
     resolved_path = _resolve_db_path(db_path)

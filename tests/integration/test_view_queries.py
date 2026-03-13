@@ -4,15 +4,16 @@ from __future__ import annotations
 
 import tempfile
 import uuid
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
 import pytest
 
 from collectors.rss_collector import RSSCollector
-from graph.graph_store import init_database, upsert_url_and_entities
 from graph.graph_queries import get_view
+from graph.graph_store import init_database, upsert_url_and_entities
+
 
 pytestmark = pytest.mark.integration
 
@@ -40,7 +41,7 @@ def test_get_view_by_continent(sources_config: dict[str, Any], temp_db_path: Pat
 
     # 데이터 수집 및 저장
     init_database(temp_db_path)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     for source in rss_sources[:2]:
         collector = RSSCollector(source)
@@ -76,7 +77,7 @@ def test_get_view_by_trust_tier(sources_config: dict[str, Any], temp_db_path: Pa
 
     # 데이터 수집 및 저장
     init_database(temp_db_path)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     for source in rss_sources[:2]:
         collector = RSSCollector(source)
@@ -110,7 +111,7 @@ def test_get_view_by_info_purpose(sources_config: dict[str, Any], temp_db_path: 
 
     # 데이터 수집 및 저장
     init_database(temp_db_path)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     for source in rss_sources[:2]:
         collector = RSSCollector(source)
@@ -144,7 +145,7 @@ def test_get_view_with_source_filter(sources_config: dict[str, Any], temp_db_pat
 
     # 데이터 수집 및 저장
     init_database(temp_db_path)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     collected_source_names = []
     for source in rss_sources[:2]:
@@ -183,7 +184,7 @@ def test_get_view_score_ordering(sources_config: dict[str, Any], temp_db_path: P
 
     # 데이터 수집 및 저장
     init_database(temp_db_path)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     for source in rss_sources[:2]:
         collector = RSSCollector(source)
@@ -216,7 +217,7 @@ def test_get_view_time_window_filtering(sources_config: dict[str, Any], temp_db_
 
     # 데이터 수집 및 저장
     init_database(temp_db_path)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     for source in rss_sources[:1]:
         collector = RSSCollector(source)
@@ -256,7 +257,7 @@ def test_get_view_with_entities(sources_config: dict[str, Any], temp_db_path: Pa
 
     # 데이터 수집 및 저장 (엔티티 포함)
     init_database(temp_db_path)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     source = rss_sources[0]
     collector = RSSCollector(source)

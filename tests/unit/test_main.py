@@ -5,9 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 
 import duckdb
-import pytest
 
 from main import collect_and_store, run_once
+
 
 SAMPLE_FEED = """<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">

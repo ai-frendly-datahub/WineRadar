@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """WineRadar analyzers 패키지.
 
 분석 모듈:
@@ -13,6 +12,7 @@ from analyzers.entity_extractor import (
     extract_wineries,
     infer_climate_zone,
 )
+
 
 __all__ = [
     "Entity",

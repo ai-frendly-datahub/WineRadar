@@ -9,6 +9,7 @@ import pytest
 
 from collectors.base import RawItem
 
+
 pytestmark = pytest.mark.unit
 
 

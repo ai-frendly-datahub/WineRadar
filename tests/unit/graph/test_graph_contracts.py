@@ -2,17 +2,18 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
 from graph import graph_store
 
+
 pytestmark = pytest.mark.unit
 
 
 def test_node_schema_example() -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     node: graph_store.Node = {
         "id": "url:https://example.com/articles/1",
         "type": "url",
@@ -25,7 +26,7 @@ def test_node_schema_example() -> None:
 
 
 def test_edge_schema_example() -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     edge: graph_store.Edge = {
         "source_id": "url:https://example.com/articles/1",
         "target_id": "entity:wine:cabernet",

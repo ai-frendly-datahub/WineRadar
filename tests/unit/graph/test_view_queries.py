@@ -8,6 +8,7 @@ import pytest
 
 from graph.graph_queries import ViewItem
 
+
 pytestmark = pytest.mark.unit
 
 
@@ -143,8 +144,9 @@ def test_view_item_entities_structure() -> None:
 
 def test_get_view_supports_user_view_metadata() -> None:
     """get_view 함수가 사용자 뷰 중심 메타데이터 view_type을 지원하는지 검증."""
-    from graph.graph_queries import get_view
     import typing
+
+    from graph.graph_queries import get_view
 
     # get_view 함수 시그니처 가져오기
     sig = typing.get_type_hints(get_view)
@@ -171,8 +173,9 @@ def test_get_view_supports_user_view_metadata() -> None:
 
 def test_get_view_return_type() -> None:
     """get_view 함수의 반환 타입이 list[ViewItem]인지 검증."""
-    from graph.graph_queries import get_view
     import typing
+
+    from graph.graph_queries import get_view
 
     sig = typing.get_type_hints(get_view)
     return_type = sig["return"]
@@ -185,8 +188,9 @@ def test_get_view_return_type() -> None:
 
 def test_get_view_parameters() -> None:
     """get_view 함수가 필수 파라미터를 가지는지 검증."""
-    from graph.graph_queries import get_view
     import inspect
+
+    from graph.graph_queries import get_view
 
     sig = inspect.signature(get_view)
     params = sig.parameters
@@ -254,8 +258,9 @@ def test_view_item_optional_fields() -> None:
 
 def test_view_type_literal_values() -> None:
     """get_view의 view_type Literal이 올바른 값들을 가지는지 검증."""
-    from graph.graph_queries import get_view
     import typing
+
+    from graph.graph_queries import get_view
 
     sig = typing.get_type_hints(get_view)
     view_type_hint = sig["view_type"]
