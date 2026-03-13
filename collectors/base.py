@@ -93,13 +93,9 @@ class BaseCollector:
                 response.raise_for_status()
                 return response
             except requests.Timeout as exc:
-                raise requests.Timeout(
-                    f"Request to {url} timed out after {timeout}s"
-                ) from exc
+                raise requests.Timeout(f"Request to {url} timed out after {timeout}s") from exc
             except requests.ConnectionError as exc:
-                raise requests.ConnectionError(
-                    f"Failed to connect to {url}"
-                ) from exc
+                raise requests.ConnectionError(f"Failed to connect to {url}") from exc
 
         return breaker.call(
             lambda source=source_name: _fetch_impl(),
@@ -126,13 +122,9 @@ class BaseCollector:
                 response.encoding = response.apparent_encoding or "utf-8"
                 return response.text
             except requests.Timeout as exc:
-                raise requests.Timeout(
-                    f"HTML fetch from {url} timed out after {timeout}s"
-                ) from exc
+                raise requests.Timeout(f"HTML fetch from {url} timed out after {timeout}s") from exc
             except requests.ConnectionError as exc:
-                raise requests.ConnectionError(
-                    f"Failed to fetch HTML from {url}"
-                ) from exc
+                raise requests.ConnectionError(f"Failed to fetch HTML from {url}") from exc
 
         return breaker.call(
             lambda source=source_name: _fetch_html_impl(),
@@ -163,17 +155,11 @@ class BaseCollector:
                 response.raise_for_status()
                 return response.json()
             except requests.Timeout as exc:
-                raise requests.Timeout(
-                    f"JSON fetch from {url} timed out after {timeout}s"
-                ) from exc
+                raise requests.Timeout(f"JSON fetch from {url} timed out after {timeout}s") from exc
             except requests.ConnectionError as exc:
-                raise requests.ConnectionError(
-                    f"Failed to fetch JSON from {url}"
-                ) from exc
+                raise requests.ConnectionError(f"Failed to fetch JSON from {url}") from exc
             except ValueError as exc:
-                raise ValueError(
-                    f"Failed to parse JSON from {url}"
-                ) from exc
+                raise ValueError(f"Failed to parse JSON from {url}") from exc
 
         return breaker.call(
             lambda source=source_name: _fetch_json_impl(),
@@ -234,13 +220,9 @@ def validate_raw_item(item: RawItem, source_name: str) -> list[str]:
     for field_name, must_not_be_empty in required_fields:
         value = item.get(field_name)
         if value is None:
-            errors.append(
-                f"{source_name}: Missing required field '{field_name}'"
-            )
+            errors.append(f"{source_name}: Missing required field '{field_name}'")
         elif must_not_be_empty and isinstance(value, str) and not value.strip():
-            errors.append(
-                f"{source_name}: Empty required field '{field_name}'"
-            )
+            errors.append(f"{source_name}: Empty required field '{field_name}'")
 
     # Validate URL format
     if item.get("url"):
