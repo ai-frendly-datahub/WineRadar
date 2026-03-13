@@ -1,14 +1,14 @@
 """Unit tests for HTMLCollector with multilingual fixtures."""
 
 from __future__ import annotations
-from typing import Optional
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 import requests
 
 from collectors.html_collector import HTMLCollector
+
 
 pytestmark = pytest.mark.unit
 
@@ -62,7 +62,7 @@ def sample_list_html() -> bytes:
         </article>
     </body>
     </html>
-    """.encode("utf-8")
+    """.encode()
 
 
 @pytest.fixture
@@ -84,7 +84,7 @@ def latin1_list_html() -> bytes:
 
 @pytest.fixture
 def sample_article_html() -> bytes:
-    return """
+    return b"""
     <html>
     <body>
         <article class="detail">
@@ -96,7 +96,7 @@ def sample_article_html() -> bytes:
         </article>
     </body>
     </html>
-    """.encode("utf-8")
+    """
 
 
 def test_extract_article_list(wine21_source: dict, sample_list_html: bytes) -> None:
@@ -185,7 +185,7 @@ def test_create_raw_item_structure(wine21_source: dict) -> None:
         "title": "Test Wine Article",
         "summary": "짧은 요약",
     }
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     item = collector._create_raw_item(article, now)
 
     assert item["summary"] == "짧은 요약"
@@ -208,7 +208,7 @@ def test_summary_falls_back_to_title_when_missing(wine21_source: dict) -> None:
         "title": "Fallback Title",
         "summary": None,
     }
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     item = collector._create_raw_item(article, now)
     assert item["summary"] == "Fallback Title"
 
@@ -221,7 +221,7 @@ def test_summary_generated_from_content_when_available(wine21_source: dict) -> N
         "summary": None,
         "content": "첫 문장입니다. 두 번째 문장입니다.",
     }
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     item = collector._create_raw_item(article, now)
     assert item["summary"].startswith("첫 문장입니다.")
 
@@ -236,7 +236,9 @@ def test_build_headers_respects_configured_user_agent(wine21_source: dict) -> No
     assert headers["X-Test"] == "1"
 
 
-def test_default_fetcher_retries_then_succeeds(monkeypatch: pytest.MonkeyPatch, wine21_source: dict) -> None:
+def test_default_fetcher_retries_then_succeeds(
+    monkeypatch: pytest.MonkeyPatch, wine21_source: dict
+) -> None:
     wine21_source["config"]["max_retries"] = 2
     wine21_source["config"]["request_interval"] = 0.0
     collector = HTMLCollector(wine21_source)
@@ -254,7 +256,9 @@ def test_default_fetcher_retries_then_succeeds(monkeypatch: pytest.MonkeyPatch, 
 
     call_count = {"count": 0}
 
-    def fake_get(url: str, headers: Optional[dict] = None, timeout: Optional[float] = None) -> DummyResponse:
+    def fake_get(
+        url: str, headers: dict | None = None, timeout: float | None = None
+    ) -> DummyResponse:
         call_count["count"] += 1
         if call_count["count"] == 1:
             raise requests.HTTPError("boom")

@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
 """Entity normalization utilities."""
 
 import unicodedata
+
 from analyzers.wine_entities_data import (
     GRAPE_NORMALIZATION,
     REGION_NORMALIZATION,
@@ -19,9 +19,9 @@ def normalize_unicode(text: str) -> str:
         Normalized text without accents
     """
     # NFD = Canonical Decomposition
-    nfd = unicodedata.normalize('NFD', text)
+    nfd = unicodedata.normalize("NFD", text)
     # Remove combining characters (accents)
-    return ''.join(char for char in nfd if unicodedata.category(char) != 'Mn')
+    return "".join(char for char in nfd if unicodedata.category(char) != "Mn")
 
 
 def normalize_entity(entity_type: str, value: str) -> str:
@@ -91,7 +91,8 @@ def calculate_entity_confidence(
 
     # Boost confidence if entity appears multiple times
     import re
-    pattern = r'\b' + re.escape(value.lower()) + r'\b'
+
+    pattern = r"\b" + re.escape(value.lower()) + r"\b"
     occurrences = len(re.findall(pattern, text.lower()))
 
     if occurrences > 1:

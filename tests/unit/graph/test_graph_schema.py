@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import tempfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import duckdb
@@ -13,13 +13,13 @@ import pytest
 from collectors.base import RawItem
 from graph.graph_store import init_database, upsert_url_and_entities
 
+
 pytestmark = pytest.mark.unit
 
 
 @pytest.fixture
 def temp_db_path() -> Path:
     """임시 DuckDB 파일 경로 생성."""
-    import os
 
     # 임시 파일 대신 고유한 이름 생성
     import uuid
@@ -148,7 +148,7 @@ def test_upsert_url_with_metadata(temp_db_path: Path) -> None:
     """upsert_url_and_entities가 메타데이터를 올바르게 저장하는지 검증."""
     init_database(temp_db_path)
 
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
     item: RawItem = {
         "id": "test_decanter_001",
         "url": "https://www.decanter.com/wine-news/test-001",
@@ -206,7 +206,7 @@ def test_upsert_updates_existing_url(temp_db_path: Path) -> None:
     """동일 URL에 대한 upsert가 기존 레코드를 업데이트하는지 검증."""
     init_database(temp_db_path)
 
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
     item: RawItem = {
         "id": "test_001",
         "url": "https://example.com/wine-news/001",
@@ -241,7 +241,9 @@ def test_upsert_updates_existing_url(temp_db_path: Path) -> None:
         count = conn.execute("SELECT COUNT(*) FROM urls WHERE url = ?", (item["url"],)).fetchone()
         assert count[0] == 1, "중복 레코드가 생성됨"
 
-        result = conn.execute("SELECT title, producer_role, trust_tier FROM urls WHERE url = ?", (item["url"],)).fetchone()
+        result = conn.execute(
+            "SELECT title, producer_role, trust_tier FROM urls WHERE url = ?", (item["url"],)
+        ).fetchone()
         assert result[0] == "Updated Title", "title이 업데이트되지 않음"
         assert result[1] == "expert_media", "producer_role이 업데이트되지 않음"
         assert result[2] == "T2_expert", "trust_tier가 업데이트되지 않음"
@@ -251,7 +253,7 @@ def test_info_purpose_json_array_storage(temp_db_path: Path) -> None:
     """info_purpose가 JSON 배열로 올바르게 저장되는지 검증."""
     init_database(temp_db_path)
 
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
     item: RawItem = {
         "id": "test_001",
         "url": "https://example.com/test",
@@ -291,7 +293,7 @@ def test_metadata_consistency_in_database(temp_db_path: Path) -> None:
     """DB에 저장된 메타데이터가 sources.yaml 규칙과 일치하는지 검증."""
     init_database(temp_db_path)
 
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
 
     # government → T1_authoritative
     item1: RawItem = {

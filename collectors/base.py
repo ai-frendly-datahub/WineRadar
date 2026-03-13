@@ -1,14 +1,15 @@
-# -*- coding: utf-8 -*-
 """Collector 프로토콜 및 공통 타입 정의."""
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Optional, Any, Iterable, Literal, Protocol, TypedDict
+from typing import Any, Literal, Protocol, TypedDict
 
 import requests
 
 from resilience import SourceCircuitBreakerManager
+
 
 Continent = Literal["OLD_WORLD", "NEW_WORLD", "ASIA"]
 ProducerRole = Literal[
@@ -69,28 +70,69 @@ class BaseCollector:
         return 10.0
 
     def _fetch(self, url: str) -> requests.Response:
+        """Fetch URL with timeout and error handling.
+
+        Args:
+            url: URL to fetch
+
+        Returns:
+            requests.Response object
+
+        Raises:
+            requests.Timeout: When request exceeds timeout
+            requests.ConnectionError: When connection fails
+            requests.HTTPError: When HTTP error status received
+        """
         source_name = self._resolve_source_name()
         breaker = self.breaker_manager.get_breaker(source_name)
+        timeout = self._resolve_timeout()
 
         def _fetch_impl() -> requests.Response:
-            response = requests.get(url, timeout=self._resolve_timeout())
-            response.raise_for_status()
-            return response
+            try:
+                response = requests.get(url, timeout=timeout)
+                response.raise_for_status()
+                return response
+            except requests.Timeout as exc:
+                raise requests.Timeout(
+                    f"Request to {url} timed out after {timeout}s"
+                ) from exc
+            except requests.ConnectionError as exc:
+                raise requests.ConnectionError(
+                    f"Failed to connect to {url}"
+                ) from exc
 
         return breaker.call(
             lambda source=source_name: _fetch_impl(),
             source=source_name,
         )
 
-    def _fetch_html(self, url: str) -> Optional[str]:
+    def _fetch_html(self, url: str) -> str | None:
+        """Fetch HTML content from URL with timeout and encoding detection.
+
+        Args:
+            url: URL to fetch HTML from
+
+        Returns:
+            HTML content as string, or None if failed
+        """
         source_name = self._resolve_source_name()
         breaker = self.breaker_manager.get_breaker(source_name)
+        timeout = self._resolve_timeout()
 
-        def _fetch_html_impl() -> Optional[str]:
-            response = requests.get(url, timeout=self._resolve_timeout())
-            response.raise_for_status()
-            response.encoding = response.apparent_encoding or "utf-8"
-            return response.text
+        def _fetch_html_impl() -> str | None:
+            try:
+                response = requests.get(url, timeout=timeout)
+                response.raise_for_status()
+                response.encoding = response.apparent_encoding or "utf-8"
+                return response.text
+            except requests.Timeout as exc:
+                raise requests.Timeout(
+                    f"HTML fetch from {url} timed out after {timeout}s"
+                ) from exc
+            except requests.ConnectionError as exc:
+                raise requests.ConnectionError(
+                    f"Failed to fetch HTML from {url}"
+                ) from exc
 
         return breaker.call(
             lambda source=source_name: _fetch_html_impl(),
@@ -98,13 +140,40 @@ class BaseCollector:
         )
 
     def _fetch_json(self, url: str) -> dict[str, Any] | list[Any]:
+        """Fetch JSON data from URL with timeout and error handling.
+
+        Args:
+            url: URL to fetch JSON from
+
+        Returns:
+            Parsed JSON as dict or list
+
+        Raises:
+            requests.Timeout: When request exceeds timeout
+            requests.ConnectionError: When connection fails
+            ValueError: When JSON parsing fails
+        """
         source_name = self._resolve_source_name()
         breaker = self.breaker_manager.get_breaker(source_name)
+        timeout = self._resolve_timeout()
 
         def _fetch_json_impl() -> dict[str, Any] | list[Any]:
-            response = requests.get(url, timeout=self._resolve_timeout())
-            response.raise_for_status()
-            return response.json()
+            try:
+                response = requests.get(url, timeout=timeout)
+                response.raise_for_status()
+                return response.json()
+            except requests.Timeout as exc:
+                raise requests.Timeout(
+                    f"JSON fetch from {url} timed out after {timeout}s"
+                ) from exc
+            except requests.ConnectionError as exc:
+                raise requests.ConnectionError(
+                    f"Failed to fetch JSON from {url}"
+                ) from exc
+            except ValueError as exc:
+                raise ValueError(
+                    f"Failed to parse JSON from {url}"
+                ) from exc
 
         return breaker.call(
             lambda source=source_name: _fetch_json_impl(),
@@ -113,21 +182,21 @@ class BaseCollector:
 
 
 class RawItem(TypedDict):
-    """Collector가 수집한 원시 아이템.
+    """Collector 가 수집한 원시 아이템.
 
-    sources.yaml의 사용자 뷰 중심 메타데이터를 포함하여
-    Graph Store까지 일관된 분류체계를 적용한다.
+    sources.yaml 의 사용자 뷰 중심 메타데이터를 포함하여
+    Graph Store 까지 일관된 분류체계를 적용한다.
     """
 
     id: str
     url: str
     title: str
-    summary: Optional[str]
-    content: Optional[str]
+    summary: str | None
+    content: str | None
     published_at: datetime
     source_name: str
     source_type: str
-    language: Optional[str]
+    language: str | None
     content_type: str
 
     country: str
@@ -137,6 +206,57 @@ class RawItem(TypedDict):
     trust_tier: TrustTier
     info_purpose: list[InfoPurpose]
     collection_tier: CollectionTier
+
+
+def validate_raw_item(item: RawItem, source_name: str) -> list[str]:
+    """Validate RawItem required fields.
+
+    Args:
+        item: RawItem to validate
+        source_name: Name of the source for error messages
+
+    Returns:
+        List of validation error messages (empty if valid)
+    """
+    errors: list[str] = []
+
+    # Required fields that must not be empty
+    required_fields: list[tuple[str, bool]] = [
+        ("id", True),
+        ("url", True),
+        ("title", True),
+        ("published_at", True),
+        ("source_name", True),
+        ("source_type", True),
+        ("content_type", True),
+    ]
+
+    for field_name, must_not_be_empty in required_fields:
+        value = item.get(field_name)
+        if value is None:
+            errors.append(
+                f"{source_name}: Missing required field '{field_name}'"
+            )
+        elif must_not_be_empty and isinstance(value, str) and not value.strip():
+            errors.append(
+                f"{source_name}: Empty required field '{field_name}'"
+            )
+
+    # Validate URL format
+    if item.get("url"):
+        url = item["url"]
+        if not isinstance(url, str):
+            errors.append(f"{source_name}: 'url' must be a string")
+        elif not url.startswith("http"):
+            errors.append(f"{source_name}: Invalid URL format '{url}'")
+
+    # Validate title length
+    if item.get("title"):
+        title = item["title"]
+        if isinstance(title, str) and len(title.strip()) < 3:
+            errors.append(f"{source_name}: Title too short '{title}'")
+
+    return errors
 
 
 class Collector(Protocol):

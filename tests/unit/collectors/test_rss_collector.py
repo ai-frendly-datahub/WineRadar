@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from collectors.rss_collector import RSSCollector
 
@@ -54,16 +54,18 @@ def test_rss_collector_parses_entries(rss_source_meta):
     assert first["source_name"] == rss_source_meta["name"]
     assert first["continent"] == rss_source_meta["continent"]
     assert isinstance(first["published_at"], datetime)
-    assert first["published_at"].tzinfo == timezone.utc
+    assert first["published_at"].tzinfo == UTC
 
     second = items[1]
     assert second["id"] == "item-2"
-    assert second["published_at"].tzinfo == timezone.utc
+    assert second["published_at"].tzinfo == UTC
     assert second["summary"] == "Summary B"
 
 
 def test_rss_collector_falls_back_to_title_when_summary_missing(rss_source_meta):
-    collector = RSSCollector(rss_source_meta, fetcher=lambda url: SAMPLE_FEED_NO_SUMMARY.encode("utf-8"))
+    collector = RSSCollector(
+        rss_source_meta, fetcher=lambda url: SAMPLE_FEED_NO_SUMMARY.encode("utf-8")
+    )
     items = list(collector.collect())
     assert len(items) == 1
     assert items[0]["summary"] == "No Summary Story"

@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+import logging
 import threading
-from typing import Optional
 
 import structlog
 from pybreaker import CircuitBreaker, CircuitBreakerListener
 
+
 logger = structlog.get_logger(__name__)
+_log = logging.getLogger(__name__)
 
 
 class SourceCircuitBreakerListener(CircuitBreakerListener):
@@ -28,11 +30,19 @@ class SourceCircuitBreakerListener(CircuitBreakerListener):
         cb: CircuitBreaker,
         exc: BaseException,
     ) -> None:
+        exc_type = type(exc).__name__
+        exc_msg = str(exc)
         logger.warning(
             "circuit_breaker_failure",
             source=cb.name,
-            exception=type(exc).__name__,
-            message=str(exc),
+            exception_type=exc_type,
+            exception_message=exc_msg,
+        )
+        _log.warning(
+            "Circuit breaker failure for %s: %s - %s",
+            cb.name,
+            exc_type,
+            exc_msg,
         )
 
     def success(self, cb: CircuitBreaker) -> None:
@@ -68,7 +78,7 @@ class SourceCircuitBreakerManager:
             return breaker
 
 
-_manager: Optional[SourceCircuitBreakerManager] = None
+_manager: SourceCircuitBreakerManager | None = None
 _manager_lock = threading.Lock()
 
 

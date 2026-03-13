@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import Iterable, Sequence
 
 import numpy as np
+
 
 USE_NATIVE_FAISS = os.environ.get("WINERADAR_FORCE_FAISS", "0") == "1"
 
@@ -42,7 +43,9 @@ class FaissVectorIndex:
     def _to_array(self, vector: Sequence[float]) -> np.ndarray:
         arr = np.asarray(vector, dtype="float32").reshape(1, -1)
         if arr.shape[1] != self.dimension:
-            raise ValueError(f"vector dimension mismatch: expected {self.dimension}, got {arr.shape[1]}")
+            raise ValueError(
+                f"vector dimension mismatch: expected {self.dimension}, got {arr.shape[1]}"
+            )
         return arr
 
     def add(self, item_id: str, vector: Sequence[float]) -> None:
@@ -81,7 +84,9 @@ class FaissVectorIndex:
             scores, indices = self._index.search(arr, actual_k)
         else:
             matrix = np.vstack(self._vectors)
-            dot_scores = (matrix.reshape(len(self._vectors), self.dimension) @ arr.reshape(self.dimension, 1)).reshape(-1)
+            dot_scores = (
+                matrix.reshape(len(self._vectors), self.dimension) @ arr.reshape(self.dimension, 1)
+            ).reshape(-1)
             order = np.argsort(dot_scores)[::-1][:actual_k]
             scores = dot_scores[order].astype("float32").reshape(1, -1)
             indices = order.astype("int64").reshape(1, -1)

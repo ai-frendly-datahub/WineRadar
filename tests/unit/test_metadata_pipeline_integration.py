@@ -4,17 +4,17 @@ from __future__ import annotations
 
 import json
 import tempfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 import duckdb
 import pytest
-import yaml
 
 from collectors.base import RawItem
 from graph.graph_queries import ViewItem
 from graph.graph_store import init_database, upsert_url_and_entities
+
 
 pytestmark = pytest.mark.unit
 
@@ -44,7 +44,7 @@ def test_metadata_pipeline_decanter(sources_config: dict[str, Any], temp_db_path
     assert decanter is not None, "Decanter 소스가 sources.yaml에 없음"
 
     # Step 2: RawItem 생성 (Collector가 생성하는 것과 동일)
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
     raw_item: RawItem = {
         "id": "decanter_test_001",
         "url": "https://www.decanter.com/wine-news/test",
@@ -135,7 +135,7 @@ def test_metadata_pipeline_wine21(sources_config: dict[str, Any], temp_db_path: 
     wine21 = next((s for s in sources if s.get("id") == "media_wine21_kr"), None)
     assert wine21 is not None, "Wine21 소스가 sources.yaml에 없음"
 
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
     raw_item: RawItem = {
         "id": "wine21_test_001",
         "url": "https://wine21.com/news/test",
@@ -174,7 +174,7 @@ def test_metadata_consistency_across_multiple_sources(
 ) -> None:
     """여러 소스의 메타데이터가 동시에 저장되어도 일관성이 유지되는지 검증."""
     sources = sources_config.get("sources", [])
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
 
     init_database(temp_db_path)
 
@@ -224,10 +224,12 @@ def test_metadata_consistency_across_multiple_sources(
             assert row[2] == "C1_rss"
 
 
-def test_metadata_filtering_by_trust_tier(sources_config: dict[str, Any], temp_db_path: Path) -> None:
+def test_metadata_filtering_by_trust_tier(
+    sources_config: dict[str, Any], temp_db_path: Path
+) -> None:
     """trust_tier별로 필터링이 가능한지 검증 (get_view 시뮬레이션)."""
     sources = sources_config.get("sources", [])
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
 
     init_database(temp_db_path)
 
@@ -282,10 +284,12 @@ def test_metadata_filtering_by_trust_tier(sources_config: dict[str, Any], temp_d
         assert t2_results[0] >= 1, "T2 소스가 최소 1개 이상 있어야 함"
 
 
-def test_metadata_filtering_by_info_purpose(sources_config: dict[str, Any], temp_db_path: Path) -> None:
+def test_metadata_filtering_by_info_purpose(
+    sources_config: dict[str, Any], temp_db_path: Path
+) -> None:
     """info_purpose별로 필터링이 가능한지 검증 (JSON 배열 쿼리)."""
     sources = sources_config.get("sources", [])
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
 
     init_database(temp_db_path)
 
@@ -332,10 +336,12 @@ def test_metadata_filtering_by_info_purpose(sources_config: dict[str, Any], temp
 def test_end_to_end_metadata_round_trip(sources_config: dict[str, Any], temp_db_path: Path) -> None:
     """sources.yaml → RawItem → DuckDB → ViewItem 전체 라운드트립 검증."""
     sources = sources_config.get("sources", [])
-    wine_institute = next((s for s in sources if s.get("id") == "official_wineinstitute_us"), None)  # 수정됨
+    wine_institute = next(
+        (s for s in sources if s.get("id") == "official_wineinstitute_us"), None
+    )  # 수정됨
     assert wine_institute is not None
 
-    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC)
 
     # Step 1: sources.yaml 메타데이터 확인
     assert wine_institute["producer_role"] == "government"

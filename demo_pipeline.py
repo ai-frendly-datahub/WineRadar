@@ -3,15 +3,16 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
+
 import yaml
 
-from collectors.rss_collector import RSSCollector
-from collectors.html_collector import HTMLCollector
 from analyzers.entity_extractor import extract_all_entities
-from graph.graph_store import init_database, upsert_url_and_entities
+from collectors.html_collector import HTMLCollector
+from collectors.rss_collector import RSSCollector
 from graph.graph_queries import get_view
+from graph.graph_store import init_database, upsert_url_and_entities
 
 
 def main() -> None:
@@ -27,13 +28,9 @@ def main() -> None:
         config = yaml.safe_load(f)
 
     sources = config.get("sources", [])
-    rss_sources = [
-        s for s in sources
-        if s.get("enabled") and s.get("collection_tier") == "C1_rss"
-    ]
+    rss_sources = [s for s in sources if s.get("enabled") and s.get("collection_tier") == "C1_rss"]
     html_sources = [
-        s for s in sources
-        if s.get("enabled") and s.get("collection_tier") == "C2_html_simple"
+        s for s in sources if s.get("enabled") and s.get("collection_tier") == "C2_html_simple"
     ]
     print(f"[OK] 활성화된 RSS 소스: {len(rss_sources)}개")
     for source in rss_sources:
@@ -41,7 +38,7 @@ def main() -> None:
     print(f"[OK] 활성화된 HTML 소스: {len(html_sources)}개")
     for source in html_sources:
         # ASCII-safe 출력
-        name_safe = source['name'].encode('ascii', 'ignore').decode('ascii') or source['name']
+        name_safe = source["name"].encode("ascii", "ignore").decode("ascii") or source["name"]
         print(f"  - {name_safe} ({source['trust_tier']}, {source['continent']})")
 
     # 2. DuckDB 초기화
@@ -55,7 +52,7 @@ def main() -> None:
 
     # 3. 데이터 수집 및 엔티티 추출
     print("\n[3단계] RSS/HTML 데이터 수집 및 엔티티 추출...")
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     total_collected = 0
     total_entities = 0
 
@@ -130,7 +127,7 @@ def main() -> None:
     )
     print(f"  [OK] {len(old_world)}개 발견")
     for i, item in enumerate(old_world[:3], 1):
-        title_safe = item['title'][:60].encode('ascii', 'ignore').decode('ascii')
+        title_safe = item["title"][:60].encode("ascii", "ignore").decode("ascii")
         print(f"    {i}. [{item['score']:.2f}] {title_safe}...")
         print(f"       {item['source_name']} | {item['country']} | {item['producer_role']}")
 
@@ -145,7 +142,7 @@ def main() -> None:
     )
     print(f"  [OK] {len(expert)}개 발견")
     for i, item in enumerate(expert[:3], 1):
-        title_safe = item['title'][:60].encode('ascii', 'ignore').decode('ascii')
+        title_safe = item["title"][:60].encode("ascii", "ignore").decode("ascii")
         print(f"    {i}. [{item['score']:.2f}] {title_safe}...")
         print(f"       {item['source_name']} | {item['trust_tier']}")
 
@@ -160,7 +157,7 @@ def main() -> None:
     )
     print(f"  [OK] {len(briefing)}개 발견")
     for i, item in enumerate(briefing[:3], 1):
-        title_safe = item['title'][:60].encode('ascii', 'ignore').decode('ascii')
+        title_safe = item["title"][:60].encode("ascii", "ignore").decode("ascii")
         print(f"    {i}. [{item['score']:.2f}] {title_safe}...")
         print(f"       {item['source_name']} | {item['info_purpose']}")
 
@@ -175,7 +172,7 @@ def main() -> None:
     )
     print(f"  [OK] {len(uk)}개 발견")
     for i, item in enumerate(uk[:3], 1):
-        title_safe = item['title'][:60].encode('ascii', 'ignore').decode('ascii')
+        title_safe = item["title"][:60].encode("ascii", "ignore").decode("ascii")
         print(f"    {i}. [{item['score']:.2f}] {title_safe}...")
         print(f"       {item['source_name']} | {item['region']}")
 
@@ -190,7 +187,7 @@ def main() -> None:
     )
     print(f"  [OK] {len(grape_items)}개 발견")
     for i, item in enumerate(grape_items[:3], 1):
-        title_safe = item['title'][:60].encode('ascii', 'ignore').decode('ascii')
+        title_safe = item["title"][:60].encode("ascii", "ignore").decode("ascii")
         print(f"    {i}. [{item['score']:.2f}] {title_safe}...")
         print(f"       {item['source_name']} | 엔티티 보너스 적용")
 

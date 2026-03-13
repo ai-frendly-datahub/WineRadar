@@ -2,18 +2,19 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
-from collectors.base import RawItem
 from analyzers.entity_extractor import (
+    extract_all_entities,
     extract_grape_varieties,
     extract_regions,
     extract_wineries,
-    extract_all_entities,
     infer_climate_zone,
 )
+from collectors.base import RawItem
+
 
 pytestmark = pytest.mark.unit
 
@@ -26,7 +27,7 @@ def test_extract_grape_varieties_from_title() -> None:
         "title": "Cabernet Sauvignon and Merlot Blend from Bordeaux",
         "summary": None,
         "content": None,
-        "published_at": datetime(2025, 1, 19, tzinfo=timezone.utc),
+        "published_at": datetime(2025, 1, 19, tzinfo=UTC),
         "source_name": "Test",
         "source_type": "media",
         "language": "en",
@@ -55,7 +56,7 @@ def test_extract_regions_from_summary() -> None:
         "title": "Wine News",
         "summary": "Exploring the wines of Napa Valley and Sonoma",
         "content": None,
-        "published_at": datetime(2025, 1, 19, tzinfo=timezone.utc),
+        "published_at": datetime(2025, 1, 19, tzinfo=UTC),
         "source_name": "Test",
         "source_type": "media",
         "language": "en",
@@ -84,7 +85,7 @@ def test_extract_wineries() -> None:
         "title": "Château Lafite Releases 2020 Vintage",
         "summary": "Opus One and Penfolds also announce new vintages",
         "content": "Antinori in Tuscany is leading the way...",
-        "published_at": datetime(2025, 1, 19, tzinfo=timezone.utc),
+        "published_at": datetime(2025, 1, 19, tzinfo=UTC),
         "source_name": "Test",
         "source_type": "media",
         "language": "en",
@@ -137,7 +138,7 @@ def test_extract_all_entities_comprehensive() -> None:
         "title": "Château Margaux Cabernet Sauvignon 2020",
         "summary": "A masterpiece from Bordeaux featuring Merlot blend",
         "content": "The wine showcases classic Pinot Noir characteristics from Burgundy...",
-        "published_at": datetime(2025, 1, 19, tzinfo=timezone.utc),
+        "published_at": datetime(2025, 1, 19, tzinfo=UTC),
         "source_name": "Test",
         "source_type": "media",
         "language": "en",
@@ -181,7 +182,7 @@ def test_extract_all_entities_empty_text() -> None:
         "title": "",
         "summary": None,
         "content": None,
-        "published_at": datetime(2025, 1, 19, tzinfo=timezone.utc),
+        "published_at": datetime(2025, 1, 19, tzinfo=UTC),
         "source_name": "Test",
         "source_type": "media",
         "language": "en",
@@ -209,7 +210,7 @@ def test_extract_entities_confidence_filtering() -> None:
         "title": "Wine News",
         "summary": None,
         "content": "This Chardonnay is excellent...",
-        "published_at": datetime(2025, 1, 19, tzinfo=timezone.utc),
+        "published_at": datetime(2025, 1, 19, tzinfo=UTC),
         "source_name": "Test",
         "source_type": "media",
         "language": "en",
@@ -237,7 +238,7 @@ def test_extract_entities_case_insensitive() -> None:
         "title": "bordeaux CABERNET sauvignon",  # 소문자/대문자 혼합
         "summary": None,
         "content": None,
-        "published_at": datetime(2025, 1, 19, tzinfo=timezone.utc),
+        "published_at": datetime(2025, 1, 19, tzinfo=UTC),
         "source_name": "Test",
         "source_type": "media",
         "language": "en",
@@ -268,7 +269,7 @@ def test_extract_entities_no_duplicates() -> None:
         "title": "Bordeaux Bordeaux Bordeaux",  # 중복
         "summary": "Bordeaux is great",  # 중복
         "content": "I love Bordeaux",  # 중복
-        "published_at": datetime(2025, 1, 19, tzinfo=timezone.utc),
+        "published_at": datetime(2025, 1, 19, tzinfo=UTC),
         "source_name": "Test",
         "source_type": "media",
         "language": "en",

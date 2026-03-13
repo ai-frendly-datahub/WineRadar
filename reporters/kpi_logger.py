@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 """KPI 로깅 및 대시보드 생성."""
 
 from __future__ import annotations
 
 import json
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from pathlib import Path
-from typing import Optional, Any
+from typing import Any
 
 import duckdb
 
@@ -79,7 +78,7 @@ class KPILogger:
         report_sections: int,
         runtime_seconds: float,
         errors: list[str] | None = None,
-        notes: Optional[str] = None,
+        notes: str | None = None,
     ) -> None:
         """일일 실행 KPI를 기록한다."""
         # Calculate derived metrics
@@ -104,7 +103,7 @@ class KPILogger:
             """,
                 [
                     run_date,
-                    datetime.now(timezone.utc),
+                    datetime.now(UTC),
                     sources_active,
                     sources_attempted,
                     sources_succeeded,
@@ -128,34 +127,37 @@ class KPILogger:
             )
 
         # Also write JSON log for easy inspection
-        self._write_json_log(run_date, {
-            "run_date": str(run_date),
-            "run_timestamp": datetime.now(timezone.utc).isoformat(),
-            "collection": {
-                "sources_active": sources_active,
-                "sources_attempted": sources_attempted,
-                "sources_succeeded": sources_succeeded,
-                "sources_failed": sources_failed,
-                "success_rate": f"{collection_success_rate:.1f}%",
+        self._write_json_log(
+            run_date,
+            {
+                "run_date": str(run_date),
+                "run_timestamp": datetime.now(UTC).isoformat(),
+                "collection": {
+                    "sources_active": sources_active,
+                    "sources_attempted": sources_attempted,
+                    "sources_succeeded": sources_succeeded,
+                    "sources_failed": sources_failed,
+                    "success_rate": f"{collection_success_rate:.1f}%",
+                },
+                "articles": {
+                    "collected": articles_collected,
+                    "new": articles_new,
+                    "duplicate": articles_duplicate,
+                },
+                "entities": {
+                    "extracted": entities_extracted,
+                },
+                "report": {
+                    "generated": report_generated,
+                    "cards": report_cards,
+                    "sections": report_sections,
+                },
+                "top_source": top_source_stats,
+                "runtime_seconds": runtime_seconds,
+                "errors": errors or [],
+                "notes": notes,
             },
-            "articles": {
-                "collected": articles_collected,
-                "new": articles_new,
-                "duplicate": articles_duplicate,
-            },
-            "entities": {
-                "extracted": entities_extracted,
-            },
-            "report": {
-                "generated": report_generated,
-                "cards": report_cards,
-                "sections": report_sections,
-            },
-            "top_source": top_source_stats,
-            "runtime_seconds": runtime_seconds,
-            "errors": errors or [],
-            "notes": notes,
-        })
+        )
 
     def _get_top_source_stats(self) -> dict[str, Any]:
         """현재 DB에서 가장 많은 기사를 가진 소스를 조회한다."""
@@ -214,7 +216,9 @@ class KPILogger:
                     "avg_collection_success_rate": round(result[1], 1) if result[1] else 0.0,
                     "avg_articles_per_day": round(result[2], 1) if result[2] else 0.0,
                     "avg_cards_per_report": round(result[3], 1) if result[3] else 0.0,
-                    "report_success_rate": round(result[4] / result[0] * 100, 1) if result[0] > 0 else 0.0,
+                    "report_success_rate": round(result[4] / result[0] * 100, 1)
+                    if result[0] > 0
+                    else 0.0,
                     "avg_top_source_dominance": round(result[5], 1) if result[5] else 0.0,
                 }
 
@@ -250,7 +254,7 @@ class KPILogger:
         # Generate markdown
         content = f"""# WineRadar KPI Report
 
-**Generated**: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}
+**Generated**: {datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")}
 
 ---
 
@@ -260,23 +264,23 @@ class KPILogger:
 
 | Metric | Value |
 |--------|-------|
-| Total Runs | {summary_7d.get('total_runs', 0)} |
-| Avg Collection Success Rate | {summary_7d.get('avg_collection_success_rate', 0)}% |
-| Avg Articles/Day | {summary_7d.get('avg_articles_per_day', 0)} |
-| Avg Cards/Report | {summary_7d.get('avg_cards_per_report', 0)} |
-| Report Success Rate | {summary_7d.get('report_success_rate', 0)}% |
-| Avg Top Source Dominance | {summary_7d.get('avg_top_source_dominance', 0)}% |
+| Total Runs | {summary_7d.get("total_runs", 0)} |
+| Avg Collection Success Rate | {summary_7d.get("avg_collection_success_rate", 0)}% |
+| Avg Articles/Day | {summary_7d.get("avg_articles_per_day", 0)} |
+| Avg Cards/Report | {summary_7d.get("avg_cards_per_report", 0)} |
+| Report Success Rate | {summary_7d.get("report_success_rate", 0)}% |
+| Avg Top Source Dominance | {summary_7d.get("avg_top_source_dominance", 0)}% |
 
 ### Last 30 Days
 
 | Metric | Value |
 |--------|-------|
-| Total Runs | {summary_30d.get('total_runs', 0)} |
-| Avg Collection Success Rate | {summary_30d.get('avg_collection_success_rate', 0)}% |
-| Avg Articles/Day | {summary_30d.get('avg_articles_per_day', 0)} |
-| Avg Cards/Report | {summary_30d.get('avg_cards_per_report', 0)} |
-| Report Success Rate | {summary_30d.get('report_success_rate', 0)}% |
-| Avg Top Source Dominance | {summary_30d.get('avg_top_source_dominance', 0)}% |
+| Total Runs | {summary_30d.get("total_runs", 0)} |
+| Avg Collection Success Rate | {summary_30d.get("avg_collection_success_rate", 0)}% |
+| Avg Articles/Day | {summary_30d.get("avg_articles_per_day", 0)} |
+| Avg Cards/Report | {summary_30d.get("avg_cards_per_report", 0)} |
+| Report Success Rate | {summary_30d.get("report_success_rate", 0)}% |
+| Avg Top Source Dominance | {summary_30d.get("avg_top_source_dominance", 0)}% |
 
 ---
 
@@ -287,7 +291,9 @@ class KPILogger:
 """
 
         for log in recent_logs:
-            content += f"| {log[0]} | {log[1]:.1f}% | {log[2]} | {log[3]} | {log[4]} | {log[5]:.1f}% |\n"
+            content += (
+                f"| {log[0]} | {log[1]:.1f}% | {log[2]} | {log[3]} | {log[4]} | {log[5]:.1f}% |\n"
+            )
 
         content += """
 ---
@@ -314,13 +320,25 @@ For detailed daily logs, check the JSON files in the `data/kpi_logs/` directory.
 """
 
         # Fill in status indicators
-        report_rate = summary_7d.get('report_success_rate', 0)
-        avg_cards = summary_7d.get('avg_cards_per_report', 0)
-        avg_dominance = summary_7d.get('avg_top_source_dominance', 0)
+        report_rate = summary_7d.get("report_success_rate", 0)
+        avg_cards = summary_7d.get("avg_cards_per_report", 0)
+        avg_dominance = summary_7d.get("avg_top_source_dominance", 0)
 
-        status_report = "✅ Meeting target" if report_rate >= 95 else ("⚠️ Below target" if report_rate >= 80 else "❌ Significantly below")
-        status_cards = "✅ Meeting target" if avg_cards >= 10 else ("⚠️ Below target" if avg_cards >= 5 else "❌ Significantly below")
-        status_dominance = "✅ Meeting target" if avg_dominance < 30 else ("⚠️ Above target" if avg_dominance < 50 else "❌ Significantly above")
+        status_report = (
+            "✅ Meeting target"
+            if report_rate >= 95
+            else ("⚠️ Below target" if report_rate >= 80 else "❌ Significantly below")
+        )
+        status_cards = (
+            "✅ Meeting target"
+            if avg_cards >= 10
+            else ("⚠️ Below target" if avg_cards >= 5 else "❌ Significantly below")
+        )
+        status_dominance = (
+            "✅ Meeting target"
+            if avg_dominance < 30
+            else ("⚠️ Above target" if avg_dominance < 50 else "❌ Significantly above")
+        )
 
         # Get earliest log date
         with duckdb.connect(str(self.db_path)) as conn:

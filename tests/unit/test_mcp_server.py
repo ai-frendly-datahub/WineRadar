@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """MCP 서버 스텁 단위 테스트."""
 
 from __future__ import annotations
@@ -9,9 +8,9 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from mcp_server.server_stub import (
-    load_manifest,
     handle_get_view,
     handle_top_entities,
+    load_manifest,
     main,
 )
 

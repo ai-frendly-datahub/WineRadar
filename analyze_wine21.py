@@ -1,30 +1,32 @@
-# -*- coding: utf-8 -*-
 """Analyze Wine21 HTML structure to find correct selectors."""
 
 import requests
 from bs4 import BeautifulSoup
 
+
 url = "https://www.wine21.com/11_news/reporter_news_list.html"
 
 print("Fetching Wine21 page...")
-response = requests.get(url, timeout=10, headers={
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-})
+response = requests.get(
+    url,
+    timeout=10,
+    headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
+)
 
 print(f"Status: {response.status_code}")
 print(f"Content length: {len(response.text)} bytes")
 
-soup = BeautifulSoup(response.text, 'html.parser')
+soup = BeautifulSoup(response.text, "html.parser")
 
 # Try different selectors
 selectors_to_try = [
-    ('a[href*="reporter_news_view"]', 'Links containing reporter_news_view'),
-    ('div.board-list a', 'Links in board-list div'),
-    ('table.board-list a', 'Links in board-list table'),
-    ('tr a', 'All links in table rows'),
-    ('a[href*="news"]', 'Links containing news'),
-    ('div.list-item a', 'Links in list-item div'),
-    ('ul.news-list a', 'Links in news-list ul'),
+    ('a[href*="reporter_news_view"]', "Links containing reporter_news_view"),
+    ("div.board-list a", "Links in board-list div"),
+    ("table.board-list a", "Links in board-list table"),
+    ("tr a", "All links in table rows"),
+    ('a[href*="news"]', "Links containing news"),
+    ("div.list-item a", "Links in list-item div"),
+    ("ul.news-list a", "Links in news-list ul"),
 ]
 
 print("\nTrying different selectors:")
@@ -39,7 +41,7 @@ for selector, description in selectors_to_try:
     if elements:
         print("  First 3 matches:")
         for i, elem in enumerate(elements[:3], 1):
-            href = elem.get('href', '')
+            href = elem.get("href", "")
             text = elem.get_text(strip=True)[:50]
             print(f"    {i}. {text}... -> {href}")
 
@@ -49,8 +51,8 @@ print("Page structure analysis:")
 print("=" * 80)
 
 # Find all anchor tags
-all_links = soup.find_all('a', href=True)
-news_links = [a for a in all_links if 'news' in a.get('href', '').lower()]
+all_links = soup.find_all("a", href=True)
+news_links = [a for a in all_links if "news" in a.get("href", "").lower()]
 
 print(f"\nTotal links: {len(all_links)}")
 print(f"Links with 'news' in href: {len(news_links)}")

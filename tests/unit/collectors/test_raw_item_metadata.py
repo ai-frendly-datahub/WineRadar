@@ -2,19 +2,20 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Optional, Any, get_type_hints
+from datetime import UTC, datetime
+from typing import Optional, get_type_hints
 
 import pytest
 
 from collectors.base import (
-    RawItem,
-    Continent,
-    ProducerRole,
-    TrustTier,
-    InfoPurpose,
     CollectionTier,
+    Continent,
+    InfoPurpose,
+    ProducerRole,
+    RawItem,
+    TrustTier,
 )
+
 
 pytestmark = pytest.mark.unit
 
@@ -180,7 +181,7 @@ def test_raw_item_instantiation_with_valid_data() -> None:
         "title": "Test Wine News",
         "summary": "Test summary",
         "content": "Test content",
-        "published_at": datetime(2025, 1, 15, 10, 0, 0, tzinfo=timezone.utc),
+        "published_at": datetime(2025, 1, 15, 10, 0, 0, tzinfo=UTC),
         "source_name": "Decanter",
         "source_type": "media",
         "language": "en",
@@ -229,11 +230,11 @@ def test_raw_item_metadata_consistency() -> None:
 def test_raw_item_all_literal_types_are_exported() -> None:
     """모든 Literal 타입이 base.py에서 export되는지 검증."""
     from collectors.base import (
+        CollectionTier,
         Continent,
+        InfoPurpose,
         ProducerRole,
         TrustTier,
-        InfoPurpose,
-        CollectionTier,
     )
 
     # Import 성공하면 테스트 통과

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """WineRadar MCP 서버 스텁.
 
 manifest.json에 정의된 도구들을 구현하고 graph_queries.py 함수를 호출합니다.
@@ -9,12 +8,12 @@ from __future__ import annotations
 import json
 from datetime import timedelta
 from pathlib import Path
-from typing import Optional, Any
+from typing import Any
 
-from graph.graph_queries import get_view, get_top_entities
+from graph.graph_queries import get_top_entities, get_view
 
 
-def load_manifest(manifest_path: Optional[Path | str] = None) -> dict[str, Any]:
+def load_manifest(manifest_path: Path | str | None = None) -> dict[str, Any]:
     """manifest.json을 로드하고 파싱합니다."""
     if manifest_path is None:
         manifest_path = Path(__file__).resolve().parent / "manifest.json"
