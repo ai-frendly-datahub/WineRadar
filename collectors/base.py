@@ -2,11 +2,18 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Iterable
 from datetime import datetime
 from typing import Any, Literal, Protocol, TypedDict
 
 import requests
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 from resilience import SourceCircuitBreakerManager
 
@@ -47,6 +54,42 @@ class BaseCollector:
     def __init__(self, source_meta: dict[str, Any]) -> None:
         self.source_meta = source_meta
         self.breaker_manager = SourceCircuitBreakerManager()
+        self.logger = logging.getLogger(f"{__name__}.{self._resolve_source_name()}")
+
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=1, max=10),
+        retry=retry_if_exception_type((requests.Timeout, requests.ConnectionError, requests.HTTPError)),
+        reraise=True,
+    )
+    def _fetch_with_retry(self, url: str, timeout: float) -> requests.Response:
+        """Fetch URL with exponential backoff retry.
+        
+        Retries on: 408, 429, 500, 502, 503, 504, 522, 524
+        
+        Args:
+            url: URL to fetch
+            timeout: Request timeout in seconds
+            
+        Returns:
+            requests.Response object
+            
+        Raises:
+            requests.Timeout: When request exceeds timeout after retries
+            requests.ConnectionError: When connection fails after retries
+            requests.HTTPError: When HTTP error persists after retries
+        """
+        response = requests.get(url, timeout=timeout)
+        # Manually raise for retryable status codes
+        if response.status_code in (408, 429, 500, 502, 503, 504, 522, 524):
+            self.logger.warning(
+                "Retryable HTTP status %s for %s, will retry",
+                response.status_code,
+                url,
+            )
+            response.raise_for_status()
+        response.raise_for_status()
+        return response
 
     def _resolve_source_name(self) -> str:
         source_name = self.source_meta.get("name")
