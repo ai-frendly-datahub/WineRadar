@@ -109,7 +109,9 @@ def test_build_collectors_includes_html_sources(sources_config: dict[str, Any]) 
 @pytest.mark.skip(reason="실제 네트워크 요청이 필요하며, 사이트 구조 변경에 취약")
 def test_wine21_real_collection(sources_config: dict[str, Any], temp_db_path: Path) -> None:
     sources = sources_config.get("sources", [])
-    wine21 = next((s for s in sources if s.get("id") == "media_wine21_kr" and s.get("enabled")), None)
+    wine21 = next(
+        (s for s in sources if s.get("id") == "media_wine21_kr" and s.get("enabled")), None
+    )
 
     if not wine21:
         pytest.skip("Wine21 소스가 활성화되어 있지 않음")
