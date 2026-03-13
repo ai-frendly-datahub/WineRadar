@@ -32,7 +32,7 @@ except ModuleNotFoundError:
     class Tool:
         name: str
         description: str
-        inputSchema: dict[str, Any]
+        inputSchema: dict[str, Any]  # noqa: N815
 
     class Server:
         def __init__(self, name: str) -> None:

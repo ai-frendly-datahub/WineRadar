@@ -240,7 +240,7 @@ def test_metadata_filtering_by_trust_tier(
         ("media_wine21_kr", "T3_professional"),
     ]
 
-    for source_id, expected_tier in test_sources:
+    for source_id, _expected_tier in test_sources:
         source = next((s for s in sources if s.get("id") == source_id), None)
         if source is None:
             continue

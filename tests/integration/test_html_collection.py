@@ -4,12 +4,11 @@ from __future__ import annotations
 
 import tempfile
 import uuid
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
 import pytest
-import yaml
 
 from analyzers.entity_extractor import extract_all_entities
 from collectors.html_collector import HTMLCollector

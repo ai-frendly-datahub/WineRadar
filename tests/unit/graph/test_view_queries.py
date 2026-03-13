@@ -53,20 +53,20 @@ def test_view_item_metadata_types() -> None:
     type_hints = get_type_hints(ViewItem)
 
     # 문자열 필드
-    assert type_hints["url"] == str
-    assert type_hints["title"] == str
-    assert type_hints["source_name"] == str
-    assert type_hints["source_type"] == str
-    assert type_hints["content_type"] == str
-    assert type_hints["country"] == str
-    assert type_hints["continent"] == str
-    assert type_hints["region"] == str
-    assert type_hints["producer_role"] == str
-    assert type_hints["trust_tier"] == str
-    assert type_hints["collection_tier"] == str
+    assert type_hints["url"] == str  # noqa: E721
+    assert type_hints["title"] == str  # noqa: E721
+    assert type_hints["source_name"] == str  # noqa: E721
+    assert type_hints["source_type"] == str  # noqa: E721
+    assert type_hints["content_type"] == str  # noqa: E721
+    assert type_hints["country"] == str  # noqa: E721
+    assert type_hints["continent"] == str  # noqa: E721
+    assert type_hints["region"] == str  # noqa: E721
+    assert type_hints["producer_role"] == str  # noqa: E721
+    assert type_hints["trust_tier"] == str  # noqa: E721
+    assert type_hints["collection_tier"] == str  # noqa: E721
 
     # Optional 문자열 필드
-    assert type_hints["summary"] == Optional[str]
+    assert type_hints["summary"] == Optional[str]  # noqa: UP045
 
     # datetime 필드
     assert type_hints["published_at"] == datetime
@@ -75,7 +75,7 @@ def test_view_item_metadata_types() -> None:
     assert type_hints["info_purpose"] == list[str]
 
     # float 필드
-    assert type_hints["score"] == float
+    assert type_hints["score"] == float  # noqa: E721
 
     # dict 필드
     assert type_hints["entities"] == dict[str, list[str]]
@@ -110,17 +110,17 @@ def test_view_item_info_purpose_is_list() -> None:
 
     type_hints = get_type_hints(ViewItem)
 
-    assert typing.get_origin(type_hints["info_purpose"]) == list
+    assert typing.get_origin(type_hints["info_purpose"]) == list  # noqa: E721
     list_args = typing.get_args(type_hints["info_purpose"])
     assert len(list_args) == 1
-    assert list_args[0] == str
+    assert list_args[0] == str  # noqa: E721
 
 
 def test_view_item_score_is_float() -> None:
     """ViewItem의 score가 float 타입인지 검증."""
     type_hints = get_type_hints(ViewItem)
 
-    assert type_hints["score"] == float
+    assert type_hints["score"] == float  # noqa: E721
 
 
 def test_view_item_entities_structure() -> None:
@@ -130,16 +130,16 @@ def test_view_item_entities_structure() -> None:
     type_hints = get_type_hints(ViewItem)
 
     # dict[str, list[str]] 타입 확인
-    assert typing.get_origin(type_hints["entities"]) == dict
+    assert typing.get_origin(type_hints["entities"]) == dict  # noqa: E721
 
     dict_args = typing.get_args(type_hints["entities"])
     assert len(dict_args) == 2
-    assert dict_args[0] == str  # 키 타입
+    assert dict_args[0] == str  # 키 타입  # noqa: E721
 
     # 값 타입: list[str]
     value_type = dict_args[1]
-    assert typing.get_origin(value_type) == list
-    assert typing.get_args(value_type)[0] == str
+    assert typing.get_origin(value_type) == list  # noqa: E721
+    assert typing.get_args(value_type)[0] == str  # noqa: E721
 
 
 def test_get_view_supports_user_view_metadata() -> None:
@@ -180,7 +180,7 @@ def test_get_view_return_type() -> None:
     sig = typing.get_type_hints(get_view)
     return_type = sig["return"]
 
-    assert typing.get_origin(return_type) == list
+    assert typing.get_origin(return_type) == list  # noqa: E721
     list_args = typing.get_args(return_type)
     assert len(list_args) == 1
     assert list_args[0] == ViewItem
@@ -253,7 +253,7 @@ def test_view_item_optional_fields() -> None:
     type_hints = get_type_hints(ViewItem)
 
     # summary만 Optional
-    assert type_hints["summary"] == Optional[str]
+    assert type_hints["summary"] == Optional[str]  # noqa: UP045
 
 
 def test_view_type_literal_values() -> None:

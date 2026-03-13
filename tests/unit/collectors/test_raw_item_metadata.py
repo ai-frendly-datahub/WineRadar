@@ -59,19 +59,19 @@ def test_raw_item_metadata_types() -> None:
     type_hints = get_type_hints(RawItem)
 
     # 문자열 필드
-    assert type_hints["id"] == str
-    assert type_hints["url"] == str
-    assert type_hints["title"] == str
-    assert type_hints["source_name"] == str
-    assert type_hints["source_type"] == str
-    assert type_hints["content_type"] == str
-    assert type_hints["country"] == str
-    assert type_hints["region"] == str
+    assert type_hints["id"] == str  # noqa: E721
+    assert type_hints["url"] == str  # noqa: E721
+    assert type_hints["title"] == str  # noqa: E721
+    assert type_hints["source_name"] == str  # noqa: E721
+    assert type_hints["source_type"] == str  # noqa: E721
+    assert type_hints["content_type"] == str  # noqa: E721
+    assert type_hints["country"] == str  # noqa: E721
+    assert type_hints["region"] == str  # noqa: E721
 
     # Optional 문자열 필드
-    assert type_hints["summary"] == Optional[str]
-    assert type_hints["content"] == Optional[str]
-    assert type_hints["language"] == Optional[str]
+    assert type_hints["summary"] == Optional[str]  # noqa: UP045
+    assert type_hints["content"] == Optional[str]  # noqa: UP045
+    assert type_hints["language"] == Optional[str]  # noqa: UP045
 
     # datetime 필드
     assert type_hints["published_at"] == datetime
@@ -252,7 +252,7 @@ def test_raw_item_info_purpose_is_list() -> None:
     # list[InfoPurpose] 타입인지 확인
     import typing
 
-    assert typing.get_origin(type_hints["info_purpose"]) == list, (
+    assert typing.get_origin(type_hints["info_purpose"]) == list, (  # noqa: E721
         "info_purpose는 list 타입이어야 함"
     )
 
@@ -271,7 +271,7 @@ def test_raw_item_optional_fields() -> None:
     for field in optional_fields:
         field_type = type_hints[field]
         # str | None 타입인지 확인
-        assert field_type == Optional[str], (
+        assert field_type == Optional[str], (  # noqa: UP045
             f"{field}는 str | None 타입이어야 함 (현재: {field_type})"
         )
 
