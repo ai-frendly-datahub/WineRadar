@@ -2,20 +2,21 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone, timedelta
-from pathlib import Path
-from typing import Any
 import tempfile
 import uuid
+from datetime import UTC, datetime, timedelta, timezone
+from pathlib import Path
+from typing import Any
 
 import pytest
 import yaml
 
+from analyzers.entity_extractor import extract_all_entities
 from collectors.html_collector import HTMLCollector
 from collectors.registry import build_collectors
-from graph.graph_store import init_database, upsert_url_and_entities
 from graph.graph_queries import get_view
-from analyzers.entity_extractor import extract_all_entities
+from graph.graph_store import init_database, upsert_url_and_entities
+
 
 pytestmark = pytest.mark.integration
 
@@ -83,7 +84,7 @@ def test_html_collector_with_mock_source(temp_db_path: Path) -> None:
     assert items[0]["summary"] == "Festival summary."
 
     init_database(temp_db_path)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     for item in items:
         entities = extract_all_entities(item)
         upsert_url_and_entities(item, entities, now, temp_db_path)
@@ -120,7 +121,7 @@ def test_wine21_real_collection(sources_config: dict[str, Any], temp_db_path: Pa
     assert len(items) >= 1
 
     init_database(temp_db_path)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     for item in items[:5]:
         entities = extract_all_entities(item)
