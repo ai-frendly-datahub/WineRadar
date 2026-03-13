@@ -209,6 +209,7 @@ __marimo__/
 # WineRadar data files
 data/*.duckdb
 data/*.duckdb.wal
+data/daily/
 
 # Generated workflow artifacts
 .sisyphus/

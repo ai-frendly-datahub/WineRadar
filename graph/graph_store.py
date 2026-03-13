@@ -239,3 +239,48 @@ def prune_expired_urls(
         raise StorageError(f"Failed to prune WineRadar expired URLs: {exc}") from exc
     finally:
         conn.close()
+
+
+def create_daily_snapshot(
+    db_path: Optional[Path | str] = None,
+    snapshot_dir: Optional[str] = None,
+) -> Optional[Path]:
+    """Create a daily snapshot of the database.
+
+    Args:
+        db_path: Optional database path. Resolved via environment or default.
+        snapshot_dir: Optional directory for snapshots.
+                     Defaults to ``<db_parent>/daily``.
+
+    Returns:
+        Path to the created snapshot file, or ``None`` if the
+        source database does not exist.
+    """
+    from graph.date_storage import snapshot_database
+
+    resolved = _resolve_db_path(db_path)
+    snapshot_root = Path(snapshot_dir) if snapshot_dir else resolved.parent / "daily"
+    return snapshot_database(resolved, snapshot_root=snapshot_root)
+
+
+def cleanup_old_snapshots(
+    db_path: Optional[Path | str] = None,
+    snapshot_dir: Optional[str] = None,
+    keep_days: int = 90,
+) -> int:
+    """Remove snapshot date-directories older than *keep_days*.
+
+    Args:
+        db_path: Optional database path. Resolved via environment or default.
+        snapshot_dir: Optional directory containing snapshots.
+                     Defaults to ``<db_parent>/daily``.
+        keep_days: Number of days to retain.
+
+    Returns:
+        Number of directories removed.
+    """
+    from graph.date_storage import cleanup_date_directories
+
+    resolved = _resolve_db_path(db_path)
+    snapshot_root = Path(snapshot_dir) if snapshot_dir else resolved.parent / "daily"
+    return cleanup_date_directories(snapshot_root, keep_days=keep_days)
