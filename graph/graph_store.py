@@ -1,229 +1,188 @@
-"""DuckDB 기반 그래프 저장소 구현."""
-
 from __future__ import annotations
 
-import os
-from dataclasses import dataclass
-from datetime import datetime, timedelta
+import json
+from collections.abc import Iterable
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import cast
 
 import duckdb
 
-from collectors.base import RawItem
-from graph.scoring import calculate_entity_boost, calculate_score
+from .exceptions import StorageError
+from .models import Article
 
 
-DB_ENV_VAR = "WINERADAR_DB_PATH"
-DEFAULT_DB_PATH = Path("data") / "wineradar.duckdb"
+def _utc_naive(dt: datetime | None) -> datetime | None:
+    """Convert tz-aware datetime to UTC naive for DuckDB."""
+    if dt is None:
+        return None
+    if dt.tzinfo:
+        return dt.astimezone(UTC).replace(tzinfo=None)
+    return dt
 
 
-class Node(dict):
-    """레거시 타입 호환용 placeholder."""
+class RadarStorage:
+    """DuckDB 기반 경량 스토리지."""
 
+    def __init__(self, db_path: Path):
+        self.db_path: Path = db_path
+        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self.conn: duckdb.DuckDBPyConnection = duckdb.connect(str(self.db_path))
+        self._ensure_tables()
 
-class Edge(dict):
-    """레거시 타입 호환용 placeholder."""
+    def close(self) -> None:
+        self.conn.close()
 
+    def __enter__(self) -> RadarStorage:
+        return self
 
-@dataclass
-class DatabasePaths:
-    path: Path
+    def __exit__(self, *args: object) -> None:
+        self.close()
 
-
-def _resolve_db_path(db_path: Path | str | None = None) -> Path:
-    if db_path is not None:
-        path = Path(db_path)
-    elif db_env := os.environ.get(DB_ENV_VAR):
-        path = Path(db_env)
-    else:
-        path = DEFAULT_DB_PATH
-    path.parent.mkdir(parents=True, exist_ok=True)
-    return path
-
-
-def init_database(db_path: Path | str | None = None) -> DatabasePaths:
-    """DuckDB 파일과 기본 테이블을 생성한다."""
-    path = _resolve_db_path(db_path)
-    with duckdb.connect(str(path)) as conn:
-        conn.execute(
+    def _ensure_tables(self) -> None:
+        _ = self.conn.execute(
             """
-            CREATE TABLE IF NOT EXISTS urls (
-                url TEXT PRIMARY KEY,
-                title TEXT,
+            CREATE SEQUENCE IF NOT EXISTS articles_id_seq START 1;
+            CREATE TABLE IF NOT EXISTS articles (
+                id BIGINT PRIMARY KEY DEFAULT nextval('articles_id_seq'),
+                category TEXT NOT NULL,
+                source TEXT NOT NULL,
+                title TEXT NOT NULL,
+                link TEXT NOT NULL UNIQUE,
                 summary TEXT,
-                content TEXT,
-                published_at TIMESTAMP,
-                source_name TEXT,
-                source_type TEXT,
-                language TEXT,
-                content_type TEXT,
-
-                -- === 사용자 뷰 중심 메타데이터 (sources.yaml과 일치) ===
-                -- 1. 지리적 메타데이터
-                country TEXT,                -- ISO 3166-1 alpha-2
-                continent TEXT,              -- OLD_WORLD, NEW_WORLD, ASIA
-                region TEXT,                 -- 계층적 경로
-
-                -- 2. 생산자 역할
-                producer_role TEXT,          -- government, industry_assoc, research_inst, expert_media, trade_media, importer, consumer_comm
-
-                -- 3. 신뢰도 등급
-                trust_tier TEXT,             -- T1_authoritative, T2_expert, T3_professional, T4_community
-
-                -- 4. 정보 목적 (JSON 배열)
-                info_purpose JSON,           -- ["P1_daily_briefing", "P2_market_analysis", ...]
-
-                -- 5. 수집 난이도
-                collection_tier TEXT,        -- C1_rss, C2_html_simple, C3_html_js, C4_api, C5_manual
-
-                -- 메타 필드
-                score DOUBLE,
-                created_at TIMESTAMP,
-                updated_at TIMESTAMP,
-                last_seen_at TIMESTAMP
-            )
+                published TIMESTAMP,
+                collected_at TIMESTAMP NOT NULL,
+                entities_json TEXT
+            );
             """
         )
-        conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS url_entities (
-                url TEXT,
-                entity_type TEXT,
-                entity_value TEXT,
-                weight DOUBLE,
-                first_seen_at TIMESTAMP,
-                last_seen_at TIMESTAMP,
-                PRIMARY KEY (url, entity_type, entity_value)
-            )
-            """
+        _ = self.conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_articles_category_time ON articles (category, published, collected_at);"
         )
-    return DatabasePaths(path=path)
 
-
-def _connect(db_path: Path | str | None = None) -> duckdb.DuckDBPyConnection:
-    path = _resolve_db_path(db_path)
-    init_database(path)
-    return duckdb.connect(str(path))
-
-
-def upsert_url_and_entities(
-    item: RawItem, entities: dict[str, list[str]], now: datetime, db_path: Path | str | None = None
-) -> None:
-    """URL과 연관 엔터티를 upsert한다.
-
-    스코어는 trust_tier, info_purpose, published_at 기반으로 자동 계산되며,
-    엔티티 매칭 시 추가 보너스가 적용된다.
-    """
-    import json
-
-    # 스코어 계산
-    base_score = calculate_score(
-        trust_tier=item["trust_tier"],
-        info_purposes=item["info_purpose"],
-        published_at=item["published_at"],
-        now=now,
-    )
-    final_score = calculate_entity_boost(base_score, entities)
-
-    conn = _connect(db_path)
-    try:
-        conn.execute(
-            """
-            INSERT INTO urls (
-                url, title, summary, content, published_at,
-                source_name, source_type, language, content_type,
-                country, continent, region,
-                producer_role, trust_tier, info_purpose, collection_tier,
-                score, created_at, updated_at, last_seen_at
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT (url) DO UPDATE SET
-                title = excluded.title,
-                summary = excluded.summary,
-                content = excluded.content,
-                published_at = excluded.published_at,
-                source_name = excluded.source_name,
-                source_type = excluded.source_type,
-                language = excluded.language,
-                content_type = excluded.content_type,
-                country = excluded.country,
-                continent = excluded.continent,
-                region = excluded.region,
-                producer_role = excluded.producer_role,
-                trust_tier = excluded.trust_tier,
-                info_purpose = excluded.info_purpose,
-                collection_tier = excluded.collection_tier,
-                score = excluded.score,
-                updated_at = excluded.updated_at,
-                last_seen_at = excluded.last_seen_at
-            """,
-            (
-                item["url"],
-                item["title"],
-                item.get("summary"),
-                item.get("content"),
-                item["published_at"],
-                item["source_name"],
-                item["source_type"],
-                item.get("language"),
-                item["content_type"],
-                item["country"],
-                item["continent"],
-                item["region"],
-                item["producer_role"],
-                item["trust_tier"],
-                json.dumps(item["info_purpose"]),  # JSON 배열로 저장
-                item["collection_tier"],
-                final_score,  # 계산된 스코어
-                now,
-                now,
-                now,
-            ),
-        )
-        for entity_type, values in entities.items():
-            for value in values:
-                conn.execute(
-                    """
-                    INSERT INTO url_entities (
-                        url, entity_type, entity_value, weight, first_seen_at, last_seen_at
-                    )
-                    VALUES (?, ?, ?, ?, ?, ?)
-                    ON CONFLICT (url, entity_type, entity_value) DO UPDATE SET
-                        weight = excluded.weight,
-                        last_seen_at = excluded.last_seen_at
-                    """,
-                    (
-                        item["url"],
-                        entity_type,
-                        value,
-                        1.0,
-                        now,
-                        now,
-                    ),
+    def upsert_articles(self, articles: Iterable[Article]) -> None:
+        """중복 링크는 덮어쓰고 최신 수집 시각을 기록."""
+        now = _utc_naive(datetime.now(UTC))
+        rows: list[tuple[object, ...]] = []
+        for article in articles:
+            rows.append(
+                (
+                    article.category,
+                    article.source,
+                    article.title,
+                    article.link,
+                    article.summary,
+                    _utc_naive(article.published),
+                    now,
+                    json.dumps(article.matched_entities, ensure_ascii=False),
                 )
-    finally:
-        conn.close()
-
-
-def prune_expired_urls(
-    now: datetime, ttl_days: int = 30, db_path: Path | str | None = None
-) -> None:
-    """ttl_days 이전 URL/엔터티 레코드를 삭제한다."""
-    threshold = now - timedelta(days=ttl_days)
-    conn = _connect(db_path)
-    try:
-        conn.execute(
-            """
-            DELETE FROM url_entities
-            WHERE url IN (
-                SELECT url FROM urls WHERE last_seen_at < ?
             )
+
+        if not rows:
+            return
+
+        try:
+            _ = self.conn.begin()
+            _ = self.conn.executemany(
+                """
+                INSERT INTO articles (category, source, title, link, summary, published, collected_at, entities_json)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(link) DO UPDATE SET
+                    title = EXCLUDED.title,
+                    summary = EXCLUDED.summary,
+                    published = EXCLUDED.published,
+                    collected_at = EXCLUDED.collected_at,
+                    entities_json = EXCLUDED.entities_json
+                """,
+                rows,
+            )
+            _ = self.conn.commit()
+        except Exception as exc:
+            try:
+                _ = self.conn.rollback()
+            except duckdb.Error:
+                pass
+            raise StorageError("Failed to upsert articles") from exc
+
+    def recent_articles(self, category: str, *, days: int = 7, limit: int = 200) -> list[Article]:
+        """최근 N일 내 기사 반환."""
+        since = _utc_naive(datetime.now(UTC) - timedelta(days=days))
+        cur = self.conn.execute(
+            """
+            SELECT category, source, title, link, summary, published, collected_at, entities_json
+            FROM articles
+            WHERE category = ? AND COALESCE(published, collected_at) >= ?
+            ORDER BY COALESCE(published, collected_at) DESC
+            LIMIT ?
             """,
-            (threshold,),
+            [category, since, limit],
         )
-        conn.execute(
-            "DELETE FROM urls WHERE last_seen_at < ?",
-            (threshold,),
+        rows = cast(
+            list[
+                tuple[str, str, str, str, str | None, datetime | None, datetime | None, str | None]
+            ],
+            cur.fetchall(),
         )
-    finally:
-        conn.close()
+
+        results: list[Article] = []
+        for row in rows:
+            category_value, source, title, link, summary, published, collected_at, raw_entities = (
+                row
+            )
+            published_at = published if isinstance(published, datetime) else None
+            collected = collected_at if isinstance(collected_at, datetime) else None
+
+            entities: dict[str, list[str]] = {}
+            if raw_entities:
+                try:
+                    parsed_entities = cast(object, json.loads(raw_entities))
+                    if isinstance(parsed_entities, dict):
+                        parsed_map = cast(dict[object, object], parsed_entities)
+                        entities = {}
+                        for name, keywords in parsed_map.items():
+                            if not isinstance(name, str) or not isinstance(keywords, list):
+                                continue
+                            normalized_keywords: list[str] = []
+                            for keyword in cast(list[object], keywords):
+                                normalized_keywords.append(str(keyword))
+                            entities[name] = normalized_keywords
+                except json.JSONDecodeError:
+                    entities = {}
+
+            results.append(
+                Article(
+                    title=str(title),
+                    link=str(link),
+                    summary=str(summary) if summary is not None else "",
+                    published=published_at,
+                    source=str(source),
+                    category=str(category_value),
+                    matched_entities=entities,
+                    collected_at=collected,
+                )
+            )
+        return results
+
+    def delete_older_than(self, days: int) -> int:
+        """보존 기간 밖 데이터 삭제."""
+        cutoff = _utc_naive(datetime.now(UTC) - timedelta(days=days))
+        count_row = self.conn.execute(
+            "SELECT COUNT(*) FROM articles WHERE COALESCE(published, collected_at) < ?", [cutoff]
+        ).fetchone()
+        to_delete = count_row[0] if count_row else 0
+        _ = self.conn.execute(
+            "DELETE FROM articles WHERE COALESCE(published, collected_at) < ?", [cutoff]
+        )
+        return to_delete
+
+    def create_daily_snapshot(self, snapshot_dir: str | None = None) -> Path | None:
+        from .date_storage import snapshot_database
+
+        snapshot_root = Path(snapshot_dir) if snapshot_dir else self.db_path.parent / "daily"
+        return snapshot_database(self.db_path, snapshot_root=snapshot_root)
+
+    def cleanup_old_snapshots(self, snapshot_dir: str | None = None, keep_days: int = 90) -> int:
+        from .date_storage import cleanup_date_directories
+
+        snapshot_root = Path(snapshot_dir) if snapshot_dir else self.db_path.parent / "daily"
+        return cleanup_date_directories(snapshot_root, keep_days=keep_days)

@@ -1,106 +1,75 @@
-"""공통 pytest 픽스처."""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
 
 import pytest
-import yaml
-
-from collectors.base import RawItem
-from graph.graph_queries import ViewItem
+import structlog
 
 
-@pytest.fixture(scope="session")
-def project_root() -> Path:
-    """프로젝트 루트 경로."""
-    return Path(__file__).resolve().parent.parent
+@pytest.fixture(autouse=True)
+def reset_structlog() -> object:
+    structlog.reset_defaults()
+    yield
+    structlog.reset_defaults()
 
 
-@pytest.fixture(scope="session")
-def sources_config(project_root: Path) -> dict[str, Any]:
-    """sources.yaml 전체 로딩."""
-    sources_path = project_root / "config" / "sources.yaml"
-    with sources_path.open(encoding="utf-8") as fp:
-        return yaml.safe_load(fp)
+@pytest.fixture
+def sample_source() -> object:
+    from wineradar.models import Source
+
+    return Source(name="Example RSS", type="rss", url="https://example.com/feed.xml")
 
 
-@pytest.fixture()
-def sample_raw_item() -> RawItem:
-    """Collector가 반환해야 하는 RawItem 예시."""
-    published_at = datetime(2024, 1, 1, 12, tzinfo=UTC)
-    return RawItem(
-        id="sample-item-1",
-        url="https://example.com/articles/1",
-        title="샘플 와인 기사",
-        summary="샘플 요약입니다.",
-        content="본문 내용",
-        published_at=published_at,
-        source_name="Wine21",
-        source_type="media",
-        language="ko",
-        content_type="news_review",
-        # 사용자 뷰 중심 메타데이터
-        country="KR",
-        continent="ASIA",
-        region="Asia/East/Korea",
-        producer_role="trade_media",
-        trust_tier="T3_professional",
-        info_purpose=["P1_daily_briefing", "P4_trend_discovery"],
-        collection_tier="C2_html_simple",
+@pytest.fixture
+def sample_entity() -> object:
+    from wineradar.models import EntityDefinition
+
+    return EntityDefinition(name="topic", display_name="Topic", keywords=["ai", "cloud", "python"])
+
+
+@pytest.fixture
+def sample_article() -> object:
+    from wineradar.models import Article
+
+    return Article(
+        title="AI and cloud market update",
+        link="https://example.com/article-1",
+        summary="Python tooling and AI adoption continue to grow.",
+        published=datetime(2026, 3, 10, 9, 0, tzinfo=UTC),
+        source="Example RSS",
+        category="tech",
+        matched_entities={"topic": ["ai", "cloud", "python"]},
     )
 
 
-@pytest.fixture()
-def sample_sections(sample_raw_item: RawItem) -> dict[str, list[ViewItem]]:
-    """리포터/뷰 관련 샘플 섹션 데이터."""
-    view_item: ViewItem = {
-        "url": sample_raw_item["url"],
-        "title": sample_raw_item["title"],
-        "summary": sample_raw_item["summary"],
-        "published_at": sample_raw_item["published_at"],
-        "source_name": sample_raw_item["source_name"],
-        "source_type": sample_raw_item["source_type"],
-        "content_type": sample_raw_item["content_type"],
-        # 사용자 뷰 중심 메타데이터
-        "country": sample_raw_item["country"],
-        "continent": sample_raw_item["continent"],
-        "region": sample_raw_item["region"],
-        "producer_role": sample_raw_item["producer_role"],
-        "trust_tier": sample_raw_item["trust_tier"],
-        "info_purpose": sample_raw_item["info_purpose"],
-        "collection_tier": sample_raw_item["collection_tier"],
-        # 스코어 및 엔티티
-        "score": 1.0,
-        "entities": {"winery": ["샘플 와이너리"]},
-    }
-    return {
-        "top_issues": [view_item],
-        "winery": [view_item],
-        "importer": [],
-        "community": [],
-    }
+@pytest.fixture
+def tmp_duckdb(tmp_path: Path) -> Path:
+    return tmp_path / "test_radar_data.duckdb"
 
 
-@pytest.fixture()
-def rss_source_meta() -> dict[str, Any]:
-    return {
-        "id": "media_sample_rss",
-        "name": "Sample RSS Source",
-        "type": "media",
-        "country": "GB",
-        "continent": "OLD_WORLD",
-        "region": "Europe/Western/UK",
-        "producer_role": "expert_media",
-        "tier": "premium",
-        "trust_tier": "T2_expert",
-        "info_purpose": ["P1_daily_briefing"],
-        "collection_tier": "C1_rss",
-        "supports_rss": True,
-        "requires_login": False,
-        "content_type": "news_review",
-        "language": "en",
-        "config": {"list_url": "https://example.com/feed"},
-    }
+@pytest.fixture
+def tmp_search_db(tmp_path: Path) -> Path:
+    return tmp_path / "test_search_index.db"
+
+
+@pytest.fixture
+def tmp_storage(tmp_duckdb: Path) -> object:
+    from wineradar.storage import RadarStorage
+
+    storage = RadarStorage(tmp_duckdb)
+    try:
+        yield storage
+    finally:
+        storage.close()
+
+
+@pytest.fixture
+def tmp_search_index(tmp_search_db: Path) -> object:
+    from wineradar.search_index import SearchIndex
+
+    index = SearchIndex(tmp_search_db)
+    try:
+        yield index
+    finally:
+        index.close()
