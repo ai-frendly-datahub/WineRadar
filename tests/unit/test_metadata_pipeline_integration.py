@@ -98,7 +98,7 @@ def test_metadata_pipeline_decanter(sources_config: dict[str, Any], temp_db_path
     with duckdb.connect(str(temp_db_path)) as conn:
         result = conn.execute("SELECT * FROM urls WHERE url = ?", (raw_item["url"],)).fetchone()
         columns = [desc[0] for desc in conn.description]
-        row_dict = dict(zip(columns, result))
+        row_dict = dict(zip(columns, result, strict=False))
 
         view_item: ViewItem = {
             "url": row_dict["url"],
@@ -377,7 +377,7 @@ def test_end_to_end_metadata_round_trip(sources_config: dict[str, Any], temp_db_
     with duckdb.connect(str(temp_db_path)) as conn:
         result = conn.execute("SELECT * FROM urls WHERE url = ?", (raw_item["url"],)).fetchone()
         columns = [desc[0] for desc in conn.description]
-        row_dict = dict(zip(columns, result))
+        row_dict = dict(zip(columns, result, strict=False))
 
         view_item: ViewItem = {
             "url": row_dict["url"],

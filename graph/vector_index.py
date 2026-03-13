@@ -91,7 +91,7 @@ class FaissVectorIndex:
             scores = dot_scores[order].astype("float32").reshape(1, -1)
             indices = order.astype("int64").reshape(1, -1)
         results: list[VectorSearchResult] = []
-        for score, idx in zip(scores[0], indices[0]):
+        for score, idx in zip(scores[0], indices[0], strict=False):
             if idx == -1:
                 continue
             results.append(VectorSearchResult(item_id=self._ids[idx], score=float(score)))

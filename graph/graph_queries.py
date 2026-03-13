@@ -165,7 +165,7 @@ def get_view(
 
     view_items: list[ViewItem] = []
     for row in rows:
-        row_dict = dict(zip(columns, row))
+        row_dict = dict(zip(columns, row, strict=False))
         info_purpose = json.loads(row_dict["info_purpose"]) if row_dict["info_purpose"] else []
         item: ViewItem = {
             "url": row_dict["url"],

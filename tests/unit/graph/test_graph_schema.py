@@ -177,7 +177,7 @@ def test_upsert_url_with_metadata(temp_db_path: Path) -> None:
 
         # 컬럼 이름 가져오기
         columns = [desc[0] for desc in conn.description]
-        row_dict = dict(zip(columns, result))
+        row_dict = dict(zip(columns, result, strict=False))
 
         # 콘텐츠 필드 검증
         assert row_dict["url"] == item["url"]
