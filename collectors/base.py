@@ -3,19 +3,22 @@
 from __future__ import annotations
 
 import logging
+import os
 from collections.abc import Iterable
 from datetime import datetime
 from typing import Any, Literal, Protocol, TypedDict
 
 import requests
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-)
 
 from resilience import SourceCircuitBreakerManager
+
+
+_DEFAULT_HEALTH_DB_PATH = "data/radar_data.duckdb"
+
+
+def _load_adaptive_controls() -> tuple[type[Any], type[Any]]:
+    module = __import__("radar_core", fromlist=["AdaptiveThrottler", "CrawlHealthStore"])
+    return module.AdaptiveThrottler, module.CrawlHealthStore
 
 
 Continent = Literal["OLD_WORLD", "NEW_WORLD", "ASIA"]
@@ -55,15 +58,16 @@ class BaseCollector:
         self.source_meta = source_meta
         self.breaker_manager = SourceCircuitBreakerManager()
         self.logger = logging.getLogger(f"{__name__}.{self._resolve_source_name()}")
+        min_delay = source_meta.get("request_interval", 0.5)
+        if not isinstance(min_delay, (int, float)):
+            min_delay = 0.5
+        throttler_cls, health_store_cls = _load_adaptive_controls()
+        self._throttler = throttler_cls(min_delay=max(0.001, float(min_delay)))
+        self._health_store = health_store_cls(
+            source_meta.get("health_db_path")
+            or os.environ.get("RADAR_CRAWL_HEALTH_DB_PATH", _DEFAULT_HEALTH_DB_PATH)
+        )
 
-    @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=1, min=1, max=10),
-        retry=retry_if_exception_type(
-            (requests.Timeout, requests.ConnectionError, requests.HTTPError)
-        ),
-        reraise=True,
-    )
     def _fetch_with_retry(self, url: str, timeout: float) -> requests.Response:
         """Fetch URL with exponential backoff retry.
 
@@ -81,17 +85,49 @@ class BaseCollector:
             requests.ConnectionError: When connection fails after retries
             requests.HTTPError: When HTTP error persists after retries
         """
-        response = requests.get(url, timeout=timeout)
-        # Manually raise for retryable status codes
-        if response.status_code in (408, 429, 500, 502, 503, 504, 522, 524):
-            self.logger.warning(
-                "Retryable HTTP status %s for %s, will retry",
-                response.status_code,
-                url,
-            )
-            response.raise_for_status()
-        response.raise_for_status()
-        return response
+        source_name = self._resolve_source_name()
+        max_attempts_raw = self.source_meta.get("max_retry_attempts", 3)
+        max_attempts = max_attempts_raw if isinstance(max_attempts_raw, int) else 3
+        max_attempts = max(1, max_attempts)
+        retryable_errors = (
+            requests.exceptions.Timeout,
+            requests.exceptions.ConnectionError,
+            requests.exceptions.HTTPError,
+        )
+
+        for attempt in range(max_attempts):
+            self._throttler.acquire(source_name)
+
+            try:
+                response = requests.get(url, timeout=timeout)
+                if response.status_code in (408, 429, 500, 502, 503, 504, 522, 524):
+                    self.logger.warning(
+                        "Retryable HTTP status %s for %s, will retry",
+                        response.status_code,
+                        url,
+                    )
+                    response.raise_for_status()
+                response.raise_for_status()
+
+                self._throttler.record_success(source_name)
+                delay = self._throttler.get_current_delay(source_name)
+                self._health_store.record_success(source_name, delay)
+                return response
+            except retryable_errors as exc:
+                retry_after: int | str | None = None
+                if isinstance(exc, requests.exceptions.HTTPError):
+                    response = exc.response
+                    if response is not None and response.status_code == 429:
+                        retry_after = _parse_retry_after(response.headers.get("Retry-After"))
+
+                self._throttler.record_failure(source_name, retry_after=retry_after)
+                delay = self._throttler.get_current_delay(source_name)
+                self._health_store.record_failure(source_name, str(exc), delay)
+
+                if attempt == max_attempts - 1:
+                    raise
+
+        raise RuntimeError("Retry loop exited unexpectedly")
 
     def _resolve_source_name(self) -> str:
         source_name = self.source_meta.get("name")
@@ -134,9 +170,7 @@ class BaseCollector:
 
         def _fetch_impl() -> requests.Response:
             try:
-                response = requests.get(url, timeout=timeout)
-                response.raise_for_status()
-                return response
+                return self._fetch_with_retry(url, timeout)
             except requests.Timeout as exc:
                 raise requests.Timeout(f"Request to {url} timed out after {timeout}s") from exc
             except requests.ConnectionError as exc:
@@ -162,8 +196,7 @@ class BaseCollector:
 
         def _fetch_html_impl() -> str | None:
             try:
-                response = requests.get(url, timeout=timeout)
-                response.raise_for_status()
+                response = self._fetch_with_retry(url, timeout)
                 response.encoding = response.apparent_encoding or "utf-8"
                 return response.text
             except requests.Timeout as exc:
@@ -196,8 +229,7 @@ class BaseCollector:
 
         def _fetch_json_impl() -> dict[str, Any] | list[Any]:
             try:
-                response = requests.get(url, timeout=timeout)
-                response.raise_for_status()
+                response = self._fetch_with_retry(url, timeout)
                 return response.json()
             except requests.Timeout as exc:
                 raise requests.Timeout(f"JSON fetch from {url} timed out after {timeout}s") from exc
@@ -210,6 +242,9 @@ class BaseCollector:
             lambda source=source_name: _fetch_json_impl(),
             source=source_name,
         )
+
+    def __del__(self) -> None:
+        self._health_store.close()
 
 
 class RawItem(TypedDict):
@@ -293,3 +328,17 @@ class Collector(Protocol):
     def collect(self) -> Iterable[RawItem]:
         """해당 소스에서 RawItem 시퀀스를 수집한다."""
         ...
+
+
+def _parse_retry_after(value: str | None) -> int | str | None:
+    if value is None:
+        return None
+
+    stripped = value.strip()
+    if not stripped:
+        return None
+
+    if stripped.isdigit():
+        return int(stripped)
+
+    return stripped
