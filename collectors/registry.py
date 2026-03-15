@@ -7,6 +7,7 @@ from collections.abc import Callable  # noqa: E402
 from typing import Any  # noqa: E402
 
 from collectors.html_collector import HTMLCollector, PageFetcher  # noqa: E402
+from collectors.playwright_collector import PlaywrightCollector  # noqa: E402
 from collectors.rss_collector import FeedFetcher, RSSCollector  # noqa: E402
 
 
@@ -35,6 +36,10 @@ def build_collectors(
         if collection_tier == "C2_html_simple":
             fetcher = fetcher_factory(source) if fetcher_factory else None
             collectors.append(HTMLCollector(source, fetcher=fetcher))
+            continue
+
+        if collection_tier == "C3_html_js":
+            collectors.append(PlaywrightCollector(source))
             continue
 
     return collectors

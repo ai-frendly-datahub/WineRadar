@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collectors.base import Collector, RawItem
 from collectors.html_collector import HTMLCollector
+from collectors.playwright_collector import PlaywrightCollector
 from collectors.registry import build_collectors
 from collectors.rss_collector import RSSCollector
 
@@ -18,5 +19,6 @@ __all__ = [
     "Collector",
     "RSSCollector",
     "HTMLCollector",
+    "PlaywrightCollector",
     "build_collectors",
 ]
