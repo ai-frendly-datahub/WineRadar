@@ -186,3 +186,28 @@ class RadarStorage:
 
         snapshot_root = Path(snapshot_dir) if snapshot_dir else self.db_path.parent / "daily"
         return cleanup_date_directories(snapshot_root, keep_days=keep_days)
+
+
+def prune_expired_urls(now_dt: datetime, *, ttl_days: int = 30, db_path: Path) -> int:
+    """Delete URL records whose *collected_at* is older than *ttl_days*."""
+    cutoff = _utc_naive(now_dt - timedelta(days=ttl_days))
+    with duckdb.connect(str(db_path)) as conn:
+        try:
+            row = conn.execute(
+                "SELECT COUNT(*) FROM urls WHERE collected_at < ?", [cutoff]
+            ).fetchone()
+        except duckdb.CatalogException:
+            return 0
+        to_delete: int = row[0] if row else 0
+        if to_delete == 0:
+            return 0
+        try:
+            conn.execute(
+                "DELETE FROM url_entities WHERE url_id IN "
+                "(SELECT url_id FROM urls WHERE collected_at < ?)",
+                [cutoff],
+            )
+        except duckdb.CatalogException:
+            pass
+        conn.execute("DELETE FROM urls WHERE collected_at < ?", [cutoff])
+        return to_delete
