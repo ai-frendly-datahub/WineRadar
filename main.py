@@ -17,6 +17,7 @@ from graph.search_index import SearchIndex
 from raw_logger import RawLogger
 from reporters.html_reporter import generate_daily_report, generate_index_page
 from reporters.kpi_logger import KPILogger
+from wineradar.reporter import generate_index_html
 from wineradar.common.validators import (
     validate_article,
     validate_rating,
@@ -147,6 +148,9 @@ def _generate_html_reports(
 
     # 인덱스 페이지 업데이트
     _update_index_page(output_dir, target_date, stats)
+
+    # 통합 템플릿 인덱스 생성
+    generate_index_html(output_dir)
 
 
 def _update_index_page(output_dir: Path, target_date: date, stats: dict[str, Any]) -> None:

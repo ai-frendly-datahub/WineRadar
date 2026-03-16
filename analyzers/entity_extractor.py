@@ -236,6 +236,49 @@ def extract_wineries(item: RawItem) -> list[Entity]:
     return entities
 
 
+def _validate_extraction_input(item: RawItem) -> list[str]:
+    """Validate RawItem has sufficient text for entity extraction.
+
+    Returns:
+        List of warning messages (empty if valid).
+    """
+    warnings: list[str] = []
+
+    title = item.get("title", "")
+    summary = item.get("summary")
+    content = item.get("content", "")
+
+    if not title and not summary and not content:
+        warnings.append("No text fields available for entity extraction")
+        return warnings
+
+    if title and len(title.strip()) < 3:
+        warnings.append(f"Title too short for reliable extraction: '{title}'")
+
+    return warnings
+
+
+def _validate_entity(entity: Entity) -> bool:
+    """Validate a single extracted entity for common issues.
+
+    Returns:
+        True if entity is valid, False otherwise.
+    """
+    from analyzers.entity_normalizer import validate_entity_value
+
+    value = entity.get("value", "")
+    entity_type = entity.get("type", "")
+
+    if not value or not entity_type:
+        return False
+
+    if not isinstance(value, str) or len(value.strip()) < 2:
+        return False
+
+    validation_warnings = validate_entity_value(entity_type, value)
+    return len(validation_warnings) == 0
+
+
 def extract_all_entities(item: RawItem) -> dict[str, list[str]]:
     """RawItem에서 모든 타입의 엔티티를 추출한다.
 
@@ -251,38 +294,75 @@ def extract_all_entities(item: RawItem) -> dict[str, list[str]]:
                 "winery": ["Château Margaux"]
             }
     """
-    # 각 타입별 엔티티 추출
-    grape_entities = extract_grape_varieties(item)
-    region_entities = extract_regions(item)
-    winery_entities = extract_wineries(item)
-    climate_entities = infer_climate_zone(region_entities)
+    import logging
+
+    _log = logging.getLogger(__name__)
+
+    input_warnings = _validate_extraction_input(item)
+    if input_warnings:
+        for warning in input_warnings:
+            _log.warning("Entity extraction input validation: %s", warning)
+        if any("No text fields" in w for w in input_warnings):
+            return {}
+
+    try:
+        grape_entities = extract_grape_varieties(item)
+    except Exception as exc:
+        _log.warning("Grape variety extraction failed: %s", exc)
+        grape_entities = []
+
+    try:
+        region_entities = extract_regions(item)
+    except Exception as exc:
+        _log.warning("Region extraction failed: %s", exc)
+        region_entities = []
+
+    try:
+        winery_entities = extract_wineries(item)
+    except Exception as exc:
+        _log.warning("Winery extraction failed: %s", exc)
+        winery_entities = []
+
+    try:
+        climate_entities = infer_climate_zone(region_entities)
+    except Exception as exc:
+        _log.warning("Climate zone inference failed: %s", exc)
+        climate_entities = []
 
     if _NLP:
-        doc = _NLP(
-            " ".join(
-                filter(None, [item.get("title"), item.get("summary"), item.get("content", "")])
+        try:
+            doc = _NLP(
+                " ".join(
+                    filter(None, [item.get("title"), item.get("summary"), item.get("content", "")])
+                )
             )
-        )
-        for ent in doc.ents:
-            if ent.label_ in {"ORG", "PERSON"}:
-                winery_entities.append(
-                    {"type": "winery", "value": ent.text, "confidence": 0.55, "source": "spacy"}
-                )
-            if ent.label_ == "LOC":
-                region_entities.append(
-                    {"type": "region", "value": ent.text, "confidence": 0.55, "source": "spacy"}
-                )
+            for ent in doc.ents:
+                if ent.label_ in {"ORG", "PERSON"}:
+                    winery_entities.append(
+                        {"type": "winery", "value": ent.text, "confidence": 0.55, "source": "spacy"}
+                    )
+                if ent.label_ == "LOC":
+                    region_entities.append(
+                        {"type": "region", "value": ent.text, "confidence": 0.55, "source": "spacy"}
+                    )
+        except Exception as exc:
+            _log.warning("spaCy NER extraction failed: %s", exc)
 
-    # 모든 엔티티 통합
     all_entities = grape_entities + region_entities + winery_entities + climate_entities
 
-    # 정규화 및 중복 제거 (동일 엔티티의 다양한 표기 통합)
+    pre_validation_count = len(all_entities)
+    all_entities = [e for e in all_entities if _validate_entity(e)]
+    if len(all_entities) < pre_validation_count:
+        _log.info(
+            "Filtered %d invalid entities out of %d",
+            pre_validation_count - len(all_entities),
+            pre_validation_count,
+        )
+
     deduplicated = deduplicate_entities(all_entities)
 
-    # 신뢰도 필터링 (threshold > 0.5)
     filtered_entities = [e for e in deduplicated if e["confidence"] > 0.5]
 
-    # dict[str, list[str]] 형태로 변환
     result: dict[str, list[str]] = {}
 
     for entity in filtered_entities:
@@ -292,11 +372,9 @@ def extract_all_entities(item: RawItem) -> dict[str, list[str]]:
         if entity_type not in result:
             result[entity_type] = []
 
-        # 중복 제거 (이미 deduplicate_entities에서 처리했지만 추가 보호)
         if entity_value not in result[entity_type]:
             result[entity_type].append(entity_value)
 
-    # 각 타입별로 정렬
     for entity_type in result:
         result[entity_type] = sorted(result[entity_type])
 
