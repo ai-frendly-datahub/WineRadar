@@ -188,6 +188,99 @@ class RadarStorage:
         return cleanup_date_directories(snapshot_root, keep_days=keep_days)
 
 
+_DEFAULT_DB_PATH = Path("data/wineradar.duckdb")
+
+
+def _ensure_url_tables(conn: duckdb.DuckDBPyConnection) -> None:
+    conn.execute(
+        """
+        CREATE SEQUENCE IF NOT EXISTS urls_id_seq START 1;
+        CREATE TABLE IF NOT EXISTS urls (
+            url_id BIGINT PRIMARY KEY DEFAULT nextval('urls_id_seq'),
+            url TEXT NOT NULL UNIQUE,
+            title TEXT,
+            summary TEXT,
+            source_name TEXT,
+            source_type TEXT,
+            content_type TEXT,
+            language TEXT,
+            country TEXT,
+            continent TEXT,
+            region TEXT,
+            trust_tier TEXT,
+            published_at TIMESTAMP,
+            collected_at TIMESTAMP NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS url_entities (
+            url_id BIGINT NOT NULL,
+            entity_type TEXT NOT NULL,
+            entity_value TEXT NOT NULL,
+            UNIQUE(url_id, entity_type, entity_value)
+        );
+        """
+    )
+
+
+def upsert_url_and_entities(
+    item: dict[str, object],
+    entities: dict[str, list[str]],
+    now: datetime,
+    *,
+    db_path: Path | None = None,
+) -> None:
+    resolved = db_path or _DEFAULT_DB_PATH
+    resolved.parent.mkdir(parents=True, exist_ok=True)
+    with duckdb.connect(str(resolved)) as conn:
+        _ensure_url_tables(conn)
+        collected = _utc_naive(now)
+        raw_pub = item.get("published_at")
+        published = _utc_naive(raw_pub if isinstance(raw_pub, datetime) else now)
+        conn.execute(
+            """
+            INSERT INTO urls (url, title, summary, source_name, source_type,
+                              content_type, language, country, continent,
+                              region, trust_tier, published_at, collected_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(url) DO UPDATE SET
+                title = EXCLUDED.title,
+                summary = EXCLUDED.summary,
+                collected_at = EXCLUDED.collected_at
+            """,
+            [
+                str(item.get("url", "")),
+                str(item.get("title", "")),
+                str(item.get("summary") or ""),
+                str(item.get("source_name", "")),
+                str(item.get("source_type", "")),
+                str(item.get("content_type", "")),
+                str(item.get("language") or ""),
+                str(item.get("country", "")),
+                str(item.get("continent", "")),
+                str(item.get("region", "")),
+                str(item.get("trust_tier", "")),
+                published,
+                collected,
+            ],
+        )
+        if entities:
+            row = conn.execute(
+                "SELECT url_id FROM urls WHERE url = ?",
+                [str(item.get("url", ""))],
+            ).fetchone()
+            if row:
+                url_id = row[0]
+                for etype, evalues in entities.items():
+                    for ev in evalues:
+                        conn.execute(
+                            """
+                            INSERT INTO url_entities (url_id, entity_type, entity_value)
+                            VALUES (?, ?, ?)
+                            ON CONFLICT DO NOTHING
+                            """,
+                            [url_id, str(etype), str(ev)],
+                        )
+
+
 def prune_expired_urls(now_dt: datetime, *, ttl_days: int = 30, db_path: Path) -> int:
     """Delete URL records whose *collected_at* is older than *ttl_days*."""
     cutoff = _utc_naive(now_dt - timedelta(days=ttl_days))
