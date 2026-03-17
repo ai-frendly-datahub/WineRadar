@@ -332,6 +332,24 @@ def run_once(
             print(f"  - 리포트 생성 실패: {e}")
             errors.append(f"Report generation: {str(e)[:100]}")
 
+        # Generate summary JSON for trend tracking
+        try:
+            from radar_core.report_utils import generate_summary_json
+            summary_path = report_dir / f"{now.date().isoformat()}_summary.json"
+            generate_summary_json(
+                report_date=now.date().isoformat(),
+                category="wine",
+                total_collected=total_items,
+                total_sources=collector_count,
+                sources_succeeded=sources_succeeded,
+                sources_failed=sources_failed,
+                entity_counts={},
+                output_path=summary_path,
+            )
+            print(f"  - Summary JSON: {summary_path}")
+        except Exception as e:
+            print(f"  - Summary JSON failed: {e}")
+
     # KPI 로깅
     runtime_seconds = time.time() - start_time
     try:
