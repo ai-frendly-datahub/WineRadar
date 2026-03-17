@@ -37,7 +37,7 @@ sources:
   content_type: news_review
   continent: ASIA
   country: KR
-  enabled: false
+  enabled: true
   id: media_winereview_kr
   info_purpose:
   - P1_daily_briefing
@@ -76,14 +76,19 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.4
-- collection_tier: C2_html_simple
+- collection_tier: C3_html_js
   config:
-    collection_method: html
+    collection_method: browser
     list_url: https://koreawine.or.kr/wineinfo
+    wait_for: ".board-text-overflow"
+    article_selector: ".board-text-overflow"
+    link_selector: ".board-text-overflow a"
+    max_articles: 20
+    timeout: 20000
   content_type: education
   continent: ASIA
   country: KR
-  enabled: false
+  enabled: true
   id: official_koreawine_kr
   info_purpose:
   - P5_education
@@ -98,14 +103,19 @@ sources:
   trust_tier: T1_authoritative
   type: official
   weight: 2.0
-- collection_tier: C2_html_simple
+- collection_tier: C3_html_js
   config:
-    collection_method: html
+    collection_method: browser
     list_url: https://www.shinsegae-lnb.com/html/news/promotion.html
+    wait_for: ".promotionGallery"
+    article_selector: ".list .wrap"
+    link_selector: ".list .wrap a"
+    max_articles: 20
+    timeout: 20000
   content_type: news_review
   continent: ASIA
   country: KR
-  enabled: false
+  enabled: true
   id: importer_shinsegae_kr
   info_purpose:
   - P4_trend_discovery
@@ -392,10 +402,15 @@ sources:
   config:
     collection_method: html
     list_url: https://www.federdoc.com/news/
+    article_selector: "article"
+    link_selector: "h2.entry-title a"
+    summary_selector: ".entry-content p"
+    date_selector: "time"
+    max_articles: 20
   content_type: education
   continent: OLD_WORLD
   country: IT
-  enabled: false
+  enabled: true
   id: official_federdoc_it
   info_purpose:
   - P5_education
@@ -476,14 +491,18 @@ sources:
   trust_tier: T1_authoritative
   type: official
   weight: 2.5
-- collection_tier: C2_html_simple
+- collection_tier: C3_html_js
   config:
-    collection_method: html
+    collection_method: browser
     list_url: https://wineinstitute.org/category/press-releases/
+    wait_for: "main"
+    link_selector: "main a"
+    max_articles: 20
+    timeout: 20000
   content_type: statistics
   continent: NEW_WORLD
   country: US
-  enabled: false
+  enabled: true
   id: official_wineinstitute_us
   info_purpose:
   - P2_market_analysis
@@ -664,12 +683,17 @@ sources:
   weight: 2.5
 - collection_tier: C3_html_js
   config:
-    collection_method: html
+    collection_method: browser
     list_url: https://www.wineaustralia.com/news
+    wait_for: ".date"
+    link_selector: "a[href*='/news/']"
+    date_selector: ".date"
+    max_articles: 20
+    timeout: 20000
   content_type: statistics
   continent: NEW_WORLD
   country: AU
-  enabled: false
+  enabled: true
   id: official_wineaustralia_au
   info_purpose:
   - P2_market_analysis
