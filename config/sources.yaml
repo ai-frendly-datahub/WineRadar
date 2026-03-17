@@ -822,29 +822,6 @@ sources:
 - collection_tier: C1_rss
   config:
     collection_method: rss
-    list_url: https://www.austinwinejournal.com/feed/
-  content_type: news_review
-  continent: NEW_WORLD
-  country: US
-  enabled: false
-  id: media_austinwine_us
-  info_purpose:
-  - P1_daily_briefing
-  - P4_trend_discovery
-  language: en
-  name: Austin Wine Journal
-  notes: 'US regional wine coverage [DISABLED: DNS resolution failed - Domain unavailable]'
-  producer_role: trade_media
-  region: Americas/North/USA
-  requires_login: false
-  supports_rss: true
-  tier: premium
-  trust_tier: T3_professional
-  type: media
-  weight: 2.3
-- collection_tier: C1_rss
-  config:
-    collection_method: rss
     list_url: https://www.meininger.de/en/rss.xml
   content_type: news_review
   continent: OLD_WORLD
@@ -865,57 +842,6 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.8
-- collection_tier: C2_html_simple
-  config:
-    collection_method: html
-    list_url: https://www.winesofchina.com/news
-    article_selector: div.news-item
-    link_selector: h3 a
-    max_articles: 15
-  content_type: news_review
-  continent: ASIA
-  country: CN
-  enabled: false
-  id: media_winesofchina_cn
-  info_purpose:
-  - P1_daily_briefing
-  language: en
-  name: Wines of China
-  notes: 'China wine market news and analysis [DISABLED: Connection timeout - site unavailable]'
-  producer_role: trade_media
-  region: Asia/East/China
-  requires_login: false
-  supports_rss: false
-  tier: premium
-  trust_tier: T3_professional
-  type: media
-  weight: 2.4
-- collection_tier: C2_html_simple
-  config:
-    collection_method: html
-    list_url: https://japan-wine.jp/news/
-    article_selector: article.post
-    link_selector: h2.entry-title a
-    max_articles: 10
-  content_type: news_review
-  continent: ASIA
-  country: JP
-  enabled: false
-  id: media_japanwine_jp
-  info_purpose:
-  - P1_daily_briefing
-  - P4_trend_discovery
-  language: ja
-  name: Japan Wine
-  notes: 'Japanese wine industry news [DISABLED: Connection timeout - site unavailable]'
-  producer_role: trade_media
-  region: Asia/East/Japan
-  requires_login: false
-  supports_rss: false
-  tier: premium
-  trust_tier: T3_professional
-  type: media
-  weight: 2.3
 - collection_tier: C1_rss
   config:
     collection_method: rss
