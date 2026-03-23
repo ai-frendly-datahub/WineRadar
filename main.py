@@ -15,9 +15,9 @@ from graph import graph_store
 from graph.graph_queries import get_view
 from graph.search_index import SearchIndex
 from raw_logger import RawLogger
-from reporters.html_reporter import generate_daily_report, generate_index_page
 from reporters.kpi_logger import KPILogger
-from wineradar.reporter import generate_index_html
+from wineradar import models as radar_models
+from wineradar.reporter import generate_index_html, generate_report
 from wineradar.common.validators import (
     validate_article,
     validate_rating,
@@ -28,7 +28,7 @@ from wineradar.common.validators import (
 CONFIG_ENV_VAR = "WINERADAR_SOURCES_PATH"
 PROJECT_ROOT = Path(__file__).resolve().parent
 DEFAULT_CONFIG_PATH = PROJECT_ROOT / "config" / "sources.yaml"
-DEFAULT_REPORT_DIR = PROJECT_ROOT / "docs" / "reports"
+DEFAULT_REPORT_DIR = PROJECT_ROOT / "reports"
 DEFAULT_RAW_DIR = PROJECT_ROOT / "data" / "raw"
 DEFAULT_SEARCH_DB_PATH = PROJECT_ROOT / "data" / "search_index.db"
 
@@ -136,43 +136,58 @@ def _generate_html_reports(
     stats["sections_count"] = len([s for s in sections.values() if s])
 
     # 일일 리포트 생성
-    report_filename = f"{target_date.isoformat()}.html"
+    report_date_token = target_date.strftime("%Y%m%d")
+    report_filename = f"wine_{report_date_token}.html"
     report_path = output_dir / report_filename
 
-    generate_daily_report(
-        target_date=target_date,
-        sections=sections,
-        stats=stats,
-        output_path=report_path,
-    )
+    articles_by_url: dict[str, Any] = {}
+    for items in sections.values():
+        for item in items:
+            article_url = str(item.get("url") or "").strip()
+            if not article_url or article_url in articles_by_url:
+                continue
 
-    # 인덱스 페이지 업데이트
-    _update_index_page(output_dir, target_date, stats)
+            published_at = item.get("published_at")
+            entities = item.get("entities")
+            matched_entities = entities if isinstance(entities, dict) else {}
+
+            articles_by_url[article_url] = radar_models.Article(
+                title=str(item.get("title") or "(untitled)"),
+                link=article_url,
+                summary=str(item.get("summary") or ""),
+                published=published_at if isinstance(published_at, datetime) else None,
+                source=str(item.get("source_name") or "Unknown"),
+                category="wine",
+                matched_entities=matched_entities,
+            )
+
+    articles: list[Any] = list(articles_by_url.values())
+    sources = {
+        source
+        for article in articles
+        if isinstance((source := getattr(article, "source", None)), str) and source.strip()
+    }
+    matched_count = sum(1 for article in articles if getattr(article, "matched_entities", {}))
+
+    generate_report(
+        category=radar_models.CategoryConfig(
+            category_name="wine",
+            display_name="Wine Radar",
+            sources=[],
+            entities=[],
+        ),
+        articles=articles,
+        output_path=report_path,
+        stats={
+            "article_count": len(articles),
+            "source_count": len(sources),
+            "matched_count": matched_count,
+        },
+        store=None,
+    )
 
     # 통합 템플릿 인덱스 생성
     generate_index_html(output_dir)
-
-
-def _update_index_page(output_dir: Path, target_date: date, stats: dict[str, Any]) -> None:
-    """인덱스 페이지를 업데이트한다."""
-    # 기존 리포트 목록 스캔
-    reports = []
-    if output_dir.exists():
-        for report_file in sorted(output_dir.glob("*.html")):
-            if report_file.name == "index.html":
-                continue
-            report_date = report_file.stem  # 2025-11-19
-            reports.append(
-                {
-                    "date": report_date,
-                    "path": report_file.name,
-                    "stats": stats if report_date == target_date.isoformat() else {},
-                }
-            )
-
-    # 인덱스 페이지 생성
-    index_path = output_dir / "index.html"
-    generate_index_page(reports, index_path)
 
 
 def collect_and_store(
@@ -247,7 +262,8 @@ def collect_and_store(
                 sources_failed += 1
                 errors.append(f"{collector.__class__.__name__}: {str(e)[:100]}")
 
-        graph_store.prune_expired_urls(now, db_path=db_path)
+        prune_db_path = db_path or (PROJECT_ROOT / "data" / "wineradar.duckdb")
+        graph_store.prune_expired_urls(now, db_path=prune_db_path)
         return (
             total_items,
             len(collectors),
@@ -306,7 +322,7 @@ def run_once(
     if generate_report:
         print("  - HTML 리포트 생성 중...")
         try:
-            report_dir = report_output_dir or PROJECT_ROOT / "docs" / "reports"
+            report_dir = report_output_dir or PROJECT_ROOT / "reports"
             _generate_html_reports(
                 target_date=now.date(),
                 db_path=db_path,
@@ -322,7 +338,7 @@ def run_once(
             report_generated = True
 
             # Count cards from report (approximate - will refactor later)
-            report_file = report_dir / f"{now.date()}.html"
+            report_file = report_dir / f"wine_{now.date().strftime('%Y%m%d')}.html"
             if report_file.exists():
                 content = report_file.read_text(encoding="utf-8")
                 report_cards = content.count('class="card"')
@@ -331,24 +347,6 @@ def run_once(
         except Exception as e:
             print(f"  - 리포트 생성 실패: {e}")
             errors.append(f"Report generation: {str(e)[:100]}")
-
-        # Generate summary JSON for trend tracking
-        try:
-            from radar_core.report_utils import generate_summary_json
-            summary_path = report_dir / f"{now.date().isoformat()}_summary.json"
-            generate_summary_json(
-                report_date=now.date().isoformat(),
-                category="wine",
-                total_collected=total_items,
-                total_sources=collector_count,
-                sources_succeeded=sources_succeeded,
-                sources_failed=sources_failed,
-                entity_counts={},
-                output_path=summary_path,
-            )
-            print(f"  - Summary JSON: {summary_path}")
-        except Exception as e:
-            print(f"  - Summary JSON failed: {e}")
 
     # KPI 로깅
     runtime_seconds = time.time() - start_time
@@ -401,45 +399,38 @@ def _send_pipeline_notification(
     if not email_to and not webhook_url:
         return
 
-    from notifier import NotificationConfig, Notifier
+    from notifier import CompositeNotifier, EmailNotifier, NotificationPayload, WebhookNotifier
 
-    config = NotificationConfig(
-        enabled=True,
-        channels=[],
-        email_settings={
-            "smtp_host": os.environ.get("SMTP_HOST", "localhost"),
-            "smtp_port": int(os.environ.get("SMTP_PORT", "587")),
-            "from_address": os.environ.get("SMTP_FROM", ""),
-            "to_addresses": [email_to] if email_to else [],
-            "username": os.environ.get("SMTP_USER", ""),
-            "password": os.environ.get("SMTP_PASSWORD", ""),
-        },
-        webhook_url=webhook_url or "",
-    )
+    notifiers: list[object] = []
 
     if email_to:
-        config.channels.append("email")
-    if webhook_url:
-        config.channels.append("webhook")
+        notifiers.append(
+            EmailNotifier(
+                smtp_host=os.environ.get("SMTP_HOST", "localhost"),
+                smtp_port=int(os.environ.get("SMTP_PORT", "587")),
+                smtp_user=os.environ.get("SMTP_USER", ""),
+                smtp_password=os.environ.get("SMTP_PASSWORD", ""),
+                from_addr=os.environ.get("SMTP_FROM", ""),
+                to_addrs=[email_to],
+            )
+        )
 
-    notifier = Notifier(config)
-    notifier.send(
-        title="[WineRadar] Pipeline Complete",
-        message=(
-            f"Items: {total_items}, Entities: {total_entities}\n"
-            f"Sources: {sources_succeeded} OK / {sources_failed} failed\n"
-            f"Errors: {len(errors)}"
-        ),
-        priority="high" if sources_failed > 0 else "normal",
-        metadata={
-            "total_items": total_items,
-            "collector_count": collector_count,
-            "total_entities": total_entities,
-            "sources_succeeded": sources_succeeded,
-            "sources_failed": sources_failed,
-            "errors_count": len(errors),
-        },
+    if webhook_url:
+        notifiers.append(WebhookNotifier(url=webhook_url))
+
+    if not notifiers:
+        return
+
+    payload = NotificationPayload(
+        category_name="wine",
+        sources_count=collector_count,
+        collected_count=total_items,
+        matched_count=total_entities,
+        errors_count=len(errors),
+        timestamp=datetime.now(UTC),
     )
+
+    CompositeNotifier(notifiers).send(payload)
 
 
 def run_scheduler(

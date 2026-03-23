@@ -2,70 +2,46 @@
 
 from __future__ import annotations
 
+from importlib import import_module
 from collections.abc import Iterable
 from pathlib import Path
-
-from radar_core.report_utils import (
-    generate_index_html as _core_generate_index_html,
-    generate_report as _core_generate_report,
-)
-
-from .models import Article, CategoryConfig
+from typing import Any
 
 
 def generate_report(
     *,
-    category: CategoryConfig,
-    articles: Iterable[Article],
+    category: Any,
+    articles: Iterable[Any],
     output_path: Path,
     stats: dict[str, int],
     errors: list[str] | None = None,
     store: object | None = None,
 ) -> Path:
-    """Generate HTML report using unified template with optional plugin charts.
+    """Generate HTML report using unified template with optional plugin charts."""
+    report_utils = import_module("radar_core.report_utils")
+    core_generate_report = report_utils.generate_report
 
-    Args:
-        category: CategoryConfig object with category metadata
-        articles: Iterable of Article objects to include
-        output_path: Path where report HTML will be written
-        stats: Dictionary of statistics
-        errors: Optional list of error messages
-        store: Optional graph store for plugin access
-
-    Returns:
-        Path to the generated report file
-    """
     articles_list = list(articles)
     plugin_charts = []
-    if store is not None:
-        try:
-            from wineradar.plugins.network_graph import get_chart_config_from_sections
 
-            # Note: This would need sections data from the caller
-            # For now, we skip plugin generation in this context
-            # The plugin is available for future integration
-        except Exception:
-            pass
-
-    # --- Universal plugins (entity heatmap + source reliability) ---
     try:
-        from radar_core.plugins.entity_heatmap import get_chart_config as _heatmap_config
+        heatmap_plugin = import_module("radar_core.plugins.entity_heatmap")
 
-        _heatmap = _heatmap_config(articles=articles_list)
+        _heatmap = heatmap_plugin.get_chart_config(articles=articles_list)
         if _heatmap is not None:
             plugin_charts.append(_heatmap)
     except Exception:
         pass
     try:
-        from radar_core.plugins.source_reliability import get_chart_config as _reliability_config
+        source_plugin = import_module("radar_core.plugins.source_reliability")
 
-        _reliability = _reliability_config(store=store)
+        _reliability = source_plugin.get_chart_config(store=store)
         if _reliability is not None:
             plugin_charts.append(_reliability)
     except Exception:
         pass
 
-    return _core_generate_report(
+    return core_generate_report(
         category=category,
         articles=articles_list,
         output_path=output_path,
@@ -76,13 +52,7 @@ def generate_report(
 
 
 def generate_index_html(report_dir: Path, radar_name: str = "Wine Radar") -> Path:
-    """Generate index.html listing all available reports.
-
-    Args:
-        report_dir: Directory containing report files
-        radar_name: Display name for the index page
-
-    Returns:
-        Path to the generated index.html file
-    """
-    return _core_generate_index_html(report_dir, radar_name)
+    """Generate index.html listing all available reports."""
+    report_utils = import_module("radar_core.report_utils")
+    core_generate_index_html = report_utils.generate_index_html
+    return core_generate_index_html(report_dir, radar_name)
