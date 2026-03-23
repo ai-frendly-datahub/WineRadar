@@ -37,11 +37,11 @@ jobs:
         env:
           TZ: Asia/Seoul
         run: |
-          python main.py --mode once --generate-report
+          python main.py --mode once --generate-report --report-dir reports
 
       - name: Generate index.html
         run: |
-          python -c "from wineradar.reporter import generate_index_html; from pathlib import Path; generate_index_html(Path('docs/reports'))"
+          python -c "from wineradar.reporter import generate_index_html; from pathlib import Path; generate_index_html(Path('reports'))"
 
       - name: Run Quality Checks
         if: always()
@@ -62,7 +62,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/reports
+          publish_dir: ./reports
           publish_branch: gh-pages
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
