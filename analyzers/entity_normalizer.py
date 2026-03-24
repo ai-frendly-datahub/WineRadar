@@ -10,6 +10,7 @@ from analyzers.wine_entities_data import (
     WINERY_NORMALIZATION,
 )
 
+
 logger = logging.getLogger(__name__)
 
 # Common prefix/suffix patterns to strip for normalization

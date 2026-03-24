@@ -37,7 +37,7 @@ sources:
   content_type: news_review
   continent: ASIA
   country: KR
-  enabled: true
+  enabled: false
   id: media_winereview_kr
   info_purpose:
   - P1_daily_briefing
@@ -185,7 +185,7 @@ sources:
   content_type: news_review
   continent: OLD_WORLD
   country: FR
-  enabled: true
+  enabled: false
   id: media_larvf_fr
   info_purpose:
   - P1_daily_briefing
@@ -665,7 +665,7 @@ sources:
   content_type: news_review
   continent: OLD_WORLD
   country: IT
-  enabled: true
+  enabled: false
   id: media_vinogusto_it
   info_purpose:
   - P1_daily_briefing
@@ -1016,7 +1016,7 @@ sources:
   content_type: news_review
   continent: OLD_WORLD
   country: IT
-  enabled: true
+  enabled: false
   id: media_intravino_it
   info_purpose:
   - P1_daily_briefing
@@ -1040,7 +1040,7 @@ sources:
   content_type: news_review
   continent: OLD_WORLD
   country: IT
-  enabled: true
+  enabled: false
   id: media_drvino_it
   info_purpose:
   - P1_daily_briefing

@@ -25,7 +25,7 @@ class PlaywrightCollector:
 
         try:
             browser_module = importlib.import_module("radar_core.browser_collector")
-            collect_browser_sources = getattr(browser_module, "collect_browser_sources")
+            collect_browser_sources = browser_module.collect_browser_sources
         except ImportError:
             logger.warning("playwright_unavailable source=%s", self.source_name)
             return []

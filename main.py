@@ -17,12 +17,12 @@ from graph.search_index import SearchIndex
 from raw_logger import RawLogger
 from reporters.kpi_logger import KPILogger
 from wineradar import models as radar_models
-from wineradar.reporter import generate_index_html, generate_report
 from wineradar.common.validators import (
     validate_article,
     validate_rating,
     validate_vintage,
 )
+from wineradar.reporter import generate_index_html, generate_report
 
 
 CONFIG_ENV_VAR = "WINERADAR_SOURCES_PATH"

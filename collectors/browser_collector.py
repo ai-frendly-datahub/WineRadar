@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from collectors.playwright_collector import PlaywrightCollector
 
+
 # Cross-repo compatibility alias
 BrowserCollector = PlaywrightCollector
 
