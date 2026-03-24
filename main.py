@@ -11,6 +11,7 @@ import yaml
 
 from analyzers.entity_extractor import extract_all_entities
 from collectors.registry import FetcherFactory, build_collectors
+from date_storage import apply_date_storage_policy
 from graph import graph_store
 from graph.graph_queries import get_view
 from graph.search_index import SearchIndex
@@ -284,6 +285,7 @@ def run_once(
     db_path: Path | None = None,
     generate_report: bool = False,
     report_output_dir: Path | None = None,
+    snapshot_db: bool = False,
 ) -> None:
     """하루 파이프라인을 한 번 실행한다."""
     import time
@@ -347,6 +349,24 @@ def run_once(
         except Exception as e:
             print(f"  - 리포트 생성 실패: {e}")
             errors.append(f"Report generation: {str(e)[:100]}")
+
+    # Apply date storage policy
+    if snapshot_db:
+        try:
+            db_path_for_snapshot = db_path or PROJECT_ROOT / "data" / "wineradar.duckdb"
+            date_storage = apply_date_storage_policy(
+                database_path=db_path_for_snapshot,
+                raw_data_dir=PROJECT_ROOT / "data" / "raw",
+                report_dir=PROJECT_ROOT / "reports",
+                keep_raw_days=180,
+                keep_report_days=90,
+                snapshot_db=snapshot_db,
+            )
+            snapshot_path = date_storage.get("snapshot_path")
+            if isinstance(snapshot_path, str) and snapshot_path:
+                print(f"  - Snapshot saved to {snapshot_path}")
+        except Exception as e:
+            print(f"  - Snapshot creation failed: {e}")
 
     # KPI 로깅
     runtime_seconds = time.time() - start_time
@@ -439,6 +459,7 @@ def run_scheduler(
     config_path: Path | None = None,
     fetcher_factory: FetcherFactory | None = None,
     db_path: Path | None = None,
+    snapshot_db: bool = False,
 ) -> None:
     """정기적으로 데이터를 수집하는 스케줄러.
 
@@ -447,6 +468,7 @@ def run_scheduler(
         config_path: sources.yaml 경로
         fetcher_factory: 커스텀 fetcher factory
         db_path: DuckDB 파일 경로
+        snapshot_db: Whether to create database snapshot
     """
     import time
 
@@ -460,6 +482,7 @@ def run_scheduler(
                 config_path=config_path,
                 fetcher_factory=fetcher_factory,
                 db_path=db_path,
+                snapshot_db=snapshot_db,
             )
             print(f"다음 수집까지 {interval_hours}시간 대기 중...")
             time.sleep(interval_hours * 3600)
@@ -505,6 +528,9 @@ if __name__ == "__main__":
         default=DEFAULT_REPORT_DIR,
         help=f"리포트 출력 디렉토리 (기본값: {DEFAULT_REPORT_DIR})",
     )
+    parser.add_argument(
+        "--snapshot-db", action="store_true", default=False, help="Create database snapshot"
+    )
 
     args = parser.parse_args()
 
@@ -513,9 +539,10 @@ if __name__ == "__main__":
             execute_collectors=not args.dry_run,
             generate_report=args.generate_report,
             report_output_dir=args.report_dir,
+            snapshot_db=args.snapshot_db,
         )
     else:
         if args.dry_run:
             print("스케줄러 모드에서는 dry-run이 지원되지 않습니다")
         else:
-            run_scheduler(interval_hours=args.interval)
+            run_scheduler(interval_hours=args.interval, snapshot_db=args.snapshot_db)
