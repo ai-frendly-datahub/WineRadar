@@ -17,12 +17,6 @@ def get_chart_config(store: Any = None, articles: Any = None) -> dict[str, Any] 
     Returns:
         Plugin config dict with id, title, and config_json, or None if generation fails
     """
-    try:
-        import networkx as nx
-        import plotly.graph_objects as go
-    except ModuleNotFoundError:
-        return None
-
     # For now, return None since we don't have access to sections data
     # This will be called from reporter.py with proper context
     return None
