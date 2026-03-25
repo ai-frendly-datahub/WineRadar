@@ -209,3 +209,5 @@ __marimo__/
 # WineRadar data files
 data/*.duckdb
 data/*.duckdb.wal
+# Exception: allow snapshot duckdb files to be tracked
+!data/snapshots/**/*.duckdb
