@@ -88,7 +88,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: update radar data [skip ci]"
-          file_pattern: "data/*.duckdb data/snapshots/**/*.duckdb reports/*_summary.json"
+          file_pattern: "data/*.duckdb data/*.db data/snapshots/**/*.duckdb reports/*.html reports/*.json"
           skip_fetch: false
           skip_checkout: false
 

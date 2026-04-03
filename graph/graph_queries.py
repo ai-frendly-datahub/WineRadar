@@ -157,7 +157,10 @@ def get_view(
         if urls:
             placeholders = ",".join(["?"] * len(urls))
             entity_rows = conn.execute(
-                f"SELECT url, entity_type, entity_value FROM url_entities WHERE url IN ({placeholders})",
+                f"""SELECT u.url, ue.entity_type, ue.entity_value
+                    FROM url_entities ue
+                    INNER JOIN urls u ON ue.url_id = u.url_id
+                    WHERE u.url IN ({placeholders})""",
                 urls,
             ).fetchall()
             for url, entity_type, entity_value in entity_rows:
