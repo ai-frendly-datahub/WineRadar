@@ -85,12 +85,13 @@ jobs:
           retention-days: 30
 
       - name: Auto-commit data updates
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: update radar data [skip ci]"
-          file_pattern: "data/*.duckdb data/*.db data/snapshots/**/*.duckdb reports/*.html reports/*.json"
-          skip_fetch: false
-          skip_checkout: false
+        continue-on-error: true
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/*.duckdb data/*.db data/snapshots/**/*.duckdb reports/*.html reports/*.json 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "chore: update radar data [skip ci]"
+          git push || true
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

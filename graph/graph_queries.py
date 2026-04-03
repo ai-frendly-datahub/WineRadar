@@ -104,7 +104,7 @@ def get_view(
                 "SELECT u.url, u.title, u.summary, u.published_at, u.source_name, u.source_type, u.content_type,",
                 "u.country, u.continent, u.region, u.producer_role, u.trust_tier, u.info_purpose, u.collection_tier, u.score",
                 "FROM urls u",
-                "INNER JOIN url_entities ue ON u.url = ue.url",
+                "INNER JOIN url_entities ue ON u.url_id = ue.url_id",
                 "WHERE u.published_at >= ?",
                 "AND ue.entity_type = ?",
             ]
