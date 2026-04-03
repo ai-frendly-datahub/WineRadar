@@ -207,7 +207,11 @@ def _ensure_url_tables(conn: duckdb.DuckDBPyConnection) -> None:
             country TEXT,
             continent TEXT,
             region TEXT,
+            producer_role TEXT,
             trust_tier TEXT,
+            info_purpose TEXT,
+            collection_tier TEXT,
+            score DOUBLE,
             published_at TIMESTAMP,
             collected_at TIMESTAMP NOT NULL
         );
@@ -219,6 +223,17 @@ def _ensure_url_tables(conn: duckdb.DuckDBPyConnection) -> None:
         );
         """
     )
+    # Add missing columns to existing tables (for migration)
+    for col_def in [
+        ("producer_role", "TEXT"),
+        ("info_purpose", "TEXT"),
+        ("collection_tier", "TEXT"),
+        ("score", "DOUBLE"),
+    ]:
+        try:
+            conn.execute(f"ALTER TABLE urls ADD COLUMN {col_def[0]} {col_def[1]}")
+        except duckdb.CatalogException:
+            pass  # Column already exists
 
 
 def upsert_url_and_entities(
@@ -235,15 +250,31 @@ def upsert_url_and_entities(
         collected = _utc_naive(now)
         raw_pub = item.get("published_at")
         published = _utc_naive(raw_pub if isinstance(raw_pub, datetime) else now)
+
+        # Handle info_purpose as JSON string
+        info_purpose_raw = item.get("info_purpose")
+        if isinstance(info_purpose_raw, list):
+            info_purpose = json.dumps(info_purpose_raw)
+        elif isinstance(info_purpose_raw, str):
+            info_purpose = info_purpose_raw
+        else:
+            info_purpose = "[]"
+
+        # Handle score (default to 1.0 if not provided)
+        score_raw = item.get("score") or item.get("weight")
+        score = float(score_raw) if score_raw is not None else 1.0
+
         conn.execute(
             """
             INSERT INTO urls (url, title, summary, source_name, source_type,
                               content_type, language, country, continent,
-                              region, trust_tier, published_at, collected_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                              region, producer_role, trust_tier, info_purpose,
+                              collection_tier, score, published_at, collected_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(url) DO UPDATE SET
                 title = EXCLUDED.title,
                 summary = EXCLUDED.summary,
+                score = EXCLUDED.score,
                 collected_at = EXCLUDED.collected_at
             """,
             [
@@ -257,7 +288,11 @@ def upsert_url_and_entities(
                 str(item.get("country", "")),
                 str(item.get("continent", "")),
                 str(item.get("region", "")),
+                str(item.get("producer_role", "")),
                 str(item.get("trust_tier", "")),
+                info_purpose,
+                str(item.get("collection_tier", "")),
+                score,
                 published,
                 collected,
             ],
