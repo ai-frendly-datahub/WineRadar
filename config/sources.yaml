@@ -1040,16 +1040,66 @@ sources:
   content_type: news_review
   continent: OLD_WORLD
   country: IT
-  enabled: false
+  enabled: true
   id: media_drvino_it
   info_purpose:
   - P1_daily_briefing
   - P4_trend_discovery
   language: en
   name: Dr Vino
-  notes: Italian wine culture and analysis - Gambero Rosso alternative (Phase 4)
+  notes: Italian wine culture and analysis - Gambero Rosso alternative (Phase 4) [Re-enabled 2026-04-03 - RSS working with redirect]
   producer_role: trade_media
   region: Europe/Southern/Italy
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.5
+
+# === New Sources Added 2026-04-03 ===
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.guildsomm.com/rss
+  content_type: education
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_guildsomm_us
+  info_purpose:
+  - P5_education
+  - P1_daily_briefing
+  language: en
+  name: GuildSomm
+  notes: Professional sommelier community - expert education and wine knowledge (Added 2026-04-03)
+  producer_role: expert_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 2.8
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://winefolly.com/feed/
+  content_type: education
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_winefolly_us
+  info_purpose:
+  - P5_education
+  - P4_trend_discovery
+  language: en
+  name: Wine Folly
+  notes: Popular wine education platform with infographics and guides (Added 2026-04-03)
+  producer_role: trade_media
+  region: Americas/North/USA
   requires_login: false
   supports_rss: true
   tier: premium
