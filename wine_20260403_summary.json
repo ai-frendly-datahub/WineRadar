@@ -1,8 +1,8 @@
 {
   "date": "2026-04-03",
   "category": "wine",
-  "article_count": 56,
-  "source_count": 11,
+  "article_count": 57,
+  "source_count": 13,
   "matched_count": 27,
   "top_entities": [
     {
@@ -28,12 +28,14 @@
     "Gambero Rosso": 8,
     "Enolife": 5,
     "Decanter": 2,
+    "Wine Institute": 1,
     "Federdoc": 10,
-    "Wine Magazine South Africa": 6,
+    "Shinsegae L&B": 1,
+    "Wine Magazine South Africa": 5,
     "Vinography": 1,
     "Punch": 1,
     "The Drinks Business": 8,
     "Terre de Vins": 2
   },
-  "generated_at": "2026-04-03T10:19:45.262693+09:00"
+  "generated_at": "2026-04-03T10:20:50.190962+09:00"
 }
