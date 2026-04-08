@@ -2,7 +2,7 @@
   "date": "2026-04-08",
   "category": "wine",
   "article_count": 64,
-  "source_count": 14,
+  "source_count": 12,
   "matched_count": 21,
   "top_entities": [
     {
@@ -23,20 +23,18 @@
     }
   ],
   "sources": {
+    "Wine Industry Advisor": 13,
     "Wine21": 10,
-    "Wine Industry Advisor": 12,
     "Sonoma Magazine": 2,
-    "Wine Institute": 1,
     "Federdoc": 10,
     "Wine Enthusiast": 4,
     "Gambero Rosso": 7,
     "Decanter": 1,
-    "Shinsegae L&B": 1,
-    "Vino Joy News": 4,
+    "Vino Joy News": 5,
     "Wine Dharma": 4,
     "The Drinks Business": 6,
     "Enolife": 1,
     "Wine Magazine South Africa": 1
   },
-  "generated_at": "2026-04-08T10:26:15.837933+09:00"
+  "generated_at": "2026-04-08T10:31:41.859108+09:00"
 }
