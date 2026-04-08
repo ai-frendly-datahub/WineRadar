@@ -211,3 +211,9 @@ data/*.duckdb
 data/*.duckdb.wal
 # Exception: allow snapshot duckdb files to be tracked
 !data/snapshots/**/*.duckdb
+
+# DuckDB database files (binary, should not be in git)
+*.duckdb
+*.duckdb.wal
+data/snapshots/
+!data/snapshots/.gitkeep

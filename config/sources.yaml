@@ -53,29 +53,31 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.8
-- collection_tier: C1_rss
-  config:
-    collection_method: rss
-    list_url: https://wine-what.jp/feed/
-  content_type: news_review
-  continent: ASIA
-  country: JP
-  enabled: true
-  id: media_winewhat_jp
-  info_purpose:
-  - P1_daily_briefing
-  - P4_trend_discovery
-  language: ja
-  name: WINE WHAT!?
-  notes: Japanese wine lifestyle magazine with regular RSS updates
-  producer_role: trade_media
-  region: Asia/East/Japan
-  requires_login: false
-  supports_rss: true
-  tier: premium
-  trust_tier: T3_professional
-  type: media
-  weight: 2.4
+# NOTE: 2026-04-08 wine-what.jp disabled - Domain no longer exists (NXDOMAIN)
+# The wine-what.jp domain has been deregistered and returns DNS NXDOMAIN errors
+# - collection_tier: C1_rss
+#   config:
+#     collection_method: rss
+#     list_url: https://wine-what.jp/feed/
+#   content_type: news_review
+#   continent: ASIA
+#   country: JP
+#   enabled: false
+#   id: media_winewhat_jp
+#   info_purpose:
+#   - P1_daily_briefing
+#   - P4_trend_discovery
+#   language: ja
+#   name: WINE WHAT!?
+#   notes: Japanese wine lifestyle magazine - DISABLED: Domain no longer exists
+#   producer_role: trade_media
+#   region: Asia/East/Japan
+#   requires_login: false
+#   supports_rss: true
+#   tier: premium
+#   trust_tier: T3_professional
+#   type: media
+#   weight: 2.4
 - collection_tier: C3_html_js
   config:
     collection_method: browser
@@ -543,19 +545,18 @@ sources:
 - collection_tier: C1_rss
   config:
     collection_method: rss
-    list_url: https://www.jancisrobinson.com/articles/feed
+    list_url: https://www.jancisrobinson.com/rss
   content_type: news_review
   continent: OLD_WORLD
   country: GB
-  enabled: false
+  enabled: true
   id: media_jancisrobinson_uk
   info_purpose:
   - P1_daily_briefing
   - P3_investment
   language: en
   name: Jancis Robinson
-  notes: 'Master of Wine, authoritative wine journalism [DISABLED: RSS 404 error -
-    Feed URL not found]'
+  notes: Master of Wine, authoritative wine journalism (RSS URL fixed 2026-04-08)
   producer_role: expert_media
   region: Europe/Western/UK
   requires_login: false
@@ -1108,3 +1109,579 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.5
+
+# === New Sources Added 2026-04-08 ===
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://magazine.wein.plus/feed.xml
+  content_type: news_review
+  continent: OLD_WORLD
+  country: DE
+  enabled: true
+  id: media_weinplus_de
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: en
+  name: wein.plus Magazine
+  notes: International wine magazine with expert reviews and interviews (Added 2026-04-08, replacement for wine-what.jp)
+  producer_role: expert_media
+  region: Europe/Western/Germany
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 2.6
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://wineindustryadvisor.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_wineindustryadvisor_us
+  info_purpose:
+  - P1_daily_briefing
+  - P2_market_analysis
+  language: en
+  name: Wine Industry Advisor
+  notes: Wine business news and industry updates for professionals (Added 2026-04-08)
+  producer_role: trade_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.5
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.winecountry.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_winecountry_us
+  info_purpose:
+  - P4_trend_discovery
+  - P5_education
+  language: en
+  name: Wine Country
+  notes: California wine country travel and wine reviews (Added 2026-04-08)
+  producer_role: trade_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.4
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.drinkhacker.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_drinkhacker_us
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: en
+  name: Drinkhacker
+  notes: Wine and spirits reviews and industry insights (Added 2026-04-08)
+  producer_role: trade_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.4
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://wineeconomist.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_wineeconomist_us
+  info_purpose:
+  - P2_market_analysis
+  - P4_trend_discovery
+  language: en
+  name: The Wine Economist
+  notes: Wine market analysis and economics by Mike Veseth (Added 2026-04-08)
+  producer_role: expert_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 2.7
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.thewinecellarinsider.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_winecellarinsider_us
+  info_purpose:
+  - P1_daily_briefing
+  - P3_investment
+  language: en
+  name: The Wine Cellar Insider
+  notes: Bordeaux wine guide with reviews and buying advice (Added 2026-04-08)
+  producer_role: expert_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 2.8
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.winetraveler.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_winetraveler_us
+  info_purpose:
+  - P4_trend_discovery
+  - P5_education
+  language: en
+  name: Winetraveler
+  notes: Wine region travel guides and wine education (Added 2026-04-08)
+  producer_role: trade_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.3
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.wineswithattitude.co.uk/feed/
+  content_type: news_review
+  continent: OLD_WORLD
+  country: GB
+  enabled: true
+  id: media_wineswithattitude_uk
+  info_purpose:
+  - P1_daily_briefing
+  - P5_education
+  language: en
+  name: Wines With Attitude
+  notes: UK wine retailer with educational grape profiles (Added 2026-04-08)
+  producer_role: trade_media
+  region: Europe/Western/UK
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.3
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://yann-rousselin.com/feed/
+  content_type: education
+  continent: OLD_WORLD
+  country: FR
+  enabled: true
+  id: media_levinpasapas_fr
+  info_purpose:
+  - P5_education
+  language: fr
+  name: Le Vin Pas a Pas
+  notes: French wine education blog by Yann Rousselin (Added 2026-04-08)
+  producer_role: trade_media
+  region: Europe/Western/France
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.2
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://riojawine.com/feed/
+  content_type: news_review
+  continent: OLD_WORLD
+  country: ES
+  enabled: true
+  id: official_rioja_es
+  info_purpose:
+  - P1_daily_briefing
+  - P5_education
+  language: es
+  name: Rioja Wine Official
+  notes: Official Rioja DOCa Consejo Regulador (Added 2026-04-08)
+  producer_role: industry_assoc
+  region: Europe/Southern/Spain
+  requires_login: false
+  supports_rss: true
+  tier: official
+  trust_tier: T1_authoritative
+  type: official
+  weight: 2.6
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://winedharma.com/feed/
+  content_type: news_review
+  continent: OLD_WORLD
+  country: IT
+  enabled: true
+  id: media_winedharma_it
+  info_purpose:
+  - P4_trend_discovery
+  - P5_education
+  language: it
+  name: Wine Dharma
+  notes: Italian wine blog with recipes and reviews (Added 2026-04-08)
+  producer_role: trade_media
+  region: Europe/Southern/Italy
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.2
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.1winedude.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_1winedude_us
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: en
+  name: 1 Wine Dude
+  notes: Wine blog with reviews and industry commentary by Joe Roberts (Added 2026-04-08)
+  producer_role: trade_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.4
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://wineeducators.com/feed/
+  content_type: education
+  continent: OLD_WORLD
+  country: GB
+  enabled: true
+  id: official_wineeducators_uk
+  info_purpose:
+  - P5_education
+  language: en
+  name: Association of Wine Educators
+  notes: UK wine educators association with professional education content (Added 2026-04-08)
+  producer_role: industry_assoc
+  region: Europe/Western/UK
+  requires_login: false
+  supports_rss: true
+  tier: official
+  trust_tier: T2_expert
+  type: official
+  weight: 2.5
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://fingerlakeswinealliance.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: official_fingerlakes_us
+  info_purpose:
+  - P4_trend_discovery
+  - P5_education
+  language: en
+  name: Finger Lakes Wine Alliance
+  notes: New York Finger Lakes wine region association (Added 2026-04-08)
+  producer_role: industry_assoc
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: official
+  trust_tier: T3_professional
+  type: official
+  weight: 2.3
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://wineamerica.org/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: official_wineamerica_us
+  info_purpose:
+  - P1_daily_briefing
+  - P2_market_analysis
+  language: en
+  name: WineAmerica
+  notes: National Association of American Wineries - wine industry advocacy (Added 2026-04-08)
+  producer_role: industry_assoc
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: official
+  trust_tier: T1_authoritative
+  type: official
+  weight: 2.6
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://vino-joy.com/feed/
+  content_type: market_report
+  continent: ASIA
+  country: CN
+  enabled: true
+  id: media_vinojoy_cn
+  info_purpose:
+  - P2_market_analysis
+  - P1_daily_briefing
+  language: en
+  name: Vino Joy News
+  notes: China wine market news and analysis - Asian market coverage (Added 2026-04-08)
+  producer_role: trade_media
+  region: Asia/East/China
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.7
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://winetechlibrary.co.za/feed/
+  content_type: statistics
+  continent: NEW_WORLD
+  country: ZA
+  enabled: true
+  id: official_winetech_za
+  info_purpose:
+  - P2_market_analysis
+  - P5_education
+  language: en
+  name: South Africa Wine Research Library
+  notes: South African wine research and industry data (Added 2026-04-08)
+  producer_role: research_inst
+  region: Africa/South/South Africa
+  requires_login: false
+  supports_rss: true
+  tier: official
+  trust_tier: T1_authoritative
+  type: official
+  weight: 2.5
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://sparklingwinos.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_sparklingwinos_us
+  info_purpose:
+  - P4_trend_discovery
+  - P1_daily_briefing
+  language: en
+  name: Sparkling Winos
+  notes: Champagne, Cava, Prosecco and sparkling wine reviews (Added 2026-04-08)
+  producer_role: trade_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.3
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.sonomamag.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_sonomamag_us
+  info_purpose:
+  - P4_trend_discovery
+  - P1_daily_briefing
+  language: en
+  name: Sonoma Magazine
+  notes: Sonoma County wine region magazine with events and reviews (Added 2026-04-08)
+  producer_role: trade_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.4
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://winetitles.com.au/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: AU
+  enabled: true
+  id: media_winetitles_au
+  info_purpose:
+  - P1_daily_briefing
+  - P2_market_analysis
+  language: en
+  name: Winetitles Australia
+  notes: Australian wine industry portal and news (Added 2026-04-08)
+  producer_role: trade_media
+  region: Oceania/Australia
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.5
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.napawineproject.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_napawineproject_us
+  info_purpose:
+  - P4_trend_discovery
+  - P1_daily_briefing
+  language: en
+  name: The Napa Wine Project
+  notes: Napa Valley winery reviews and news (Added 2026-04-08)
+  producer_role: trade_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.4
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://winereviewonline.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_winereviewonline_us
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: en
+  name: Wine Review Online
+  notes: Wine reviews and recommendations from industry experts (Added 2026-04-08)
+  producer_role: expert_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 2.6
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.openingabottle.com/feed/
+  content_type: education
+  continent: OLD_WORLD
+  country: IT
+  enabled: true
+  id: media_openingabottle_us
+  info_purpose:
+  - P5_education
+  - P4_trend_discovery
+  language: en
+  name: Opening a Bottle
+  notes: Italian wine magazine and education by Kevin Day (Added 2026-04-08)
+  producer_role: expert_media
+  region: Europe/Southern/Italy
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T2_expert
+  type: media
+  weight: 2.5
+
+- collection_tier: C1_rss
+  config:
+    collection_method: rss
+    list_url: https://www.palatepress.com/feed/
+  content_type: news_review
+  continent: NEW_WORLD
+  country: US
+  enabled: true
+  id: media_palatepress_us
+  info_purpose:
+  - P1_daily_briefing
+  - P4_trend_discovery
+  language: en
+  name: Palate Press
+  notes: Fine wine, travel and spirits magazine (Added 2026-04-08)
+  producer_role: trade_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: true
+  tier: premium
+  trust_tier: T3_professional
+  type: media
+  weight: 2.4
