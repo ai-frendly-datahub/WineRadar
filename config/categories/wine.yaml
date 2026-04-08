@@ -1,6 +1,136 @@
 category_name: "wine"
 display_name: "와인 레이더"
 
+sources:
+  # === 국제 와인 뉴스 ===
+  - name: "Wine Spectator"
+    type: "rss"
+    url: "https://www.winespectator.com/rss/rss"
+    language: en
+    country: US
+    trust_tier: T1_authoritative
+    collection_tier: C1_rss
+    description: "세계 최고 권위 와인 매거진"
+
+  - name: "Decanter"
+    type: "rss"
+    url: "https://www.decanter.com/feed/"
+    language: en
+    country: GB
+    trust_tier: T1_authoritative
+    collection_tier: C1_rss
+    description: "영국 프리미엄 와인 매거진"
+
+  - name: "Wine Enthusiast"
+    type: "rss"
+    url: "https://www.winemag.com/feed/"
+    language: en
+    country: US
+    trust_tier: T1_authoritative
+    collection_tier: C1_rss
+    description: "미국 대표 와인 전문지"
+
+  - name: "VinePair"
+    type: "rss"
+    url: "https://vinepair.com/feed/"
+    language: en
+    country: US
+    trust_tier: T2_professional
+    collection_tier: C1_rss
+    description: "현대적 와인/음료 전문 매체"
+
+  - name: "Wine Folly"
+    type: "rss"
+    url: "https://winefolly.com/feed/"
+    language: en
+    country: US
+    trust_tier: T2_professional
+    collection_tier: C1_rss
+    description: "와인 교육 전문 플랫폼"
+
+  - name: "JancisRobinson.com"
+    type: "rss"
+    url: "https://www.jancisrobinson.com/articles/rss"
+    language: en
+    country: GB
+    trust_tier: T1_authoritative
+    collection_tier: C1_rss
+    description: "세계적 와인 평론가 잔시스 로빈슨"
+
+  - name: "The Drinks Business"
+    type: "rss"
+    url: "https://www.thedrinksbusiness.com/feed/"
+    language: en
+    country: GB
+    trust_tier: T2_professional
+    collection_tier: C1_rss
+    description: "주류 산업 비즈니스 뉴스"
+
+  # === 한국 와인 뉴스 ===
+  - name: "한경 라이프스타일"
+    type: "rss"
+    url: "https://www.hankyung.com/feed/lifestyle"
+    language: ko
+    country: KR
+    trust_tier: T2_professional
+    collection_tier: C1_rss
+    description: "한국경제 라이프스타일 (와인/다이닝 포함)"
+
+  - name: "조선일보 푸드"
+    type: "rss"
+    url: "https://www.chosun.com/arc/outboundfeeds/rss/category/food/?outputType=xml"
+    language: ko
+    country: KR
+    trust_tier: T2_professional
+    collection_tier: C1_rss
+    description: "조선일보 푸드 섹션 (와인 기사 포함)"
+
+  # === Reddit 커뮤니티 ===
+  - name: "r/wine"
+    type: "reddit"
+    url: "https://www.reddit.com/r/wine/"
+    language: en
+    country: US
+    trust_tier: T3_community
+    collection_tier: C2_api
+    description: "와인 메인 커뮤니티 (700K+ 멤버)"
+
+  - name: "r/WineEP"
+    type: "reddit"
+    url: "https://www.reddit.com/r/WineEP/"
+    language: en
+    country: US
+    trust_tier: T3_community
+    collection_tier: C2_api
+    description: "와인 앙프리뫼르/투자 커뮤니티"
+
+  - name: "r/winemaking"
+    type: "reddit"
+    url: "https://www.reddit.com/r/winemaking/"
+    language: en
+    country: US
+    trust_tier: T3_community
+    collection_tier: C2_api
+    description: "와인 양조 커뮤니티"
+
+  - name: "r/NaturalWine"
+    type: "reddit"
+    url: "https://www.reddit.com/r/NaturalWine/"
+    language: en
+    country: US
+    trust_tier: T3_community
+    collection_tier: C2_api
+    description: "내추럴 와인 커뮤니티"
+
+  - name: "r/Champagne"
+    type: "reddit"
+    url: "https://www.reddit.com/r/Champagne/"
+    language: en
+    country: US
+    trust_tier: T3_community
+    collection_tier: C2_api
+    description: "샴페인 전문 커뮤니티"
+
 entities:
   - name: "GrapeVariety"
     display_name: "포도 품종"
