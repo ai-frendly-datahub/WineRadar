@@ -1,21 +1,21 @@
 {
   "date": "2026-04-08",
   "category": "wine",
-  "article_count": 64,
-  "source_count": 12,
-  "matched_count": 21,
+  "article_count": 61,
+  "source_count": 13,
+  "matched_count": 24,
   "top_entities": [
     {
       "name": "region",
-      "count": 63
+      "count": 68
     },
     {
       "name": "grape_variety",
-      "count": 44
+      "count": 47
     },
     {
       "name": "climate_zone",
-      "count": 24
+      "count": 25
     },
     {
       "name": "winery",
@@ -23,18 +23,19 @@
     }
   ],
   "sources": {
-    "Wine Industry Advisor": 13,
     "Wine21": 10,
-    "Sonoma Magazine": 2,
-    "Federdoc": 10,
+    "Sonoma Magazine": 4,
     "Wine Enthusiast": 4,
+    "Enolife": 5,
+    "Drinkhacker": 2,
     "Gambero Rosso": 7,
+    "The Drinks Business": 6,
+    "Federdoc": 10,
     "Decanter": 1,
     "Vino Joy News": 5,
     "Wine Dharma": 4,
-    "The Drinks Business": 6,
-    "Enolife": 1,
-    "Wine Magazine South Africa": 1
+    "Punch": 1,
+    "Wine Magazine South Africa": 2
   },
-  "generated_at": "2026-04-08T10:31:41.859108+09:00"
+  "generated_at": "2026-04-08T10:48:52.148491+09:00"
 }
