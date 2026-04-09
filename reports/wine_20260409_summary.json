@@ -1,0 +1,43 @@
+{
+  "date": "2026-04-09",
+  "category": "wine",
+  "article_count": 65,
+  "source_count": 15,
+  "matched_count": 26,
+  "top_entities": [
+    {
+      "name": "region",
+      "count": 80
+    },
+    {
+      "name": "grape_variety",
+      "count": 34
+    },
+    {
+      "name": "climate_zone",
+      "count": 23
+    },
+    {
+      "name": "winery",
+      "count": 21
+    }
+  ],
+  "sources": {
+    "Wine21": 10,
+    "Wine Industry Advisor": 14,
+    "Wine Institute": 1,
+    "Federdoc": 10,
+    "Decanter": 3,
+    "Wine Enthusiast": 3,
+    "Gambero Rosso": 5,
+    "Shinsegae L&B": 1,
+    "Vino Joy News": 4,
+    "The Drinks Business": 8,
+    "Wine Magazine South Africa": 2,
+    "Drinkhacker": 1,
+    "Enolife": 1,
+    "Palate Press": 1,
+    "Jamie Goode's Wine Blog": 1
+  },
+  "generated_at": "2026-04-09T10:17:01.580950+09:00"
+}
