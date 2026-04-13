@@ -1,0 +1,41 @@
+{
+  "date": "2026-04-14",
+  "category": "wine",
+  "article_count": 58,
+  "source_count": 13,
+  "matched_count": 22,
+  "top_entities": [
+    {
+      "name": "region",
+      "count": 67
+    },
+    {
+      "name": "grape_variety",
+      "count": 30
+    },
+    {
+      "name": "climate_zone",
+      "count": 25
+    },
+    {
+      "name": "winery",
+      "count": 20
+    }
+  ],
+  "sources": {
+    "Wine21": 10,
+    "Sonoma Magazine": 1,
+    "Wine Enthusiast": 10,
+    "Enolife": 3,
+    "The Drinks Business": 10,
+    "Gambero Rosso": 2,
+    "The Napa Wine Project": 1,
+    "Federdoc": 10,
+    "Vino Joy News": 5,
+    "Wine Dharma": 1,
+    "Vinography": 2,
+    "Terre de Vins": 2,
+    "Decanter": 1
+  },
+  "generated_at": "2026-04-14T08:44:33.598262+09:00"
+}
