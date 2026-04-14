@@ -1,0 +1,43 @@
+{
+  "date": "2026-04-15",
+  "category": "wine",
+  "article_count": 67,
+  "source_count": 15,
+  "matched_count": 26,
+  "top_entities": [
+    {
+      "name": "region",
+      "count": 80
+    },
+    {
+      "name": "grape_variety",
+      "count": 42
+    },
+    {
+      "name": "climate_zone",
+      "count": 40
+    },
+    {
+      "name": "winery",
+      "count": 20
+    }
+  ],
+  "sources": {
+    "Wine Industry Advisor": 16,
+    "Enolife": 2,
+    "Wine Enthusiast": 7,
+    "Drinkhacker": 1,
+    "Wine Institute": 1,
+    "Federdoc": 9,
+    "Opening a Bottle": 1,
+    "Gambero Rosso": 5,
+    "Shinsegae L&B": 1,
+    "Wine21": 10,
+    "Vino Joy News": 4,
+    "The Drinks Business": 6,
+    "Decanter": 1,
+    "Vinography": 2,
+    "Jamie Goode's Wine Blog": 1
+  },
+  "generated_at": "2026-04-15T08:43:34.188535+09:00"
+}
