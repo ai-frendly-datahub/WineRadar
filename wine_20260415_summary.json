@@ -3,11 +3,11 @@
   "category": "wine",
   "article_count": 67,
   "source_count": 15,
-  "matched_count": 26,
+  "matched_count": 27,
   "top_entities": [
     {
       "name": "region",
-      "count": 80
+      "count": 81
     },
     {
       "name": "grape_variety",
@@ -15,7 +15,7 @@
     },
     {
       "name": "climate_zone",
-      "count": 40
+      "count": 41
     },
     {
       "name": "winery",
@@ -23,8 +23,8 @@
     }
   ],
   "sources": {
-    "Wine Industry Advisor": 16,
-    "Enolife": 2,
+    "Enolife": 3,
+    "Wine Industry Advisor": 15,
     "Wine Enthusiast": 7,
     "Drinkhacker": 1,
     "Wine Institute": 1,
@@ -39,5 +39,5 @@
     "Vinography": 2,
     "Jamie Goode's Wine Blog": 1
   },
-  "generated_at": "2026-04-15T08:43:34.188535+09:00"
+  "generated_at": "2026-04-15T10:27:19.038901+09:00"
 }
