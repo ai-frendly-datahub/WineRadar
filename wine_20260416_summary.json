@@ -1,21 +1,21 @@
 {
   "date": "2026-04-16",
   "category": "wine",
-  "article_count": 81,
-  "source_count": 20,
-  "matched_count": 29,
+  "article_count": 80,
+  "source_count": 19,
+  "matched_count": 28,
   "top_entities": [
     {
       "name": "region",
-      "count": 86
+      "count": 82
     },
     {
       "name": "grape_variety",
-      "count": 45
+      "count": 43
     },
     {
       "name": "climate_zone",
-      "count": 38
+      "count": 37
     },
     {
       "name": "winery",
@@ -39,10 +39,9 @@
     "Wine Dharma": 1,
     "Terre de Vins": 2,
     "Drinkhacker": 1,
-    "Tim Atkin MW": 1,
     "Vinography": 2,
     "Opening a Bottle": 1,
     "Decanter": 1
   },
-  "generated_at": "2026-04-16T08:42:50.983696+09:00"
+  "generated_at": "2026-04-16T10:33:38.054500+09:00"
 }
