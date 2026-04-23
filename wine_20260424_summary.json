@@ -1,0 +1,42 @@
+{
+  "date": "2026-04-24",
+  "category": "wine",
+  "article_count": 60,
+  "source_count": 14,
+  "matched_count": 31,
+  "top_entities": [
+    {
+      "name": "region",
+      "count": 61
+    },
+    {
+      "name": "grape_variety",
+      "count": 40
+    },
+    {
+      "name": "climate_zone",
+      "count": 23
+    },
+    {
+      "name": "winery",
+      "count": 21
+    }
+  ],
+  "sources": {
+    "Wine21": 9,
+    "Wine Industry Advisor": 16,
+    "Sonoma Magazine": 2,
+    "Drinkhacker": 1,
+    "Jeb Dunnuck": 1,
+    "Wine Enthusiast": 3,
+    "Gambero Rosso": 8,
+    "Decanter": 3,
+    "Vino Joy News": 6,
+    "The Drinks Business": 7,
+    "Enolife": 1,
+    "Tim Atkin MW": 1,
+    "Terre de Vins": 1,
+    "Wine Magazine South Africa": 1
+  },
+  "generated_at": "2026-04-24T08:46:12.358690+09:00"
+}
