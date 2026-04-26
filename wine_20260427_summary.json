@@ -1,0 +1,43 @@
+{
+  "date": "2026-04-27",
+  "category": "wine",
+  "article_count": 60,
+  "source_count": 15,
+  "matched_count": 29,
+  "top_entities": [
+    {
+      "name": "region",
+      "count": 53
+    },
+    {
+      "name": "grape_variety",
+      "count": 44
+    },
+    {
+      "name": "climate_zone",
+      "count": 26
+    },
+    {
+      "name": "winery",
+      "count": 21
+    }
+  ],
+  "sources": {
+    "Enolife": 3,
+    "Jancis Robinson": 2,
+    "Gambero Rosso": 10,
+    "Decanter": 2,
+    "Rioja Wine Official": 1,
+    "Wine21": 10,
+    "Vino Joy News": 5,
+    "Terre de Vins": 1,
+    "Vinography": 1,
+    "Wine Magazine South Africa": 1,
+    "Sonoma Magazine": 2,
+    "Wine Industry Advisor": 11,
+    "Drinkhacker": 1,
+    "Wine Enthusiast": 2,
+    "The Drinks Business": 8
+  },
+  "generated_at": "2026-04-27T08:40:47.697086+09:00"
+}
