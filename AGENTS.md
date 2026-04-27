@@ -1,6 +1,6 @@
 # WINERADAR
 
-와인 시장 데이터 수집·분석 레이더. RSS + HTML 스크래핑 → 엔티티 추출·정규화 → DuckDB 그래프 + 벡터 인덱스 저장. 가장 많은 테스트(31개), 가장 풍부한 분석 모듈.
+와인 시장 데이터 수집·분석 레이더. RSS + HTML/브라우저 수집 → 엔티티 추출·정규화 → DuckDB 그래프 + 벡터 인덱스 저장. 미디어뿐 아니라 importer/association market signal도 함께 본다.
 
 ## STRUCTURE
 
@@ -49,6 +49,7 @@ WineRadar/
 - **Quality checks**: 별도 `quality_checks/` 모듈로 데이터 무결성 검증
 - **Notebooks**: 탐색적 분석용 `notebooks/` 디렉토리
 - **테스트**: 24 unit + 6 integration + 1 e2e (워크스페이스 최대)
+- **Source mix**: taxonomy 기준 `공식 + 운영 + 시장 + 커뮤니티`를 모두 유지한다.
 
 ## COMMANDS
 

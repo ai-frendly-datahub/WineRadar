@@ -16,6 +16,12 @@ DB_ENV_VAR = "WINERADAR_DB_PATH"
 DEFAULT_DB_PATH = Path("data") / "wineradar.duckdb"
 
 
+def _utc_naive(dt: datetime) -> datetime:
+    if dt.tzinfo is None:
+        return dt
+    return dt.astimezone(UTC).replace(tzinfo=None)
+
+
 def _resolve_db_path(db_path: Path | str | None = None) -> Path:
     """Resolve database path from parameter, environment, or default."""
     if db_path is not None:
@@ -93,7 +99,7 @@ def get_view(
     entity_views = set(entity_view_map.keys())
 
     now = datetime.now(UTC)
-    threshold = now - time_window
+    threshold = _utc_naive(now - time_window)
 
     resolved_path = _resolve_db_path(db_path)
     with duckdb.connect(str(resolved_path)) as conn:
@@ -105,7 +111,7 @@ def get_view(
                 "u.country, u.continent, u.region, u.producer_role, u.trust_tier, u.info_purpose, u.collection_tier, u.score",
                 "FROM urls u",
                 "INNER JOIN url_entities ue ON u.url_id = ue.url_id",
-                "WHERE u.published_at >= ?",
+                "WHERE COALESCE(u.last_seen_at, u.collected_at, u.published_at) >= ?",
                 "AND ue.entity_type = ?",
             ]
             params = [threshold, entity_type]
@@ -117,7 +123,7 @@ def get_view(
                 "SELECT url, title, summary, published_at, source_name, source_type, content_type,",
                 "country, continent, region, producer_role, trust_tier, info_purpose, collection_tier, score",
                 "FROM urls",
-                "WHERE published_at >= ?",
+                "WHERE COALESCE(last_seen_at, collected_at, published_at) >= ?",
             ]
             params = [threshold]
 
@@ -207,7 +213,7 @@ def get_top_entities(
 ) -> list[TopEntity]:
     """특정 기간 동안 가장 많이 언급된 엔티티를 조회합니다."""
     now = datetime.now(UTC)
-    threshold = now - time_window
+    threshold = _utc_naive(now - time_window)
 
     resolved_path = _resolve_db_path(db_path)
     with duckdb.connect(str(resolved_path)) as conn:
@@ -215,7 +221,7 @@ def get_top_entities(
             "SELECT ue.entity_type, ue.entity_value, COUNT(*) AS count",
             "FROM url_entities ue",
             "INNER JOIN urls u ON ue.url = u.url",
-            "WHERE u.published_at >= ?",
+            "WHERE COALESCE(u.last_seen_at, u.collected_at, u.published_at) >= ?",
             "AND ue.entity_type = ?",
             "GROUP BY ue.entity_type, ue.entity_value",
             "ORDER BY count DESC, ue.entity_value ASC",

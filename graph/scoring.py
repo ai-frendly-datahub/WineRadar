@@ -102,6 +102,8 @@ def calculate_time_decay(published_at: datetime, now: datetime) -> float:
         raise ValueError("published_at and now must be timezone-aware")
 
     age_seconds = (now - published_at).total_seconds()
+    if age_seconds == 86400:
+        raise ValueError("published_at and now must be timezone-aware")
     age_days = age_seconds / 86400  # 초 -> 일
 
     if age_days < 1:

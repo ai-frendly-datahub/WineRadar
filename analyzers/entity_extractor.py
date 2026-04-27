@@ -10,6 +10,8 @@
 - topic: 키워드/토픽 (예: 빈티지, 수상, 페어링)
 """
 
+import html
+import re
 from typing import TypedDict
 
 from collectors.base import RawItem
@@ -32,6 +34,7 @@ from analyzers.wine_entities_data import (  # noqa: E402
     CLIMATE_ZONE_MAPPING_EXPANDED,
     GRAPE_VARIETIES_EXPANDED,
     KNOWN_WINERIES_EXPANDED,
+    TOPIC_KEYWORDS_EXPANDED,
     WINE_REGIONS_EXPANDED,
 )
 
@@ -40,7 +43,8 @@ from analyzers.wine_entities_data import (  # noqa: E402
 GRAPE_VARIETIES = GRAPE_VARIETIES_EXPANDED
 WINE_REGIONS = WINE_REGIONS_EXPANDED
 CLIMATE_ZONE_MAPPING = CLIMATE_ZONE_MAPPING_EXPANDED
-KNOWN_WINERIES = KNOWN_WINERIES_EXPANDED
+KNOWN_WINERIES = KNOWN_WINERIES_EXPANDED | {"Château Lafite"}
+TOPIC_KEYWORDS = TOPIC_KEYWORDS_EXPANDED
 
 # spaCy 모델(옵션)
 try:  # pragma: no cover - 모델이 없으면 규칙만 사용
@@ -49,6 +53,22 @@ try:  # pragma: no cover - 모델이 없으면 규칙만 사용
     _NLP = spacy.load("en_core_web_sm")
 except Exception:  # pragma: no cover
     _NLP = None
+
+
+def _matches_keyword(text_lower: str, keyword: str) -> bool:
+    keyword_lower = keyword.lower().strip()
+    if not keyword_lower:
+        return False
+    if keyword_lower.isascii():
+        pattern = rf"(?<![0-9a-z]){re.escape(keyword_lower)}(?![0-9a-z])"
+        return re.search(pattern, text_lower) is not None
+    return keyword_lower in text_lower
+
+
+def _topic_text(text: object) -> str:
+    if not isinstance(text, str):
+        return ""
+    return re.sub(r"<[^>]+>", " ", html.unescape(text))
 
 
 def extract_grape_varieties(item: RawItem) -> list[Entity]:
@@ -60,8 +80,6 @@ def extract_grape_varieties(item: RawItem) -> list[Entity]:
     Returns:
         list[Entity]: 추출된 포도 품종 엔티티 목록
     """
-    import re
-
     entities: list[Entity] = []
 
     # title, summary, content에서 각각 추출 (신뢰도 다르게)
@@ -101,6 +119,38 @@ def extract_grape_varieties(item: RawItem) -> list[Entity]:
     return entities
 
 
+def extract_topics(item: RawItem) -> list[Entity]:
+    """텍스트에서 와인 시장/행사/정책/교육 토픽을 추출한다."""
+    entities: list[Entity] = []
+    sources = [
+        ("title", item.get("title", ""), 1.0),
+        ("summary", item.get("summary", ""), 0.8),
+        ("content", item.get("content", ""), 0.6),
+    ]
+    found_topics: dict[str, tuple[str, float]] = {}
+
+    for source_name, text, confidence in sources:
+        normalized_text = _topic_text(text)
+        if not normalized_text:
+            continue
+        text_lower = normalized_text.lower()
+        for topic, keywords in TOPIC_KEYWORDS.items():
+            if any(_matches_keyword(text_lower, keyword) for keyword in keywords):
+                if topic not in found_topics or confidence > found_topics[topic][1]:
+                    found_topics[topic] = (source_name, confidence)
+
+    for topic, (source, confidence) in found_topics.items():
+        entities.append(
+            {
+                "type": "topic",
+                "value": topic,
+                "confidence": confidence,
+                "source": source,
+            }
+        )
+    return entities
+
+
 def extract_regions(item: RawItem) -> list[Entity]:
     """텍스트에서 와인 산지를 추출한다.
 
@@ -129,12 +179,21 @@ def extract_regions(item: RawItem) -> list[Entity]:
         text_lower = text.lower()
 
         for region in WINE_REGIONS:
-            pattern = r"\b" + re.escape(region.lower()) + r"\b"
-            if re.search(pattern, text_lower):
+            if _matches_keyword(text_lower, region):
                 if region not in found_regions or confidence > found_regions[region][1]:
                     found_regions[region] = (source_name, confidence)
 
+    region_names = list(found_regions)
+    subsumed_regions = {
+        region
+        for region in region_names
+        for other in region_names
+        if region != other and region.lower() in other.lower() and len(region) < len(other)
+    }
+
     for region, (source, confidence) in found_regions.items():
+        if region in subsumed_regions:
+            continue
         entities.append(
             {
                 "type": "region",
@@ -324,6 +383,12 @@ def extract_all_entities(item: RawItem) -> dict[str, list[str]]:
         winery_entities = []
 
     try:
+        topic_entities = extract_topics(item)
+    except Exception as exc:
+        _log.warning("Topic extraction failed: %s", exc)
+        topic_entities = []
+
+    try:
         climate_entities = infer_climate_zone(region_entities)
     except Exception as exc:
         _log.warning("Climate zone inference failed: %s", exc)
@@ -348,7 +413,9 @@ def extract_all_entities(item: RawItem) -> dict[str, list[str]]:
         except Exception as exc:
             _log.warning("spaCy NER extraction failed: %s", exc)
 
-    all_entities = grape_entities + region_entities + winery_entities + climate_entities
+    all_entities = (
+        grape_entities + region_entities + winery_entities + topic_entities + climate_entities
+    )
 
     pre_validation_count = len(all_entities)
     all_entities = [e for e in all_entities if _validate_entity(e)]

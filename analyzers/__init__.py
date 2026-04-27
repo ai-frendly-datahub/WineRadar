@@ -9,6 +9,7 @@ from analyzers.entity_extractor import (
     extract_all_entities,
     extract_grape_varieties,
     extract_regions,
+    extract_topics,
     extract_wineries,
     infer_climate_zone,
 )
@@ -19,6 +20,7 @@ __all__ = [
     "extract_all_entities",
     "extract_grape_varieties",
     "extract_regions",
+    "extract_topics",
     "extract_wineries",
     "infer_climate_zone",
 ]

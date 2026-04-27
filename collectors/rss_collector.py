@@ -50,6 +50,10 @@ class RSSCollector:
 
         Retries on timeout, connection errors, and HTTP errors (408, 429, 500+).
         """
+        fixture_feed = self.source_meta.get("config", {}).get("fixture_feed")
+        if isinstance(fixture_feed, str):
+            return fixture_feed.encode("utf-8")
+
         headers = {
             "User-Agent": "Mozilla/5.0 (compatible; WineRadarBot/1.0; +https://github.com/zzragida/ai-frendly-datahub)",
         }

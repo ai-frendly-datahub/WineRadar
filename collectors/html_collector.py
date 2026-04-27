@@ -176,7 +176,16 @@ class HTMLCollector:
                         # Skip unknown JavaScript patterns
                         continue
                 else:
-                    continue
+                    onclick = str(link_node.get("onclick") or "")
+                    view_match = re.search(r"viewData\(['\"]?(\d+)['\"]?\)", onclick)
+                    if view_match and "shinsegae-lnb.com" in self.list_url:
+                        article_id = view_match.group(1)
+                        href = urljoin(
+                            self.list_url,
+                            f"/html/news/promotionView.html?idx={article_id}",
+                        )
+                    else:
+                        continue
 
             if href.startswith("/"):
                 href = urljoin(self.list_url, href)
@@ -192,6 +201,10 @@ class HTMLCollector:
                 )
             else:
                 title = link_node.get_text(strip=True)
+            if not title:
+                image_node = node.select_one("img[alt]")
+                if image_node:
+                    title = str(image_node.get("alt") or "").strip()
             if not title:
                 continue
 

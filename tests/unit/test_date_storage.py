@@ -3,6 +3,25 @@ from __future__ import annotations
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
+import duckdb
+
+
+def _create_record_db(db_path: Path, *, table: str = "urls") -> None:
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    with duckdb.connect(str(db_path)) as conn:
+        if table == "articles":
+            conn.execute("CREATE TABLE articles (link TEXT)")
+            conn.execute("INSERT INTO articles VALUES ('https://example.com/article')")
+        else:
+            conn.execute("CREATE TABLE urls (url TEXT)")
+            conn.execute("INSERT INTO urls VALUES ('https://example.com/url')")
+
+
+def _create_metadata_only_db(db_path: Path) -> None:
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    with duckdb.connect(str(db_path)) as conn:
+        conn.execute("CREATE TABLE kpi_daily (run_timestamp TIMESTAMP, notes TEXT)")
+
 
 def test_snapshot_database_creates_file(tmp_path: Path) -> None:
     from wineradar.date_storage import snapshot_database
@@ -52,6 +71,42 @@ def test_snapshot_database_custom_snapshot_root(tmp_path: Path) -> None:
 
     assert result is not None
     assert result.parent == custom_root
+
+
+def test_latest_snapshot_path_prefers_newest_snapshot_with_records(tmp_path: Path) -> None:
+    from wineradar.date_storage import latest_snapshot_path
+
+    db_path = tmp_path / "data" / "wineradar.duckdb"
+    old_snapshot = tmp_path / "data" / "snapshots" / "2026-04-01" / "wineradar.duckdb"
+    new_snapshot = tmp_path / "data" / "snapshots" / "2026-04-07" / "wineradar.duckdb"
+    _create_record_db(old_snapshot)
+    _create_record_db(new_snapshot)
+
+    assert latest_snapshot_path(db_path) == new_snapshot
+
+
+def test_resolve_read_database_path_falls_back_to_snapshot_without_primary_records(
+    tmp_path: Path,
+) -> None:
+    from wineradar.date_storage import resolve_read_database_path
+
+    db_path = tmp_path / "data" / "wineradar.duckdb"
+    snapshot = tmp_path / "data" / "snapshots" / "2026-04-07" / "wineradar.duckdb"
+    _create_metadata_only_db(db_path)
+    _create_record_db(snapshot)
+
+    assert resolve_read_database_path(db_path) == snapshot
+
+
+def test_resolve_read_database_path_keeps_primary_with_records(tmp_path: Path) -> None:
+    from wineradar.date_storage import resolve_read_database_path
+
+    db_path = tmp_path / "data" / "wineradar.duckdb"
+    snapshot = tmp_path / "data" / "snapshots" / "2026-04-07" / "wineradar.duckdb"
+    _create_record_db(db_path)
+    _create_record_db(snapshot)
+
+    assert resolve_read_database_path(db_path) == db_path
 
 
 def test_cleanup_date_directories_removes_old(tmp_path: Path) -> None:

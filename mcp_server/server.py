@@ -74,13 +74,47 @@ except ModuleNotFoundError:
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from mcp_server.tools import (  # noqa: E402
-    handle_get_view,
-    handle_recent_updates,
-    handle_search_by_keyword,
-    handle_sql,
-    handle_top_trends,
-)
+import duckdb  # noqa: E402
+from mcp_server import tools as _tools  # noqa: E402
+
+
+DB_PATH = _tools.DB_PATH
+SEARCH_DB_PATH = _tools.SEARCH_DB_PATH
+SearchIndex = _tools.SearchIndex
+
+
+async def handle_get_view(arguments: dict[str, Any]) -> list[TextContent]:
+    text = await _tools.handle_get_view(arguments)
+    return [TextContent(type="text", text=text)]
+
+
+async def handle_search_by_keyword(arguments: dict[str, Any]) -> list[TextContent]:
+    text = await _tools.handle_search_by_keyword(
+        arguments,
+        search_db_path=SEARCH_DB_PATH,
+        search_index_cls=SearchIndex,
+    )
+    return [TextContent(type="text", text=text)]
+
+
+async def handle_recent_updates(arguments: dict[str, Any]) -> list[TextContent]:
+    text = await _tools.handle_recent_updates(arguments, db_path=DB_PATH)
+    return [TextContent(type="text", text=text)]
+
+
+async def handle_sql(arguments: dict[str, Any]) -> list[TextContent]:
+    text = await _tools.handle_sql(arguments, db_path=DB_PATH)
+    return [TextContent(type="text", text=text)]
+
+
+async def handle_top_trends(arguments: dict[str, Any]) -> list[TextContent]:
+    text = await _tools.handle_top_trends(arguments, db_path=DB_PATH)
+    return [TextContent(type="text", text=text)]
+
+
+async def handle_quality_report(arguments: dict[str, Any]) -> list[TextContent]:
+    text = await _tools.handle_quality_report(arguments, db_path=DB_PATH)
+    return [TextContent(type="text", text=text)]
 
 
 app = Server("wineradar")
@@ -166,26 +200,36 @@ async def list_tools() -> list[Tool]:
                 },
             },
         ),
+        Tool(
+            name="quality_report",
+            description="WineRadar 소스 신선도와 비활성 고가치 후보의 품질 점검 JSON을 반환합니다.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "config_path": {
+                        "type": "string",
+                        "description": "테스트 또는 대체 실행용 sources.yaml 경로",
+                    },
+                },
+            },
+        ),
     ]
 
 
 @app.call_tool()
 async def call_tool(name: str, arguments: Any) -> list[TextContent]:
     if name == "get_view":
-        result = await handle_get_view(arguments)
-        return [TextContent(type="text", text=result)]
+        return await handle_get_view(arguments)
     if name == "search_by_keyword":
-        result = await handle_search_by_keyword(arguments)
-        return [TextContent(type="text", text=result)]
+        return await handle_search_by_keyword(arguments)
     if name in {"recent_updates", "get_recent_items"}:
-        result = await handle_recent_updates(arguments)
-        return [TextContent(type="text", text=result)]
+        return await handle_recent_updates(arguments)
     if name == "sql":
-        result = await handle_sql(arguments)
-        return [TextContent(type="text", text=result)]
+        return await handle_sql(arguments)
     if name == "top_trends":
-        result = await handle_top_trends(arguments)
-        return [TextContent(type="text", text=result)]
+        return await handle_top_trends(arguments)
+    if name == "quality_report":
+        return await handle_quality_report(arguments)
     raise ValueError(f"Unknown tool: {name}")
 
 

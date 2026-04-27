@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, date, datetime
+from itertools import islice
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import yaml
 
@@ -23,6 +25,7 @@ from wineradar.common.validators import (
     validate_rating,
     validate_vintage,
 )
+from wineradar.quality_report import build_quality_report, write_quality_report
 from wineradar.reporter import generate_index_html, generate_report
 
 
@@ -32,6 +35,32 @@ DEFAULT_CONFIG_PATH = PROJECT_ROOT / "config" / "sources.yaml"
 DEFAULT_REPORT_DIR = PROJECT_ROOT / "reports"
 DEFAULT_RAW_DIR = PROJECT_ROOT / "data" / "raw"
 DEFAULT_SEARCH_DB_PATH = PROJECT_ROOT / "data" / "search_index.db"
+
+
+def _resolve_collect_max_workers(max_workers: int | None = None) -> int:
+    if max_workers is None:
+        raw_value = os.environ.get("WINERADAR_MAX_WORKERS", "10")
+        try:
+            parsed = int(raw_value)
+        except ValueError:
+            parsed = 10
+    else:
+        parsed = max_workers
+    return max(1, min(parsed, 12))
+
+
+def _resolve_per_source_limit(per_source_limit: int | None = None) -> int | None:
+    if per_source_limit is None:
+        raw_value = os.environ.get("WINERADAR_PER_SOURCE_LIMIT", "10")
+        try:
+            parsed = int(raw_value)
+        except ValueError:
+            parsed = 10
+    else:
+        parsed = per_source_limit
+    if parsed <= 0:
+        return None
+    return max(1, min(parsed, 500))
 
 
 def load_sources_config(path: Path | None = None) -> dict[str, Any]:
@@ -46,6 +75,7 @@ def _generate_html_reports(
     db_path: Path | None,
     output_dir: Path,
     stats: dict[str, Any],
+    quality_report: dict[str, Any] | None = None,
 ) -> None:
     """HTML 리포트를 생성하고 인덱스를 업데이트한다."""
     from datetime import timedelta
@@ -151,6 +181,8 @@ def _generate_html_reports(
             published_at = item.get("published_at")
             entities = item.get("entities")
             matched_entities = entities if isinstance(entities, dict) else {}
+            if not _report_item_matches_scope(matched_entities):
+                continue
 
             articles_by_url[article_url] = radar_models.Article(
                 title=str(item.get("title") or "(untitled)"),
@@ -185,10 +217,42 @@ def _generate_html_reports(
             "matched_count": matched_count,
         },
         store=None,
+        quality_report=quality_report,
     )
 
     # 통합 템플릿 인덱스 생성
     generate_index_html(output_dir)
+
+
+def _report_item_matches_scope(entities: dict[str, Any]) -> bool:
+    return any(isinstance(values, list) and values for values in entities.values())
+
+
+def _normalize_collected_item(item: dict[str, Any], collector: Any, now: datetime) -> dict[str, Any]:
+    normalized = dict(item)
+    normalized["summary"] = normalized.get("summary") or ""
+    normalized.setdefault("content", normalized.get("summary") or "")
+    normalized.setdefault("source_name", getattr(collector, "source_name", "Unknown Source"))
+    normalized.setdefault("source_type", getattr(collector, "source_type", "media"))
+    normalized.setdefault("content_type", "news_review")
+    normalized.setdefault("published_at", now)
+    normalized.setdefault("language", None)
+    normalized.setdefault("country", "")
+    normalized.setdefault("continent", "OLD_WORLD")
+    normalized.setdefault("region", "Unknown/Unknown")
+    normalized.setdefault("producer_role", "trade_media")
+    normalized.setdefault("trust_tier", "T3_professional")
+    normalized.setdefault("info_purpose", ["P1_daily_briefing"])
+    normalized.setdefault("collection_tier", "C1_rss")
+    return normalized
+
+
+def _collector_error_prefix(collector: Any) -> str:
+    collector_type = collector.__class__.__name__
+    source_name = str(getattr(collector, "source_name", "") or "").strip()
+    if source_name:
+        return f"{source_name}: {collector_type}"
+    return collector_type
 
 
 def collect_and_store(
@@ -196,13 +260,14 @@ def collect_and_store(
     *,
     fetcher_factory: FetcherFactory | None = None,
     db_path: Path | None = None,
+    max_workers: int | None = None,
+    per_source_limit: int | None = None,
+    progress_callback: Callable[[int, int, Any, int, Exception | None], None] | None = None,
 ) -> tuple[int, int, int, int, int, list[str]]:
-    """Collector를 실행하고 DuckDB에 저장.
-
-    Returns:
-        (수집된 아이템 수, Collector 수, 추출된 엔티티 수, 성공한 소스 수, 실패한 소스 수, 에러 목록)
-    """
+    """Collector를 실행하고 DuckDB에 저장."""
     collectors = build_collectors(sources_config, fetcher_factory=fetcher_factory)
+    workers = _resolve_collect_max_workers(max_workers)
+    item_limit = _resolve_per_source_limit(per_source_limit)
     now = datetime.now(UTC)
     total_items = 0
     total_entities = 0
@@ -213,15 +278,33 @@ def collect_and_store(
     search_index = SearchIndex(DEFAULT_SEARCH_DB_PATH)
 
     try:
-        for collector in collectors:
+        collected_results = _collect_from_collectors(
+            collectors,
+            max_workers=workers,
+            per_source_limit=item_limit,
+            progress_callback=progress_callback,
+        )
+
+        for collector, collected_items, collect_error in collected_results:
             collector_success = False
+            if collect_error is not None:
+                sources_failed += 1
+                errors.append(
+                    f"{_collector_error_prefix(collector)}: {str(collect_error)[:100]}"
+                )
+                continue
+
             try:
-                collected_items = list(collector.collect())
                 raw_logger.log_raw_items(collected_items, source_name=collector.source_name)
 
                 validated_items = []
-                for item in collected_items:
+                for raw_item in collected_items:
+                    item = _normalize_collected_item(raw_item, collector, now)
                     is_valid, validation_errors = validate_article(item)
+                    validation_errors = [
+                        error for error in validation_errors if not error.startswith("summary ")
+                    ]
+                    is_valid = len(validation_errors) == 0
                     rating = item.get("rating") if isinstance(item, dict) else None
                     vintage = item.get("vintage") if isinstance(item, dict) else None
 
@@ -232,7 +315,8 @@ def collect_and_store(
 
                     if validation_errors:
                         errors.append(
-                            f"{collector.__class__.__name__}: {item.get('url', 'unknown')} -> "
+                            f"{_collector_error_prefix(collector)}: "
+                            f"{item.get('url', 'unknown')} -> "
                             f"{'; '.join(validation_errors)}"
                         )
                         continue
@@ -258,10 +342,10 @@ def collect_and_store(
                     sources_succeeded += 1
                 else:
                     sources_failed += 1
-                    errors.append(f"{collector.__class__.__name__}: No items collected")
+                    errors.append(f"{_collector_error_prefix(collector)}: No items collected")
             except Exception as e:
                 sources_failed += 1
-                errors.append(f"{collector.__class__.__name__}: {str(e)[:100]}")
+                errors.append(f"{_collector_error_prefix(collector)}: {str(e)[:100]}")
 
         prune_db_path = db_path or (PROJECT_ROOT / "data" / "wineradar.duckdb")
         graph_store.prune_expired_urls(now, db_path=prune_db_path)
@@ -277,6 +361,66 @@ def collect_and_store(
         search_index.close()
 
 
+def _collect_from_collectors(
+    collectors: list[Any],
+    *,
+    max_workers: int,
+    per_source_limit: int | None = None,
+    progress_callback: Callable[[int, int, Any, int, Exception | None], None] | None = None,
+) -> list[tuple[Any, list[dict[str, Any]], Exception | None]]:
+    total_collectors = len(collectors)
+    if max_workers == 1 or len(collectors) <= 1:
+        serial_results: list[tuple[Any, list[dict[str, Any]], Exception | None]] = []
+        for index, collector in enumerate(collectors):
+            _index, collector, items, error = _collect_from_single(
+                index,
+                collector,
+                per_source_limit=per_source_limit,
+            )
+            if progress_callback:
+                progress_callback(index + 1, total_collectors, collector, len(items), error)
+            serial_results.append((collector, items, error))
+        return serial_results
+
+    results: list[tuple[int, Any, list[dict[str, Any]], Exception | None]] = []
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [
+            executor.submit(
+                _collect_from_single,
+                index,
+                collector,
+                per_source_limit=per_source_limit,
+            )
+            for index, collector in enumerate(collectors)
+        ]
+        for future in as_completed(futures):
+            result = future.result()
+            results.append(result)
+            if progress_callback:
+                _index, collector, items, error = result
+                progress_callback(len(results), total_collectors, collector, len(items), error)
+
+    return [
+        (collector, items, error)
+        for _, collector, items, error in sorted(results, key=lambda row: row[0])
+    ]
+
+
+def _collect_from_single(
+    index: int,
+    collector: Any,
+    *,
+    per_source_limit: int | None = None,
+) -> tuple[int, Any, list[dict[str, Any]], Exception | None]:
+    try:
+        collected = collector.collect()
+        if per_source_limit is not None:
+            return index, collector, list(islice(collected, per_source_limit)), None
+        return index, collector, list(collected), None
+    except Exception as exc:
+        return index, collector, [], exc
+
+
 def run_once(
     execute_collectors: bool = False,
     *,
@@ -286,6 +430,9 @@ def run_once(
     generate_report: bool = False,
     report_output_dir: Path | None = None,
     snapshot_db: bool = False,
+    keep_raw_days: int = 180,
+    keep_report_days: int = 90,
+    per_source_limit: int | None = None,
 ) -> None:
     """하루 파이프라인을 한 번 실행한다."""
     import time
@@ -293,28 +440,73 @@ def run_once(
     start_time = time.time()
 
     now = datetime.now(UTC)
-    print(f"[{now.isoformat()}] WineRadar run_once 시작")
+    print(f"[{now.isoformat()}] WineRadar run_once 시작", flush=True)
 
     if not execute_collectors:
-        print("  - 실행 모드: dry-run (collectors 미실행)")
+        print("  - 실행 모드: dry-run (collectors 미실행)", flush=True)
         return
 
     sources_config = load_sources_config(config_path)
 
     # 활성 소스 수 계산
     active_sources = len([s for s in sources_config.get("sources", []) if s.get("enabled", False)])
+    print(f"  - 활성 소스 설정: {active_sources}개", flush=True)
 
-    total_items, collector_count, total_entities, sources_succeeded, sources_failed, errors = (
-        collect_and_store(
-            sources_config,
-            fetcher_factory=fetcher_factory,
-            db_path=db_path,
+    def _print_collect_progress(
+        completed: int,
+        total: int,
+        collector: Any,
+        item_count: int,
+        error: Exception | None,
+    ) -> None:
+        source_name = str(getattr(collector, "source_name", "Unknown Source"))
+        status = "error" if error else "ok"
+        print(
+            f"  - Collector 진행: {completed}/{total} {source_name} "
+            f"({status}, items={item_count})",
+            flush=True,
         )
+
+    collect_result = collect_and_store(
+        sources_config,
+        fetcher_factory=fetcher_factory,
+        db_path=db_path,
+        per_source_limit=per_source_limit,
+        progress_callback=_print_collect_progress,
     )
+    if len(collect_result) == 3:
+        total_items, collector_count, total_entities = collect_result
+        sources_succeeded = collector_count if total_items else 0
+        sources_failed = max(active_sources - sources_succeeded, 0)
+        errors: list[str] = []
+    else:
+        (
+            total_items,
+            collector_count,
+            total_entities,
+            sources_succeeded,
+            sources_failed,
+            errors,
+        ) = collect_result
     print(f"  - 활성 Collector: {collector_count}개")
     print(f"  - 수집된 아이템: {total_items}건")
     print(f"  - 추출된 엔티티: {total_entities}개")
     print(f"  - 성공한 소스: {sources_succeeded}개, 실패한 소스: {sources_failed}개")
+
+    report_dir = report_output_dir or PROJECT_ROOT / "reports"
+    quality_report = None
+    if sources_config.get("sources"):
+        try:
+            quality_report = build_quality_report(
+                sources_config=sources_config,
+                db_path=db_path or PROJECT_ROOT / "data" / "wineradar.duckdb",
+                errors=errors,
+            )
+            quality_paths = write_quality_report(quality_report, output_dir=report_dir)
+            print(f"  - 품질 리포트 저장: {quality_paths['latest']}")
+        except Exception as e:
+            print(f"  - 품질 리포트 생성 실패: {e}")
+            errors.append(f"Quality report: {str(e)[:100]}")
 
     # HTML 리포트 생성
     report_generated = False
@@ -324,7 +516,6 @@ def run_once(
     if generate_report:
         print("  - HTML 리포트 생성 중...")
         try:
-            report_dir = report_output_dir or PROJECT_ROOT / "reports"
             _generate_html_reports(
                 target_date=now.date(),
                 db_path=db_path,
@@ -335,6 +526,7 @@ def run_once(
                     "entities_extracted": total_entities,
                     "sections_count": 0,  # will be updated in _generate_html_reports
                 },
+                quality_report=quality_report,
             )
             print(f"  - 리포트 저장: {report_dir}")
             report_generated = True
@@ -358,8 +550,8 @@ def run_once(
                 database_path=db_path_for_snapshot,
                 raw_data_dir=PROJECT_ROOT / "data" / "raw",
                 report_dir=PROJECT_ROOT / "reports",
-                keep_raw_days=180,
-                keep_report_days=90,
+                keep_raw_days=keep_raw_days,
+                keep_report_days=keep_report_days,
                 snapshot_db=snapshot_db,
             )
             snapshot_path = date_storage.get("snapshot_path")
@@ -460,6 +652,9 @@ def run_scheduler(
     fetcher_factory: FetcherFactory | None = None,
     db_path: Path | None = None,
     snapshot_db: bool = False,
+    keep_raw_days: int = 180,
+    keep_report_days: int = 90,
+    per_source_limit: int | None = None,
 ) -> None:
     """정기적으로 데이터를 수집하는 스케줄러.
 
@@ -483,6 +678,9 @@ def run_scheduler(
                 fetcher_factory=fetcher_factory,
                 db_path=db_path,
                 snapshot_db=snapshot_db,
+                keep_raw_days=keep_raw_days,
+                keep_report_days=keep_report_days,
+                per_source_limit=per_source_limit,
             )
             print(f"다음 수집까지 {interval_hours}시간 대기 중...")
             time.sleep(interval_hours * 3600)
@@ -531,6 +729,21 @@ if __name__ == "__main__":
     parser.add_argument(
         "--snapshot-db", action="store_true", default=False, help="Create database snapshot"
     )
+    parser.add_argument(
+        "--keep-raw-days", type=int, default=180, help="Retention window for raw JSONL directories"
+    )
+    parser.add_argument(
+        "--keep-report-days", type=int, default=90, help="Retention window for dated HTML reports"
+    )
+    parser.add_argument(
+        "--per-source-limit",
+        type=int,
+        default=None,
+        help=(
+            "Maximum items to consume from each collector. "
+            "Defaults to WINERADAR_PER_SOURCE_LIMIT or 10; use 0 for unlimited."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -540,9 +753,18 @@ if __name__ == "__main__":
             generate_report=args.generate_report,
             report_output_dir=args.report_dir,
             snapshot_db=args.snapshot_db,
+            keep_raw_days=args.keep_raw_days,
+            keep_report_days=args.keep_report_days,
+            per_source_limit=args.per_source_limit,
         )
     else:
         if args.dry_run:
             print("스케줄러 모드에서는 dry-run이 지원되지 않습니다")
         else:
-            run_scheduler(interval_hours=args.interval, snapshot_db=args.snapshot_db)
+            run_scheduler(
+                interval_hours=args.interval,
+                snapshot_db=args.snapshot_db,
+                keep_raw_days=args.keep_raw_days,
+                keep_report_days=args.keep_report_days,
+                per_source_limit=args.per_source_limit,
+            )

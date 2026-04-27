@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -193,6 +193,7 @@ class KPILogger:
 
     def get_kpi_summary(self, days: int = 7) -> dict[str, Any]:
         """최근 N일의 KPI 요약을 반환한다."""
+        cutoff_date = datetime.now(UTC).date() - timedelta(days=days)
         with duckdb.connect(str(self.db_path)) as conn:
             result = conn.execute(
                 """
@@ -204,9 +205,9 @@ class KPILogger:
                     SUM(CASE WHEN report_generated THEN 1 ELSE 0 END) as reports_generated,
                     AVG(top_source_percentage) as avg_top_source_pct
                 FROM kpi_daily
-                WHERE run_date >= CURRENT_DATE - INTERVAL ? DAY
+                WHERE run_date >= ?
             """,
-                [days],
+                [cutoff_date],
             ).fetchone()
 
             if result and result[0] > 0:

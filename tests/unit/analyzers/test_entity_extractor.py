@@ -10,6 +10,7 @@ from analyzers.entity_extractor import (
     extract_all_entities,
     extract_grape_varieties,
     extract_regions,
+    extract_topics,
     extract_wineries,
     infer_climate_zone,
 )
@@ -128,6 +129,87 @@ def test_infer_climate_zone() -> None:
     assert len(climate_entities) == 1
     assert climate_entities[0]["value"] == "Mediterranean"
     assert climate_entities[0]["confidence"] == 0.9  # 1.0 * 0.9
+
+
+def test_extract_topics_for_wine_market_policy_and_event_signals() -> None:
+    item: RawItem = {
+        "id": "test-topic",
+        "url": "https://example.com/wine/topic",
+        "title": "Federdoc warns dazi will hit vino market at Vinitaly",
+        "summary": "Indicazioni Geografiche and wine sales remain in focus.",
+        "content": None,
+        "published_at": datetime(2025, 1, 19, tzinfo=UTC),
+        "source_name": "Test",
+        "source_type": "media",
+        "language": "it",
+        "content_type": "news_review",
+        "country": "IT",
+        "continent": "OLD_WORLD",
+        "region": "Europe/Southern/Italy",
+        "producer_role": "industry_assoc",
+        "trust_tier": "T1_authoritative",
+        "info_purpose": ["P1_daily_briefing"],
+        "collection_tier": "C1_rss",
+    }
+
+    values = {entity["value"] for entity in extract_topics(item)}
+
+    assert {"wine_general", "wine_market", "wine_event", "wine_policy"} <= values
+
+
+def test_extract_topics_handles_korean_wine_signals() -> None:
+    item: RawItem = {
+        "id": "test-topic-ko",
+        "url": "https://example.com/wine/topic-ko",
+        "title": "독일 와인법 개정, 2026 빈티지부터 원산지 중심 체계로 전환",
+        "summary": "와인 테이스팅 행사와 신규 와인 출시 소식",
+        "content": None,
+        "published_at": datetime(2025, 1, 19, tzinfo=UTC),
+        "source_name": "Test",
+        "source_type": "media",
+        "language": "ko",
+        "content_type": "news_review",
+        "country": "KR",
+        "continent": "ASIA",
+        "region": "Asia/East/Korea",
+        "producer_role": "trade_media",
+        "trust_tier": "T3_professional",
+        "info_purpose": ["P1_daily_briefing"],
+        "collection_tier": "C2_html_simple",
+    }
+
+    entities = extract_all_entities(item)
+
+    assert "topic" in entities
+    assert {"wine_general", "wine_policy", "wine_event", "wine_release"} <= set(
+        entities["topic"]
+    )
+    assert "region" in entities
+    assert "Germany" in entities["region"]
+
+
+def test_extract_topics_does_not_match_broad_spirits_article() -> None:
+    item: RawItem = {
+        "id": "test-topic-offscope",
+        "url": "https://example.com/spirits",
+        "title": "Review: Wild Clay Collective Flamingo Edition Whiskeys",
+        "summary": "Ceramic decanters shaped like animals from a whiskey society.",
+        "content": None,
+        "published_at": datetime(2025, 1, 19, tzinfo=UTC),
+        "source_name": "Drinkhacker",
+        "source_type": "media",
+        "language": "en",
+        "content_type": "news_review",
+        "country": "US",
+        "continent": "NEW_WORLD",
+        "region": "Americas/North/USA",
+        "producer_role": "trade_media",
+        "trust_tier": "T3_professional",
+        "info_purpose": ["P1_daily_briefing"],
+        "collection_tier": "C1_rss",
+    }
+
+    assert extract_topics(item) == []
 
 
 def test_extract_all_entities_comprehensive() -> None:

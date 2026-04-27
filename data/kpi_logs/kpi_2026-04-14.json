@@ -1,0 +1,32 @@
+{
+  "run_date": "2026-04-14",
+  "run_timestamp": "2026-04-14T11:35:12.711800+00:00",
+  "collection": {
+    "sources_active": 49,
+    "sources_attempted": 49,
+    "sources_succeeded": 49,
+    "sources_failed": 0,
+    "success_rate": "100.0%"
+  },
+  "articles": {
+    "collected": 1262,
+    "new": 1262,
+    "duplicate": 0
+  },
+  "entities": {
+    "extracted": 3635
+  },
+  "report": {
+    "generated": true,
+    "cards": 69,
+    "sections": 0
+  },
+  "top_source": {
+    "name": "Gambero Rosso",
+    "count": 523,
+    "percentage": 37.4
+  },
+  "runtime_seconds": 190.86706829071045,
+  "errors": [],
+  "notes": null
+}

@@ -68,6 +68,27 @@ def test_call_tool_routes_recent_updates(monkeypatch: pytest.MonkeyPatch) -> Non
 
 
 @pytest.mark.unit
+def test_call_tool_routes_quality_report(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def fake_quality(arguments: dict[str, Any]) -> list[Any]:
+        assert arguments == {}
+        return [server.TextContent(type="text", text='{"category": "wine"}')]
+
+    monkeypatch.setattr(server, "handle_quality_report", fake_quality)
+
+    result = _run(server.call_tool("quality_report", {}))
+
+    assert result[0].text == '{"category": "wine"}'
+
+
+@pytest.mark.unit
+def test_list_tools_includes_quality_report() -> None:
+    tools = _run(server.list_tools())
+
+    tool_names = {tool.name for tool in tools}
+    assert "quality_report" in tool_names
+
+
+@pytest.mark.unit
 def test_sql_tool_rejects_non_select_query() -> None:
     result = _run(server.handle_sql({"query": "DELETE FROM urls"}))
 

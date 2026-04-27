@@ -226,6 +226,44 @@ def test_summary_generated_from_content_when_available(wine21_source: dict) -> N
     assert item["summary"].startswith("첫 문장입니다.")
 
 
+def test_extract_article_list_handles_shinsegae_viewdata_links() -> None:
+    source = {
+        "name": "Shinsegae L&B",
+        "id": "importer_shinsegae_kr",
+        "type": "importer",
+        "country": "KR",
+        "continent": "ASIA",
+        "region": "Asia/East/Korea",
+        "producer_role": "importer",
+        "trust_tier": "T3_professional",
+        "info_purpose": ["P4_trend_discovery"],
+        "collection_tier": "C2_html_simple",
+        "content_type": "news_review",
+        "language": "ko",
+        "config": {
+            "list_url": "https://www.shinsegae-lnb.com/html/news/promotion.html",
+            "article_selector": ".promotionGallery .list",
+            "link_selector": "a",
+        },
+    }
+    html = """
+    <div class="promotionGallery">
+      <div class="list">
+        <a href="javascript:void(0);" onclick="viewData('891');">
+          <img alt="2026년 와인앤모어 바겐 4일 행사 안내" src="/upload/promotion/a.png">
+        </a>
+      </div>
+    </div>
+    """.encode()
+
+    items = list(HTMLCollector(source, fetcher=lambda url: html).collect())
+
+    assert items[0]["title"] == "2026년 와인앤모어 바겐 4일 행사 안내"
+    assert items[0]["url"] == (
+        "https://www.shinsegae-lnb.com/html/news/promotionView.html?idx=891"
+    )
+
+
 def test_build_headers_respects_configured_user_agent(wine21_source: dict) -> None:
     wine21_source["config"]["user_agents"] = ["CustomAgent/1.0"]
     wine21_source["config"]["request_headers"] = {"X-Test": "1"}

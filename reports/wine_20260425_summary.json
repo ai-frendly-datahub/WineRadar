@@ -1,0 +1,89 @@
+{
+  "date": "2026-04-25",
+  "category": "wine",
+  "article_count": 62,
+  "source_count": 17,
+  "matched_count": 62,
+  "top_entities": [
+    {
+      "name": "topic",
+      "count": 103
+    },
+    {
+      "name": "region",
+      "count": 62
+    },
+    {
+      "name": "grape_variety",
+      "count": 38
+    },
+    {
+      "name": "climate_zone",
+      "count": 24
+    },
+    {
+      "name": "winery",
+      "count": 20
+    }
+  ],
+  "sources": {
+    "Wine21": 9,
+    "Drinkhacker": 2,
+    "Gambero Rosso": 3,
+    "Jamie Goode's Wine Blog": 1,
+    "Wine Magazine South Africa": 2,
+    "Decanter": 1,
+    "Federdoc": 9,
+    "Jancis Robinson": 2,
+    "Korean Wine Consumer Association": 4,
+    "Wine Institute": 10,
+    "Enolife": 1,
+    "Sonoma Magazine": 2,
+    "Wine Enthusiast": 2,
+    "The Drinks Business": 9,
+    "Wine Industry Advisor": 3,
+    "VinePair": 1,
+    "Tim Atkin MW": 1
+  },
+  "generated_at": "2026-04-25T21:55:58.467796+09:00",
+  "ontology": {
+    "repo": "WineRadar",
+    "category": "wine",
+    "ontology_version": "0.1.0",
+    "event_model_ids": [
+      "wine.auction_price",
+      "wine.daily_briefing",
+      "wine.education",
+      "wine.importer_portfolio_signal",
+      "wine.market_report",
+      "wine.restaurant_wine_list"
+    ],
+    "event_model_mappings": {
+      "auction_price": "wine.auction_price",
+      "restaurant_wine_list": "wine.restaurant_wine_list",
+      "importer_portfolio_signal": "wine.importer_portfolio_signal",
+      "market_report": "wine.market_report",
+      "daily_briefing": "wine.daily_briefing",
+      "education": "wine.education"
+    },
+    "entity_type_hints": [
+      "beverage.wine_label",
+      "organization.company"
+    ],
+    "source_role_ids": [
+      "community_signal",
+      "operational_evidence"
+    ],
+    "source_role_mappings": {
+      "Wine Spectator": "operational_evidence",
+      "Decanter": "operational_evidence",
+      "The Drinks Business": "operational_evidence",
+      "r/wine": "community_signal"
+    },
+    "evidence_policy_ids": [
+      "traceable_url_required",
+      "cross_reference_required",
+      "non_authoritative_context_only"
+    ]
+  }
+}

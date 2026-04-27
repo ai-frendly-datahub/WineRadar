@@ -1,3 +1,91 @@
+data_quality:
+  priority: P1
+  primary_motion: intelligence
+  weakest_dimension: operational_depth
+  quality_outputs:
+    freshness_report: reports/wine_quality.json
+    dated_freshness_report_pattern: reports/wine_YYYYMMDD_quality.json
+    tracked_event_models:
+    - auction_price
+    - restaurant_wine_list
+    - importer_portfolio_signal
+    - market_report
+    - daily_briefing
+    - education
+  event_models:
+    auction_price:
+      date_fields:
+      - auction_date
+      - collected_at
+      required_fields:
+      - producer
+      - wine_name
+      - vintage
+      - hammer_price
+      - currency
+    restaurant_wine_list:
+      date_fields:
+      - list_updated_at
+      - collected_at
+      required_fields:
+      - restaurant_name
+      - producer
+      - wine_name
+      - list_price
+    importer_portfolio_signal:
+      date_fields:
+      - published_date
+      - collected_at
+      required_fields:
+      - importer_name
+      - producer
+      - wine_name
+      - source_url
+  canonical_keys:
+    wine:
+    - producer
+    - wine_name
+    - vintage
+    - appellation
+    auction_lot:
+    - wine_key
+    - auction_house
+    - auction_date
+    - lot_id
+  freshness_sla:
+    daily_briefing:
+      max_age_days: 3
+    market_report:
+      max_age_days: 7
+    education:
+      max_age_days: 30
+    auction_price:
+      max_age_days: 7
+    restaurant_wine_list:
+      max_age_days: 14
+    importer_portfolio_signal:
+      max_age_days: 14
+  quality_gates:
+  - 생산자·와인명·빈티지·appellation을 canonical wine key로 정규화
+  - 낙찰일·리스트 업데이트일·수집일을 별도 필드로 유지
+  - 비활성 고가치 source는 skip 사유와 재시도 정책을 남김
+source_backlog:
+  operational_candidates:
+  - id: market_livex_gb
+    name: Liv-ex Market Data
+    event_model: auction_price
+    layer: operational
+    activation_gate: API 또는 CSV 접근 계약, vintage/producer canonicalization, currency normalization 검증 후 활성화
+  - id: market_sothebys_us
+    name: Sotheby's Wine Auction Results
+    event_model: auction_price
+    layer: operational
+    activation_gate: robots/ToS, lot permalink, hammer price parser 검증 후 활성화
+  - id: market_restaurantwine_kr
+    name: Korean restaurant wine list pages
+    event_model: restaurant_wine_list
+    layer: operational
+    activation_gate: 개별 업장 페이지 접근성, 가격/빈티지 parser, 업데이트일 추출 검증 후 활성화
 sources:
 - collection_tier: C2_html_simple
   config:
@@ -27,13 +115,14 @@ sources:
 - collection_tier: C2_html_simple
   config:
     collection_method: html
-    list_url: https://winereview.co.kr/news
+    list_url: https://winereview.co.kr/category/news/
     article_selector: div.td_module_wrap
     link_selector: h3.entry-title a
     summary_selector: div.td-excerpt
     date_selector: time
     content_selector: div.td-post-content
     max_articles: 20
+    skip_reason: covered by active RSS source media_winereview_rss_kr; HTML path kept as fallback after legacy /news returned 404
   content_type: news_review
   continent: ASIA
   country: KR
@@ -53,38 +142,13 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.8
-# NOTE: 2026-04-08 wine-what.jp disabled - Domain no longer exists (NXDOMAIN)
-# The wine-what.jp domain has been deregistered and returns DNS NXDOMAIN errors
-# - collection_tier: C1_rss
-#   config:
-#     collection_method: rss
-#     list_url: https://wine-what.jp/feed/
-#   content_type: news_review
-#   continent: ASIA
-#   country: JP
-#   enabled: false
-#   id: media_winewhat_jp
-#   info_purpose:
-#   - P1_daily_briefing
-#   - P4_trend_discovery
-#   language: ja
-#   name: WINE WHAT!?
-#   notes: Japanese wine lifestyle magazine - DISABLED: Domain no longer exists
-#   producer_role: trade_media
-#   region: Asia/East/Japan
-#   requires_login: false
-#   supports_rss: true
-#   tier: premium
-#   trust_tier: T3_professional
-#   type: media
-#   weight: 2.4
-- collection_tier: C3_html_js
+- collection_tier: C2_html_simple
   config:
-    collection_method: browser
+    collection_method: html
     list_url: https://koreawine.or.kr/wineinfo
-    wait_for: ".board-text-overflow"
-    article_selector: ".board-text-overflow"
-    link_selector: ".board-text-overflow a"
+    wait_for: .board-text-overflow
+    article_selector: .board-text-overflow
+    link_selector: .board-text-overflow a
     max_articles: 20
     timeout: 20000
   content_type: education
@@ -105,13 +169,13 @@ sources:
   trust_tier: T1_authoritative
   type: official
   weight: 2.0
-- collection_tier: C3_html_js
+- collection_tier: C2_html_simple
   config:
-    collection_method: browser
+    collection_method: html
     list_url: https://www.shinsegae-lnb.com/html/news/promotion.html
-    wait_for: ".promotionGallery"
-    article_selector: ".list .wrap"
-    link_selector: ".list .wrap a"
+    wait_for: .promotionGallery
+    article_selector: .promotionGallery .list
+    link_selector: a
     max_articles: 20
     timeout: 20000
   content_type: news_review
@@ -240,7 +304,8 @@ sources:
   - P5_education
   language: fr
   name: Institut Français de la Vigne et du Vin
-  notes: French viticulture research institute, statistics
+  notes: French viticulture research institute, statistics [disabled pending 403/404
+    retest noted in SOURCE_STATUS]
   producer_role: research_inst
   region: Europe/Western/France
   requires_login: false
@@ -297,10 +362,9 @@ sources:
   trust_tier: T2_expert
   type: media
   weight: 2.9
-
-- collection_tier: C3_html_js
+- collection_tier: C2_html_simple
   config:
-    collection_method: browser
+    collection_method: html
     list_url: https://www.winenara.com/our-stories
     wait_for: .story-list li
     link_selector: .story-list li a
@@ -317,7 +381,8 @@ sources:
   - P4_trend_discovery
   language: ko
   name: Winenara Stories
-  notes: Playwright source from Task 7 JS research
+  notes: Playwright source from Task 7 JS research. Adds Korean importer portfolio
+    and campaign signal.
   producer_role: trade_media
   region: Asia/East/Korea
   requires_login: false
@@ -326,13 +391,12 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.6
-
-- collection_tier: C3_html_js
+- collection_tier: C2_html_simple
   config:
-    collection_method: browser
+    collection_method: html
     list_url: https://www.vivino.com/explore/KR
-    wait_for: "[data-testid='wineCard']"
-    link_selector: "[data-testid='wineCard'] a"
+    wait_for: '[data-testid=''wineCard'']'
+    link_selector: '[data-testid=''wineCard''] a'
     title_selector: .wineCard__name
     content_selector: main
     timeout: 25000
@@ -343,18 +407,17 @@ sources:
   id: media_vivino_kr_js
   info_purpose:
   - P2_market_analysis
-  - P4_trend_discovery
   language: en
   name: Vivino KR Explore
   notes: Playwright source from Task 7 JS research
-  producer_role: consumer_comm
+  producer_role: trade_media
   region: Asia/East/Korea
   requires_login: false
   supports_rss: false
   tier: premium
-  trust_tier: T4_community
+  trust_tier: T3_professional
   type: media
-  weight: 2.2
+  weight: 2.3
 - collection_tier: C1_rss
   config:
     collection_method: rss
@@ -377,6 +440,84 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.4
+- collection_tier: C5_manual
+  config:
+    collection_method: html
+    list_url: https://www.liv-ex.com/
+    event_model: auction_price
+    freshness_sla_days: 7
+    skip_reason: API or data-license review required before collection
+    retry_policy: review_contract_then_parser_smoke
+  content_type: market_report
+  continent: OLD_WORLD
+  country: GB
+  enabled: false
+  id: market_livex_gb
+  info_purpose:
+  - P2_market_analysis
+  language: en
+  name: Liv-ex Market Data
+  notes: Fine wine market and auction-price proxy candidate. Disabled until access contract, currency normalization, and vintage/producer parser are verified.
+  producer_role: trade_media
+  region: Europe/Western/UK
+  requires_login: true
+  supports_rss: false
+  tier: premium
+  trust_tier: T3_professional
+  type: market
+  weight: 2.8
+- collection_tier: C5_manual
+  config:
+    collection_method: html
+    list_url: https://www.sothebys.com/en/departments/wine
+    event_model: auction_price
+    freshness_sla_days: 7
+    skip_reason: lot permalink and hammer-price parser require ToS/robots review
+    retry_policy: tos_review_then_lot_parser_smoke
+  content_type: market_report
+  continent: NEW_WORLD
+  country: US
+  enabled: false
+  id: market_sothebys_us
+  info_purpose:
+  - P2_market_analysis
+  language: en
+  name: Sotheby's Wine Auction Results
+  notes: Auction result source candidate for hammer price, currency, vintage, and producer evidence. Disabled until ToS/robots and parser stability are verified.
+  producer_role: trade_media
+  region: Americas/North/USA
+  requires_login: false
+  supports_rss: false
+  tier: premium
+  trust_tier: T3_professional
+  type: market
+  weight: 2.7
+- collection_tier: C5_manual
+  config:
+    collection_method: html
+    list_url: https://www.google.com/search?q=site%3Akr+restaurant+wine+list
+    event_model: restaurant_wine_list
+    freshness_sla_days: 14
+    skip_reason: individual restaurant pages need ToS review and stable price/vintage selectors
+    retry_policy: source_shortlist_then_selector_smoke
+  content_type: market_report
+  continent: ASIA
+  country: KR
+  enabled: false
+  id: market_restaurantwine_kr
+  info_purpose:
+  - P2_market_analysis
+  language: ko
+  name: Korean Restaurant Wine Lists
+  notes: Restaurant wine-list and by-the-bottle price candidate. Disabled until venue page shortlist, update-date extraction, and price/vintage parser are verified.
+  producer_role: trade_media
+  region: Asia/East/Korea
+  requires_login: false
+  supports_rss: false
+  tier: premium
+  trust_tier: T3_professional
+  type: market
+  weight: 2.5
 - collection_tier: C1_rss
   config:
     collection_method: rss
@@ -404,10 +545,10 @@ sources:
   config:
     collection_method: html
     list_url: https://www.federdoc.com/news/
-    article_selector: "article"
-    link_selector: "h2.entry-title a"
-    summary_selector: ".entry-content p"
-    date_selector: "time"
+    article_selector: article
+    link_selector: h2.entry-title a
+    summary_selector: .entry-content p
+    date_selector: time
     max_articles: 20
   content_type: education
   continent: OLD_WORLD
@@ -440,7 +581,8 @@ sources:
   - P2_market_analysis
   language: es
   name: Vinos de España (ICEX)
-  notes: Spanish official export promotion, market reports
+  notes: Spanish official export promotion, market reports [disabled pending 403/404
+    retest noted in SOURCE_STATUS]
   producer_role: government
   region: Europe/Southern/Spain
   requires_login: false
@@ -493,12 +635,13 @@ sources:
   trust_tier: T1_authoritative
   type: official
   weight: 2.5
-- collection_tier: C3_html_js
+- collection_tier: C2_html_simple
   config:
-    collection_method: browser
-    list_url: https://wineinstitute.org/category/press-releases/
-    wait_for: "main"
-    link_selector: "main a"
+    collection_method: html
+    list_url: https://wineinstitute.org/press-releases/
+    wait_for: main
+    article_selector: article
+    link_selector: h4 a
     max_articles: 20
     timeout: 20000
   content_type: statistics
@@ -568,18 +711,20 @@ sources:
 - collection_tier: C1_rss
   config:
     collection_method: rss
-    list_url: https://www.winemag.com/feed/
+    list_url: https://www.wineandspiritsmagazine.com/feed
+    skip_reason: source feed is stale and no current article feed is available from this runner
+    retry_policy: find replacement current official feed or parser smoke before enabling
   content_type: news_review
   continent: NEW_WORLD
   country: US
-  enabled: true
+  enabled: false
   id: media_winemag_us
   info_purpose:
   - P1_daily_briefing
   - P4_trend_discovery
   language: en
   name: Wine & Spirits Magazine
-  notes: US wine magazine with extensive coverage
+  notes: "DISABLED 2026-04-23: RSS feed latest item is 2024-11-15 from this runner, so it is retained as source backlog rather than active freshness tracking."
   producer_role: expert_media
   region: Americas/North/USA
   requires_login: false
@@ -682,13 +827,16 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.5
-- collection_tier: C3_html_js
+- collection_tier: C2_html_simple
   config:
-    collection_method: browser
+    collection_method: html
     list_url: https://www.wineaustralia.com/news
-    wait_for: ".date"
-    link_selector: "a[href*='/news/']"
-    date_selector: ".date"
+    wait_for: .date
+    article_selector: a[href^='/news/media-releases/'], a[href^='/news/articles/']
+    link_selector:
+    title_selector: .article-title
+    summary_selector: p
+    date_selector: .date
     max_articles: 20
     timeout: 20000
   content_type: statistics
@@ -744,7 +892,8 @@ sources:
   - P2_market_analysis
   language: en
   name: Wines of Chile
-  notes: Chilean wine association, market reports
+  notes: Chilean wine association, market reports [disabled pending 403/404 retest
+    noted in SOURCE_STATUS]
   producer_role: industry_assoc
   region: Americas/South/Chile
   requires_login: false
@@ -766,7 +915,8 @@ sources:
   - P2_market_analysis
   language: en
   name: Wines of Argentina
-  notes: Argentine wine association, market reports
+  notes: Argentine wine association, market reports [disabled pending 403/404 retest
+    noted in SOURCE_STATUS]
   producer_role: industry_assoc
   region: Americas/South/Argentina
   requires_login: false
@@ -847,6 +997,7 @@ sources:
   config:
     collection_method: rss
     list_url: https://www.acenologia.com/feed/
+    freshness_sla_days: 60
   content_type: news_review
   continent: OLD_WORLD
   country: ES
@@ -869,7 +1020,7 @@ sources:
 - collection_tier: C1_rss
   config:
     collection_method: rss
-    list_url: https://vinepair.com/wine-blog/feed/
+    list_url: https://vinepair.com/feed/
   content_type: news_review
   continent: NEW_WORLD
   country: US
@@ -916,6 +1067,7 @@ sources:
   config:
     collection_method: rss
     list_url: https://www.timatkin.com/feed/
+    freshness_sla_days: 4
   content_type: news_review
   continent: OLD_WORLD
   country: GB
@@ -926,7 +1078,7 @@ sources:
   - P3_investment
   language: en
   name: Tim Atkin MW
-  notes: Master of Wine, independent wine critic and journalist
+  notes: Master of Wine, independent wine critic and journalist; posting cadence is often every 3-4 days rather than daily
   producer_role: expert_media
   region: Europe/Western/UK
   requires_login: false
@@ -935,13 +1087,11 @@ sources:
   trust_tier: T2_expert
   type: media
   weight: 2.9
-
-# === Phase 4 신규 소스 (2025-11-19) ===
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
     list_url: https://www.winereview.co.kr/feed/
+    freshness_sla_days: 16
   content_type: news_review
   continent: ASIA
   country: KR
@@ -952,7 +1102,8 @@ sources:
   - P4_trend_discovery
   language: ko
   name: Wine Review Korea RSS
-  notes: Alternative RSS feed for Wine Review - Asian market coverage enhancement (Phase 4)
+  notes: Alternative RSS feed for Wine Review - Asian market coverage enhancement with 2-week quiet windows between updates
+    (Phase 4)
   producer_role: trade_media
   region: Asia/East/Korea
   requires_login: false
@@ -961,7 +1112,6 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.7
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
@@ -985,11 +1135,11 @@ sources:
   trust_tier: T2_expert
   type: media
   weight: 2.9
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
     list_url: https://www.jebdunnuck.com/feed/
+    freshness_sla_days: 14
   content_type: news_review
   continent: NEW_WORLD
   country: US
@@ -1002,14 +1152,13 @@ sources:
   name: Jeb Dunnuck
   notes: Independent wine critic - expert tier enhancement (Phase 4)
   producer_role: expert_media
-  region: America/North/US
+  region: Americas/North/USA
   requires_login: false
   supports_rss: true
   tier: premium
   trust_tier: T2_expert
   type: media
   weight: 2.9
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
@@ -1021,7 +1170,6 @@ sources:
   id: media_intravino_it
   info_purpose:
   - P1_daily_briefing
-  - P2_market_insight
   language: it
   name: Intravino
   notes: Italian wine magazine - Gambero Rosso alternative for balance (Phase 4)
@@ -1033,22 +1181,23 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.6
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
     list_url: https://www.drvino.com/feed/
+    skip_reason: source feed is archival; latest item is 2022-08-29 from this runner
+    retry_policy: find replacement current Italian wine source or parser smoke before enabling
   content_type: news_review
   continent: OLD_WORLD
   country: IT
-  enabled: true
+  enabled: false
   id: media_drvino_it
   info_purpose:
   - P1_daily_briefing
   - P4_trend_discovery
   language: en
   name: Dr Vino
-  notes: Italian wine culture and analysis - Gambero Rosso alternative (Phase 4) [Re-enabled 2026-04-03 - RSS working with redirect]
+  notes: "DISABLED 2026-04-23: feed redirects cleanly but latest item is 2022-08-29, so it no longer satisfies active market freshness."
   producer_role: trade_media
   region: Europe/Southern/Italy
   requires_login: false
@@ -1057,50 +1206,22 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.5
-
-# === New Sources Added 2026-04-03 ===
-
-# NOTE: 2026-04-03 GuildSomm disabled - RSS feed returns empty <title/> tags
-# The feed returns valid XML but all <title> elements are empty, causing validation errors
-# - collection_tier: C1_rss
-#   config:
-#     collection_method: rss
-#     list_url: https://www.guildsomm.com/rss
-#   content_type: education
-#   continent: NEW_WORLD
-#   country: US
-#   enabled: true
-#   id: media_guildsomm_us
-#   info_purpose:
-#   - P5_education
-#   - P1_daily_briefing
-#   language: en
-#   name: GuildSomm
-#   notes: Professional sommelier community - expert education and wine knowledge (Added 2026-04-03)
-#   producer_role: expert_media
-#   region: Americas/North/USA
-#   requires_login: false
-#   supports_rss: true
-#   tier: premium
-#   trust_tier: T2_expert
-#   type: media
-#   weight: 2.8
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
     list_url: https://winefolly.com/feed/
+    skip_reason: source feed is archival; latest feed items are from 2021
+    retry_policy: find current Wine Folly feed/API or parser smoke before enabling
   content_type: education
   continent: NEW_WORLD
   country: US
-  enabled: true
+  enabled: false
   id: media_winefolly_us
   info_purpose:
   - P5_education
-  - P4_trend_discovery
   language: en
   name: Wine Folly
-  notes: Popular wine education platform with infographics and guides (Added 2026-04-03)
+  notes: "DISABLED 2026-04-23: public RSS feed is archival with latest items from 2021; keep as education backlog until a current feed or parser is verified."
   producer_role: trade_media
   region: Americas/North/USA
   requires_login: false
@@ -1109,13 +1230,11 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.5
-
-# === New Sources Added 2026-04-08 ===
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
     list_url: https://magazine.wein.plus/feed.xml
+    freshness_sla_days: 21
   content_type: news_review
   continent: OLD_WORLD
   country: DE
@@ -1126,7 +1245,8 @@ sources:
   - P4_trend_discovery
   language: en
   name: wein.plus Magazine
-  notes: International wine magazine with expert reviews and interviews (Added 2026-04-08, replacement for wine-what.jp)
+  notes: International wine magazine with expert reviews and interviews (Added 2026-04-08,
+    replacement for wine-what.jp)
   producer_role: expert_media
   region: Europe/Western/Germany
   requires_login: false
@@ -1134,19 +1254,17 @@ sources:
   tier: premium
   trust_tier: T2_expert
   type: media
-  weight: 2.6
-
+  weight: 2.8
 - collection_tier: C1_rss
   config:
     collection_method: rss
     list_url: https://wineindustryadvisor.com/feed/
-  content_type: news_review
+  content_type: market_report
   continent: NEW_WORLD
   country: US
   enabled: true
   id: media_wineindustryadvisor_us
   info_purpose:
-  - P1_daily_briefing
   - P2_market_analysis
   language: en
   name: Wine Industry Advisor
@@ -1159,7 +1277,6 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.5
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
@@ -1171,7 +1288,6 @@ sources:
   id: media_winecountry_us
   info_purpose:
   - P4_trend_discovery
-  - P5_education
   language: en
   name: Wine Country
   notes: California wine country travel and wine reviews (Added 2026-04-08)
@@ -1183,7 +1299,6 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.4
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
@@ -1207,19 +1322,18 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.4
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
     list_url: https://wineeconomist.com/feed/
-  content_type: news_review
+    freshness_sla_days: 14
+  content_type: market_report
   continent: NEW_WORLD
   country: US
   enabled: true
   id: media_wineeconomist_us
   info_purpose:
   - P2_market_analysis
-  - P4_trend_discovery
   language: en
   name: The Wine Economist
   notes: Wine market analysis and economics by Mike Veseth (Added 2026-04-08)
@@ -1230,12 +1344,12 @@ sources:
   tier: premium
   trust_tier: T2_expert
   type: media
-  weight: 2.7
-
+  weight: 2.8
 - collection_tier: C1_rss
   config:
     collection_method: rss
     list_url: https://www.thewinecellarinsider.com/feed/
+    freshness_sla_days: 45
   content_type: news_review
   continent: NEW_WORLD
   country: US
@@ -1255,7 +1369,6 @@ sources:
   trust_tier: T2_expert
   type: media
   weight: 2.8
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
@@ -1267,7 +1380,6 @@ sources:
   id: media_winetraveler_us
   info_purpose:
   - P4_trend_discovery
-  - P5_education
   language: en
   name: Winetraveler
   notes: Wine region travel guides and wine education (Added 2026-04-08)
@@ -1279,11 +1391,11 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.3
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
     list_url: https://www.wineswithattitude.co.uk/feed/
+    freshness_sla_days: 30
   content_type: news_review
   continent: OLD_WORLD
   country: GB
@@ -1291,7 +1403,6 @@ sources:
   id: media_wineswithattitude_uk
   info_purpose:
   - P1_daily_briefing
-  - P5_education
   language: en
   name: Wines With Attitude
   notes: UK wine retailer with educational grape profiles (Added 2026-04-08)
@@ -1303,21 +1414,22 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.3
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
     list_url: https://yann-rousselin.com/feed/
+    skip_reason: source feed is archival; latest item is 2025-03-20 from this runner
+    retry_policy: find replacement current French education feed or parser smoke before enabling
   content_type: education
   continent: OLD_WORLD
   country: FR
-  enabled: true
+  enabled: false
   id: media_levinpasapas_fr
   info_purpose:
   - P5_education
   language: fr
   name: Le Vin Pas a Pas
-  notes: French wine education blog by Yann Rousselin (Added 2026-04-08)
+  notes: "DISABLED 2026-04-23: RSS feed latest item is 2025-03-20, so it is retained as education backlog rather than active freshness tracking."
   producer_role: trade_media
   region: Europe/Western/France
   requires_login: false
@@ -1326,11 +1438,11 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.2
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
     list_url: https://riojawine.com/feed/
+    freshness_sla_days: 8
   content_type: news_review
   continent: OLD_WORLD
   country: ES
@@ -1338,10 +1450,9 @@ sources:
   id: official_rioja_es
   info_purpose:
   - P1_daily_briefing
-  - P5_education
   language: es
   name: Rioja Wine Official
-  notes: Official Rioja DOCa Consejo Regulador (Added 2026-04-08)
+  notes: Official Rioja DOCa Consejo Regulador; weekly posting cadence often runs 7-8 days (Added 2026-04-08)
   producer_role: industry_assoc
   region: Europe/Southern/Spain
   requires_login: false
@@ -1349,8 +1460,7 @@ sources:
   tier: official
   trust_tier: T1_authoritative
   type: official
-  weight: 2.6
-
+  weight: 2.5
 - collection_tier: C1_rss
   config:
     collection_method: rss
@@ -1362,7 +1472,6 @@ sources:
   id: media_winedharma_it
   info_purpose:
   - P4_trend_discovery
-  - P5_education
   language: it
   name: Wine Dharma
   notes: Italian wine blog with recipes and reviews (Added 2026-04-08)
@@ -1374,10 +1483,10 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.2
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
+    freshness_sla_days: 4
     list_url: https://www.1winedude.com/feed/
   content_type: news_review
   continent: NEW_WORLD
@@ -1389,7 +1498,7 @@ sources:
   - P4_trend_discovery
   language: en
   name: 1 Wine Dude
-  notes: Wine blog with reviews and industry commentary by Joe Roberts (Added 2026-04-08)
+  notes: Wine blog with reviews and industry commentary by Joe Roberts; recent cadence is typically every 3-4 days (Added 2026-04-08)
   producer_role: trade_media
   region: Americas/North/USA
   requires_login: false
@@ -1398,11 +1507,10 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.4
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
-    list_url: https://wineeducators.com/feed/
+    list_url: https://wineeducators.com/feed
   content_type: education
   continent: OLD_WORLD
   country: GB
@@ -1412,16 +1520,16 @@ sources:
   - P5_education
   language: en
   name: Association of Wine Educators
-  notes: UK wine educators association with professional education content (Added 2026-04-08)
+  notes: UK wine educators association with professional education content (Added
+    2026-04-08)
   producer_role: industry_assoc
   region: Europe/Western/UK
   requires_login: false
   supports_rss: true
   tier: official
-  trust_tier: T2_expert
+  trust_tier: T1_authoritative
   type: official
-  weight: 2.5
-
+  weight: 2.3
 - collection_tier: C1_rss
   config:
     collection_method: rss
@@ -1433,7 +1541,6 @@ sources:
   id: official_fingerlakes_us
   info_purpose:
   - P4_trend_discovery
-  - P5_education
   language: en
   name: Finger Lakes Wine Alliance
   notes: New York Finger Lakes wine region association (Added 2026-04-08)
@@ -1442,25 +1549,25 @@ sources:
   requires_login: false
   supports_rss: true
   tier: official
-  trust_tier: T3_professional
+  trust_tier: T1_authoritative
   type: official
   weight: 2.3
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
     list_url: https://wineamerica.org/feed/
-  content_type: news_review
+    freshness_sla_days: 8
+  content_type: market_report
   continent: NEW_WORLD
   country: US
   enabled: true
   id: official_wineamerica_us
   info_purpose:
-  - P1_daily_briefing
   - P2_market_analysis
   language: en
   name: WineAmerica
-  notes: National Association of American Wineries - wine industry advocacy (Added 2026-04-08)
+  notes: National Association of American Wineries - wine industry advocacy; weekly
+    posting cadence often runs 7-8 days (Added 2026-04-08)
   producer_role: industry_assoc
   region: Americas/North/USA
   requires_login: false
@@ -1468,8 +1575,7 @@ sources:
   tier: official
   trust_tier: T1_authoritative
   type: official
-  weight: 2.6
-
+  weight: 2.5
 - collection_tier: C1_rss
   config:
     collection_method: rss
@@ -1481,7 +1587,6 @@ sources:
   id: media_vinojoy_cn
   info_purpose:
   - P2_market_analysis
-  - P1_daily_briefing
   language: en
   name: Vino Joy News
   notes: China wine market news and analysis - Asian market coverage (Added 2026-04-08)
@@ -1493,7 +1598,6 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.7
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
@@ -1517,22 +1621,23 @@ sources:
   trust_tier: T1_authoritative
   type: official
   weight: 2.5
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
     list_url: https://sparklingwinos.com/feed/
+    skip_reason: source feed is archival; latest item is 2025-09-21 from this runner
+    retry_policy: find replacement current sparkling-wine source or parser smoke before enabling
   content_type: news_review
   continent: NEW_WORLD
   country: US
-  enabled: true
+  enabled: false
   id: media_sparklingwinos_us
   info_purpose:
   - P4_trend_discovery
   - P1_daily_briefing
   language: en
   name: Sparkling Winos
-  notes: Champagne, Cava, Prosecco and sparkling wine reviews (Added 2026-04-08)
+  notes: "DISABLED 2026-04-23: RSS feed latest item is 2025-09-21; keep as backlog until a current feed is available."
   producer_role: trade_media
   region: Americas/North/USA
   requires_login: false
@@ -1541,7 +1646,6 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.3
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
@@ -1565,18 +1669,16 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.4
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
     list_url: https://winetitles.com.au/feed/
-  content_type: news_review
+  content_type: market_report
   continent: NEW_WORLD
   country: AU
   enabled: true
   id: media_winetitles_au
   info_purpose:
-  - P1_daily_briefing
   - P2_market_analysis
   language: en
   name: Winetitles Australia
@@ -1589,11 +1691,11 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.5
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
     list_url: https://www.napawineproject.com/feed/
+    freshness_sla_days: 14
   content_type: news_review
   continent: NEW_WORLD
   country: US
@@ -1613,7 +1715,6 @@ sources:
   trust_tier: T3_professional
   type: media
   weight: 2.4
-
 - collection_tier: C1_rss
   config:
     collection_method: rss
@@ -1636,8 +1737,7 @@ sources:
   tier: premium
   trust_tier: T2_expert
   type: media
-  weight: 2.6
-
+  weight: 2.8
 - collection_tier: C1_rss
   config:
     collection_method: rss
@@ -1649,7 +1749,6 @@ sources:
   id: media_openingabottle_us
   info_purpose:
   - P5_education
-  - P4_trend_discovery
   language: en
   name: Opening a Bottle
   notes: Italian wine magazine and education by Kevin Day (Added 2026-04-08)
@@ -1660,12 +1759,12 @@ sources:
   tier: premium
   trust_tier: T2_expert
   type: media
-  weight: 2.5
-
+  weight: 2.8
 - collection_tier: C1_rss
   config:
     collection_method: rss
     list_url: https://www.palatepress.com/feed/
+    freshness_sla_days: 21
   content_type: news_review
   continent: NEW_WORLD
   country: US

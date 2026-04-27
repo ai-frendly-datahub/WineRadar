@@ -196,10 +196,11 @@ def _ensure_url_tables(conn: duckdb.DuckDBPyConnection) -> None:
         """
         CREATE SEQUENCE IF NOT EXISTS urls_id_seq START 1;
         CREATE TABLE IF NOT EXISTS urls (
-            url_id BIGINT PRIMARY KEY DEFAULT nextval('urls_id_seq'),
-            url TEXT NOT NULL UNIQUE,
+            url_id BIGINT UNIQUE DEFAULT nextval('urls_id_seq'),
+            url TEXT PRIMARY KEY,
             title TEXT,
             summary TEXT,
+            content TEXT,
             source_name TEXT,
             source_type TEXT,
             content_type TEXT,
@@ -209,117 +210,173 @@ def _ensure_url_tables(conn: duckdb.DuckDBPyConnection) -> None:
             region TEXT,
             producer_role TEXT,
             trust_tier TEXT,
-            info_purpose TEXT,
+            info_purpose JSON,
             collection_tier TEXT,
             score DOUBLE,
             published_at TIMESTAMP,
+            created_at TIMESTAMP,
+            updated_at TIMESTAMP,
+            last_seen_at TIMESTAMP,
             collected_at TIMESTAMP NOT NULL
         );
         CREATE TABLE IF NOT EXISTS url_entities (
             url_id BIGINT NOT NULL,
+            url TEXT NOT NULL,
             entity_type TEXT NOT NULL,
             entity_value TEXT NOT NULL,
             UNIQUE(url_id, entity_type, entity_value)
         );
         """
     )
-    # Add missing columns to existing tables (for migration)
-    for col_def in [
+    for column, column_type in [
+        ("content", "TEXT"),
         ("producer_role", "TEXT"),
-        ("info_purpose", "TEXT"),
+        ("info_purpose", "JSON"),
         ("collection_tier", "TEXT"),
         ("score", "DOUBLE"),
+        ("created_at", "TIMESTAMP"),
+        ("updated_at", "TIMESTAMP"),
+        ("last_seen_at", "TIMESTAMP"),
     ]:
         try:
-            conn.execute(f"ALTER TABLE urls ADD COLUMN {col_def[0]} {col_def[1]}")
+            conn.execute(f"ALTER TABLE urls ADD COLUMN {column} {column_type}")
         except duckdb.CatalogException:
-            pass  # Column already exists
+            pass
+    try:
+        conn.execute("ALTER TABLE url_entities ADD COLUMN url TEXT")
+    except duckdb.CatalogException:
+        pass
+
+
+def init_database(db_path: Path | str) -> None:
+    """Initialize the WineRadar graph database schema."""
+    resolved = Path(db_path)
+    resolved.parent.mkdir(parents=True, exist_ok=True)
+    with duckdb.connect(str(resolved)) as conn:
+        _ensure_url_tables(conn)
+
+
+def _optional_text(value: object) -> str | None:
+    return None if value is None else str(value)
+
+
+def _info_purpose_json(value: object) -> str:
+    if isinstance(value, list):
+        return json.dumps(value, ensure_ascii=False)
+    if isinstance(value, str):
+        try:
+            json.loads(value)
+        except json.JSONDecodeError:
+            return json.dumps([value], ensure_ascii=False)
+        return value
+    return "[]"
+
+
+def _score(value: object) -> float:
+    if value is None:
+        return 1.0
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return 1.0
 
 
 def upsert_url_and_entities(
     item: dict[str, object],
     entities: dict[str, list[str]],
     now: datetime,
-    *,
-    db_path: Path | None = None,
+    db_path: Path | str | None = None,
 ) -> None:
-    resolved = db_path or _DEFAULT_DB_PATH
+    resolved = Path(db_path) if db_path is not None else _DEFAULT_DB_PATH
     resolved.parent.mkdir(parents=True, exist_ok=True)
     with duckdb.connect(str(resolved)) as conn:
         _ensure_url_tables(conn)
         collected = _utc_naive(now)
         raw_pub = item.get("published_at")
         published = _utc_naive(raw_pub if isinstance(raw_pub, datetime) else now)
-
-        # Handle info_purpose as JSON string
-        info_purpose_raw = item.get("info_purpose")
-        if isinstance(info_purpose_raw, list):
-            info_purpose = json.dumps(info_purpose_raw)
-        elif isinstance(info_purpose_raw, str):
-            info_purpose = info_purpose_raw
-        else:
-            info_purpose = "[]"
-
-        # Handle score (default to 1.0 if not provided)
-        score_raw = item.get("score") or item.get("weight")
-        score = float(score_raw) if score_raw is not None else 1.0
+        info_purpose = _info_purpose_json(item.get("info_purpose"))
+        score = _score(item.get("score") or item.get("weight"))
+        url = str(item.get("url", ""))
 
         conn.execute(
             """
-            INSERT INTO urls (url, title, summary, source_name, source_type,
+            INSERT INTO urls (url, title, summary, content, source_name, source_type,
                               content_type, language, country, continent,
                               region, producer_role, trust_tier, info_purpose,
-                              collection_tier, score, published_at, collected_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                              collection_tier, score, published_at, created_at,
+                              updated_at, last_seen_at, collected_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CAST(? AS JSON), ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(url) DO UPDATE SET
                 title = EXCLUDED.title,
                 summary = EXCLUDED.summary,
+                content = EXCLUDED.content,
+                source_name = EXCLUDED.source_name,
+                source_type = EXCLUDED.source_type,
+                content_type = EXCLUDED.content_type,
+                language = EXCLUDED.language,
+                country = EXCLUDED.country,
+                continent = EXCLUDED.continent,
+                region = EXCLUDED.region,
+                producer_role = EXCLUDED.producer_role,
+                trust_tier = EXCLUDED.trust_tier,
+                info_purpose = EXCLUDED.info_purpose,
+                collection_tier = EXCLUDED.collection_tier,
                 score = EXCLUDED.score,
+                published_at = EXCLUDED.published_at,
+                updated_at = EXCLUDED.updated_at,
+                last_seen_at = EXCLUDED.last_seen_at,
                 collected_at = EXCLUDED.collected_at
             """,
             [
-                str(item.get("url", "")),
+                url,
                 str(item.get("title", "")),
-                str(item.get("summary") or ""),
-                str(item.get("source_name", "")),
-                str(item.get("source_type", "")),
-                str(item.get("content_type", "")),
-                str(item.get("language") or ""),
-                str(item.get("country", "")),
-                str(item.get("continent", "")),
-                str(item.get("region", "")),
-                str(item.get("producer_role", "")),
-                str(item.get("trust_tier", "")),
+                _optional_text(item.get("summary")),
+                _optional_text(item.get("content")),
+                _optional_text(item.get("source_name")),
+                _optional_text(item.get("source_type")),
+                _optional_text(item.get("content_type")),
+                _optional_text(item.get("language")),
+                _optional_text(item.get("country")),
+                _optional_text(item.get("continent")),
+                _optional_text(item.get("region")),
+                _optional_text(item.get("producer_role")),
+                _optional_text(item.get("trust_tier")),
                 info_purpose,
-                str(item.get("collection_tier", "")),
+                _optional_text(item.get("collection_tier")),
                 score,
                 published,
                 collected,
+                collected,
+                collected,
+                collected,
             ],
         )
-        if entities:
-            row = conn.execute(
-                "SELECT url_id FROM urls WHERE url = ?",
-                [str(item.get("url", ""))],
-            ).fetchone()
-            if row:
-                url_id = row[0]
-                for etype, evalues in entities.items():
-                    for ev in evalues:
-                        conn.execute(
-                            """
-                            INSERT INTO url_entities (url_id, entity_type, entity_value)
-                            VALUES (?, ?, ?)
-                            ON CONFLICT DO NOTHING
-                            """,
-                            [url_id, str(etype), str(ev)],
-                        )
+
+        row = conn.execute("SELECT url_id, url FROM urls WHERE url = ?", [url]).fetchone()
+        if row is None:
+            return
+
+        url_id, stored_url = row
+        conn.execute("DELETE FROM url_entities WHERE url_id = ? OR url = ?", [url_id, stored_url])
+        for entity_type, entity_values in entities.items():
+            for entity_value in entity_values:
+                conn.execute(
+                    """
+                    INSERT INTO url_entities (url_id, url, entity_type, entity_value)
+                    VALUES (?, ?, ?, ?)
+                    ON CONFLICT DO NOTHING
+                    """,
+                    [url_id, stored_url, str(entity_type), str(entity_value)],
+                )
 
 
-def prune_expired_urls(now_dt: datetime, *, ttl_days: int = 30, db_path: Path) -> int:
+def prune_expired_urls(
+    now_dt: datetime, ttl_days: int = 30, db_path: Path | str | None = None
+) -> int:
     """Delete URL records whose *collected_at* is older than *ttl_days*."""
     cutoff = _utc_naive(now_dt - timedelta(days=ttl_days))
-    with duckdb.connect(str(db_path)) as conn:
+    resolved = Path(db_path) if db_path is not None else _DEFAULT_DB_PATH
+    with duckdb.connect(str(resolved)) as conn:
         try:
             row = conn.execute(
                 "SELECT COUNT(*) FROM urls WHERE collected_at < ?", [cutoff]
@@ -331,9 +388,12 @@ def prune_expired_urls(now_dt: datetime, *, ttl_days: int = 30, db_path: Path) -
             return 0
         try:
             conn.execute(
-                "DELETE FROM url_entities WHERE url_id IN "
-                "(SELECT url_id FROM urls WHERE collected_at < ?)",
-                [cutoff],
+                """
+                DELETE FROM url_entities
+                WHERE url_id IN (SELECT url_id FROM urls WHERE collected_at < ?)
+                   OR url IN (SELECT url FROM urls WHERE collected_at < ?)
+                """,
+                [cutoff, cutoff],
             )
         except duckdb.CatalogException:
             pass

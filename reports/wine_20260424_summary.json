@@ -1,0 +1,87 @@
+{
+  "date": "2026-04-24",
+  "category": "wine",
+  "article_count": 61,
+  "source_count": 15,
+  "matched_count": 61,
+  "top_entities": [
+    {
+      "name": "topic",
+      "count": 97
+    },
+    {
+      "name": "region",
+      "count": 57
+    },
+    {
+      "name": "grape_variety",
+      "count": 40
+    },
+    {
+      "name": "winery",
+      "count": 20
+    },
+    {
+      "name": "climate_zone",
+      "count": 19
+    }
+  ],
+  "sources": {
+    "Wine21": 9,
+    "Gambero Rosso": 1,
+    "Drinkhacker": 1,
+    "Decanter": 2,
+    "VinePair": 3,
+    "Federdoc": 9,
+    "Jancis Robinson": 1,
+    "Korean Wine Consumer Association": 4,
+    "Wine Institute": 15,
+    "The Drinks Business": 9,
+    "Terre de Vins": 1,
+    "Wine Industry Advisor": 3,
+    "Wine Enthusiast": 1,
+    "Sonoma Magazine": 1,
+    "Tim Atkin MW": 1
+  },
+  "generated_at": "2026-04-24T23:58:08.160372+09:00",
+  "ontology": {
+    "repo": "WineRadar",
+    "category": "wine",
+    "ontology_version": "0.1.0",
+    "event_model_ids": [
+      "wine.auction_price",
+      "wine.daily_briefing",
+      "wine.education",
+      "wine.importer_portfolio_signal",
+      "wine.market_report",
+      "wine.restaurant_wine_list"
+    ],
+    "event_model_mappings": {
+      "auction_price": "wine.auction_price",
+      "restaurant_wine_list": "wine.restaurant_wine_list",
+      "importer_portfolio_signal": "wine.importer_portfolio_signal",
+      "market_report": "wine.market_report",
+      "daily_briefing": "wine.daily_briefing",
+      "education": "wine.education"
+    },
+    "entity_type_hints": [
+      "beverage.wine_label",
+      "organization.company"
+    ],
+    "source_role_ids": [
+      "community_signal",
+      "operational_evidence"
+    ],
+    "source_role_mappings": {
+      "Wine Spectator": "operational_evidence",
+      "Decanter": "operational_evidence",
+      "The Drinks Business": "operational_evidence",
+      "r/wine": "community_signal"
+    },
+    "evidence_policy_ids": [
+      "traceable_url_required",
+      "cross_reference_required",
+      "non_authoritative_context_only"
+    ]
+  }
+}

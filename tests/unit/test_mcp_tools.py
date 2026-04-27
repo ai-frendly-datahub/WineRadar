@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import json
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -61,6 +62,63 @@ def _seed_article(
         )
     finally:
         conn.close()
+
+
+def _init_urls_table(db_path: Path) -> None:
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    with duckdb.connect(str(db_path)) as conn:
+        conn.execute(
+            """
+            CREATE TABLE urls (
+                url TEXT,
+                title TEXT,
+                source_name TEXT,
+                published_at TIMESTAMP,
+                collected_at TIMESTAMP,
+                last_seen_at TIMESTAMP,
+                created_at TIMESTAMP
+            )
+            """
+        )
+
+
+def _seed_url(*, db_path: Path, title: str, url: str, published_at: datetime) -> None:
+    with duckdb.connect(str(db_path)) as conn:
+        conn.execute(
+            """
+            INSERT INTO urls (url, title, source_name, published_at, collected_at)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            [url, title, "Snapshot Source", published_at, published_at],
+        )
+
+
+def _seed_quality_url(
+    *, db_path: Path, title: str, url: str, source_name: str, published_at: datetime
+) -> None:
+    with duckdb.connect(str(db_path)) as conn:
+        conn.execute(
+            """
+            INSERT INTO urls
+                (url, title, source_name, published_at, collected_at, last_seen_at, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            [
+                url,
+                title,
+                source_name,
+                published_at,
+                published_at,
+                published_at,
+                published_at,
+            ],
+        )
+
+
+def _init_metadata_only_db(db_path: Path) -> None:
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    with duckdb.connect(str(db_path)) as conn:
+        conn.execute("CREATE TABLE kpi_daily (run_timestamp TIMESTAMP, notes TEXT)")
 
 
 def test_handle_search(tmp_path: Path) -> None:
@@ -132,6 +190,31 @@ def test_handle_recent_updates(tmp_path: Path) -> None:
     assert "Older" not in output
 
 
+def test_module_db_path_falls_back_to_latest_snapshot(monkeypatch, tmp_path: Path) -> None:
+    import mcp_server.tools as tools
+
+    primary = tmp_path / "data" / "wineradar.duckdb"
+    snapshot = tmp_path / "data" / "snapshots" / "2026-04-07" / "wineradar.duckdb"
+    _init_metadata_only_db(primary)
+    _init_urls_table(snapshot)
+    _seed_url(
+        db_path=snapshot,
+        title="Snapshot wine update",
+        url="https://example.com/wine-update",
+        published_at=datetime.now(UTC).replace(tzinfo=None) - timedelta(days=1),
+    )
+
+    monkeypatch.setenv("WINERADAR_DB_PATH", str(primary))
+    reloaded_tools = importlib.reload(tools)
+    try:
+        assert reloaded_tools.DB_PATH == snapshot
+        output = reloaded_tools.handle_recent_updates(days=7, limit=10)
+        assert "Snapshot wine update" in output
+    finally:
+        monkeypatch.delenv("WINERADAR_DB_PATH", raising=False)
+        importlib.reload(reloaded_tools)
+
+
 def test_handle_sql_select(tmp_path: Path) -> None:
     from mcp_server.tools import handle_sql
 
@@ -185,6 +268,81 @@ def test_handle_top_trends(tmp_path: Path) -> None:
     assert "3" in output
     assert "Roaster" in output
     assert "1" in output
+
+
+def test_handle_quality_report_returns_wine_source_status_json(tmp_path: Path) -> None:
+    from mcp_server.tools import handle_quality_report
+
+    db_path = tmp_path / "radar.duckdb"
+    config_path = tmp_path / "sources.yaml"
+    _init_urls_table(db_path)
+    _seed_quality_url(
+        db_path=db_path,
+        title="Fresh Decanter update",
+        url="https://example.com/decanter",
+        source_name="Decanter",
+        published_at=datetime.now(UTC).replace(tzinfo=None) - timedelta(days=1),
+    )
+
+    config_path.write_text(
+        json.dumps(
+            {
+                "data_quality": {
+                    "quality_outputs": {
+                        "tracked_event_models": [
+                            "daily_briefing",
+                            "auction_price",
+                        ],
+                    },
+                    "freshness_sla": {
+                        "daily_briefing": {"max_age_days": 3},
+                        "auction_price": {"max_age_days": 7},
+                    },
+                },
+                "sources": [
+                    {
+                        "id": "media_decanter_gb",
+                        "name": "Decanter",
+                        "enabled": True,
+                        "content_type": "news_review",
+                        "info_purpose": ["P1_daily_briefing"],
+                        "producer_role": "trade_media",
+                        "collection_tier": "C1_rss",
+                        "trust_tier": "T3_professional",
+                        "config": {},
+                    },
+                    {
+                        "id": "market_livex_gb",
+                        "name": "Liv-ex Market Data",
+                        "enabled": False,
+                        "content_type": "market_report",
+                        "info_purpose": ["P2_market_analysis"],
+                        "producer_role": "trade_media",
+                        "collection_tier": "C5_manual",
+                        "trust_tier": "T3_professional",
+                        "weight": 2.8,
+                        "config": {
+                            "event_model": "auction_price",
+                            "skip_reason": "API contract review required",
+                        },
+                    },
+                ],
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    output = handle_quality_report(db_path=db_path, config_path=config_path)
+    payload = json.loads(output)
+
+    assert payload["category"] == "wine"
+    assert payload["summary"]["fresh_sources"] == 1
+    assert payload["summary"]["skipped_disabled_sources"] == 1
+    assert payload["summary"]["disabled_high_value_sources"] == 1
+    assert payload["summary"]["auction_price_sources"] == 0
+    assert payload["disabled_high_value_sources"][0]["tracked"] is False
+    assert payload["disabled_high_value_sources"][0]["source"] == "Liv-ex Market Data"
 
 
 def test_handle_price_watch_stub() -> None:

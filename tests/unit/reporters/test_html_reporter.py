@@ -109,6 +109,10 @@ def test_generate_daily_report_contains_content(tmp_path: Path, sample_sections,
 
     html_content = output_path.read_text(encoding="utf-8")
 
+    assert 'data-visual-system="radar-unified-v2"' in html_content
+    assert 'data-visual-surface="report"' in html_content
+    assert 'data-visual-page="daily-report"' in html_content
+
     # 날짜 확인
     assert "2025-11-19" in html_content
 
@@ -249,6 +253,10 @@ def test_generate_index_page_creates_html(tmp_path: Path):
 
     assert result_path == output_path
     assert output_path.exists()
+    html_content = output_path.read_text(encoding="utf-8")
+    assert 'data-visual-system="radar-unified-v2"' in html_content
+    assert 'data-visual-surface="report"' in html_content
+    assert 'data-visual-page="index"' in html_content
 
 
 def test_generate_index_page_contains_links(tmp_path: Path):

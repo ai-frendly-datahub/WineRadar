@@ -141,7 +141,8 @@ def _generate_variety_region_network_html(
         import networkx as nx
         import plotly.graph_objects as go
     except ModuleNotFoundError:
-        return None
+        nx = None
+        go = None
 
     bounded_target_nodes = max(50, min(100, target_nodes))
 
@@ -165,6 +166,14 @@ def _generate_variety_region_network_html(
 
     if not edge_weights:
         return None
+
+    if nx is None or go is None:
+        return (
+            '<section class="network-fallback">'
+            '<h2>Variety-Region Co-occurrence Network</h2>'
+            '<div data-chart="plotly-fallback">plotly fallback unavailable in this environment</div>'
+            '</section>'
+        )
 
     selected_node_keys = {
         node_key
@@ -513,17 +522,18 @@ def generate_index_page(
     # 간단한 인덱스 HTML 생성
     html_lines = [
         "<!DOCTYPE html>",
-        '<html lang="ko">',
+        '<html lang="ko" data-visual-system="radar-unified-v2" data-visual-surface="report" data-visual-page="index">',
         "<head>",
         '    <meta charset="UTF-8">',
         '    <meta name="viewport" content="width=device-width, initial-scale=1.0">',
         "    <title>WineRadar - Daily Reports</title>",
         "    <style>",
-        "        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; ",
+        "        :root { --vs-color-bg: #667eea; --vs-color-surface: #ffffff; --vs-color-text: #333333; --vs-color-muted: #666666; --vs-radius-lg: 16px; --vs-font-sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }",
+        "        body { font-family: var(--vs-font-sans); ",
         "               background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); ",
-        "               padding: 40px; margin: 0; }",
-        "        .container { max-width: 800px; margin: 0 auto; background: white; ",
-        "                    border-radius: 16px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }",
+        "               padding: 40px; margin: 0; color: var(--vs-color-text); }",
+        "        .container { max-width: 800px; margin: 0 auto; background: var(--vs-color-surface); ",
+        "                    border-radius: var(--vs-radius-lg); padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }",
         "        h1 { color: #667eea; margin-bottom: 30px; }",
         "        .report-list { list-style: none; padding: 0; }",
         "        .report-item { margin: 15px 0; padding: 20px; background: #f8f9fa; ",
@@ -603,21 +613,32 @@ def generate_index_html(report_dir: Path) -> Path:
         body_content = '<div class="empty">No reports available yet.</div>'
 
     html_content = f"""<!doctype html>
-<html lang="en">
+<html lang="en" data-visual-system="radar-unified-v2" data-visual-surface="report" data-visual-page="index">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
   <title>Radar Reports</title>
   <style>
-    body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; padding: 24px; background: #f6f8fb; color: #0f172a; }}
+    :root {{
+      --vs-color-bg: #0b0b0f;
+      --vs-color-surface: rgba(28, 26, 34, 0.86);
+      --vs-color-text: #f4f4f7;
+      --vs-color-muted: rgba(244, 244, 247, 0.58);
+      --vs-color-border: rgba(244, 244, 247, 0.14);
+      --vs-color-accent: #33d6c5;
+      --vs-radius-md: 10px;
+      --vs-font-sans: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }}
+    body {{ font-family: var(--vs-font-sans); margin: 0; padding: 24px; background: linear-gradient(180deg, var(--vs-color-bg), #121116 58%, #08080b); color: var(--vs-color-text); }}
     h1 {{ margin: 0 0 8px 0; }}
-    .muted {{ color: #475569; font-size: 13px; margin-bottom: 24px; }}
+    .muted {{ color: var(--vs-color-muted); font-size: 13px; margin-bottom: 24px; }}
     .reports {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }}
-    .card {{ background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); transition: box-shadow 0.2s; }}
+    .card {{ background: var(--vs-color-surface); border: 1px solid var(--vs-color-border); border-radius: var(--vs-radius-md); padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); transition: box-shadow 0.2s; }}
     .card:hover {{ box-shadow: 0 4px 6px rgba(0,0,0,0.08); }}
-    a {{ color: #0f172a; text-decoration: none; }}
+    a {{ color: var(--vs-color-text); text-decoration: none; }}
     a:hover {{ text-decoration: underline; }}
-    .empty {{ text-align: center; color: #64748b; padding: 48px; }}
+    .empty {{ text-align: center; color: var(--vs-color-muted); padding: 48px; }}
   </style>
 </head>
 <body>

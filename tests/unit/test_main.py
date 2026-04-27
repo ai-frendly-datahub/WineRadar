@@ -6,7 +6,7 @@ from pathlib import Path
 
 import duckdb
 
-from main import collect_and_store, run_once
+from main import _report_item_matches_scope, collect_and_store, run_once
 
 
 SAMPLE_FEED = """<?xml version="1.0" encoding="UTF-8"?>
@@ -62,6 +62,60 @@ def test_run_once_executes_collectors(monkeypatch, capsys):
     assert "추출된 엔티티: 10개" in captured.out
 
 
+def test_report_item_matches_scope_requires_non_empty_entities():
+    assert _report_item_matches_scope({"topic": ["wine_market"]})
+    assert not _report_item_matches_scope({})
+    assert not _report_item_matches_scope({"topic": []})
+
+
+def test_run_once_writes_quality_report(monkeypatch, tmp_path: Path):
+    def fake_loader(*args, **kwargs):
+        return {
+            "data_quality": {
+                "quality_outputs": {"tracked_event_models": ["daily_briefing"]},
+                "freshness_sla": {"daily_briefing": {"max_age_days": 3}},
+            },
+            "sources": [
+                {
+                    "id": "media_decanter_gb",
+                    "name": "Decanter",
+                    "enabled": True,
+                    "content_type": "news_review",
+                    "info_purpose": ["P1_daily_briefing"],
+                    "producer_role": "trade_media",
+                    "collection_tier": "C1_rss",
+                    "trust_tier": "T3_professional",
+                    "config": {},
+                }
+            ],
+        }
+
+    def fake_collect(*args, **kwargs):
+        return 0, 1, 0
+
+    class FakeKPILogger:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def log_run(self, *args, **kwargs):
+            return None
+
+        def generate_kpi_report(self):
+            return tmp_path / "kpi.json"
+
+    monkeypatch.setattr("main.load_sources_config", fake_loader)
+    monkeypatch.setattr("main.collect_and_store", fake_collect)
+    monkeypatch.setattr("main.KPILogger", FakeKPILogger)
+
+    run_once(
+        execute_collectors=True,
+        db_path=tmp_path / "wine.duckdb",
+        report_output_dir=tmp_path,
+    )
+
+    assert (tmp_path / "wine_quality.json").exists()
+
+
 def test_collect_and_store_persists_items(tmp_path: Path, rss_source_meta):
     meta = dict(rss_source_meta)
     meta["enabled"] = True
@@ -73,11 +127,12 @@ def test_collect_and_store_persists_items(tmp_path: Path, rss_source_meta):
 
         return fake_fetcher
 
-    total_items, collector_count, total_entities = collect_and_store(
+    result = collect_and_store(
         {"sources": [meta]},
         fetcher_factory=fake_fetcher_factory,
         db_path=db_path,
     )
+    total_items, collector_count, total_entities = result[:3]
 
     assert collector_count == 1
     assert total_items == 2

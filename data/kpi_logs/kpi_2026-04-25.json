@@ -1,0 +1,34 @@
+{
+  "run_date": "2026-04-25",
+  "run_timestamp": "2026-04-25T12:55:59.925644+00:00",
+  "collection": {
+    "sources_active": 44,
+    "sources_attempted": 44,
+    "sources_succeeded": 43,
+    "sources_failed": 1,
+    "success_rate": "97.7%"
+  },
+  "articles": {
+    "collected": 420,
+    "new": 420,
+    "duplicate": 0
+  },
+  "entities": {
+    "extracted": 2124
+  },
+  "report": {
+    "generated": true,
+    "cards": 62,
+    "sections": 0
+  },
+  "top_source": {
+    "name": "Gambero Rosso",
+    "count": 632,
+    "percentage": 33.4
+  },
+  "runtime_seconds": 400.4606394767761,
+  "errors": [
+    "wein.plus Magazine: RSSCollector: 401 Client Error: Unauthorized for url: https://magazine.wein.plus/feed.xml"
+  ],
+  "notes": null
+}

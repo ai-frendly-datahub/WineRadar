@@ -4,6 +4,101 @@ import shutil
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
+import duckdb
+
+
+_RECORD_TABLES = ("urls", "articles")
+
+
+def _has_record_rows(db_path: Path) -> bool:
+    if not db_path.exists():
+        return False
+
+    try:
+        with duckdb.connect(str(db_path), read_only=True) as conn:
+            tables = {row[0] for row in conn.execute("SHOW TABLES").fetchall()}
+            for table in _RECORD_TABLES:
+                if table in tables:
+                    row = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()
+                    if row and int(row[0]) > 0:
+                        return True
+    except Exception:
+        return False
+    return False
+
+
+def _iter_dated_database_candidates(
+    snapshot_root: Path, db_path: Path
+) -> list[tuple[date, Path]]:
+    if not snapshot_root.exists():
+        return []
+
+    candidates: list[tuple[date, Path]] = []
+    for child in snapshot_root.iterdir():
+        if child.is_dir():
+            try:
+                snapshot_date = date.fromisoformat(child.name)
+            except ValueError:
+                continue
+            candidate = child / db_path.name
+            if candidate.exists():
+                candidates.append((snapshot_date, candidate))
+            continue
+
+        if child.is_file() and child.suffix == ".duckdb":
+            try:
+                snapshot_date = date.fromisoformat(child.stem)
+            except ValueError:
+                continue
+            candidates.append((snapshot_date, child))
+    return candidates
+
+
+def latest_snapshot_path(
+    db_path: Path,
+    *,
+    snapshot_roots: tuple[Path, ...] | None = None,
+    require_records: bool = True,
+) -> Path | None:
+    roots = snapshot_roots or (db_path.parent / "snapshots", db_path.parent / "daily")
+    candidates: list[tuple[date, Path]] = []
+    for root in roots:
+        for snapshot_date, candidate in _iter_dated_database_candidates(root, db_path):
+            if require_records and not _has_record_rows(candidate):
+                continue
+            candidates.append((snapshot_date, candidate))
+
+    if not candidates:
+        return None
+    return max(candidates, key=lambda item: (item[0], str(item[1])))[1]
+
+
+def resolve_read_database_path(
+    db_path: Path,
+    *,
+    snapshot_roots: tuple[Path, ...] | None = None,
+) -> Path:
+    if _has_record_rows(db_path):
+        return db_path
+
+    latest_with_records = latest_snapshot_path(
+        db_path,
+        snapshot_roots=snapshot_roots,
+        require_records=True,
+    )
+    if latest_with_records is not None:
+        return latest_with_records
+
+    if db_path.exists():
+        return db_path
+
+    latest_existing = latest_snapshot_path(
+        db_path,
+        snapshot_roots=snapshot_roots,
+        require_records=False,
+    )
+    return latest_existing or db_path
+
 
 def snapshot_database(
     db_path: Path,
@@ -15,11 +110,10 @@ def snapshot_database(
         return None
 
     target_date = snapshot_date or datetime.now(UTC).date()
-    target_root = snapshot_root or db_path.parent / "snapshots"
-    target_dir = target_root / target_date.isoformat()
-    target_dir.mkdir(parents=True, exist_ok=True)
+    target_root = snapshot_root or db_path.parent / "daily"
+    target_root.mkdir(parents=True, exist_ok=True)
 
-    target_path = target_dir / db_path.name
+    target_path = target_root / f"{target_date.isoformat()}.duckdb"
     shutil.copy2(db_path, target_path)
     return target_path
 

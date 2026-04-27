@@ -26,6 +26,7 @@
 - **엔티티 기반 스코어링**: 산지, 품종, 와이너리, 비평가 등 엔티티 추출 및 신뢰도+시간+엔티티 기반 중요도 산출
 - **AI 연동 검색**: MCP 서버를 통해 AI 어시스턴트에서 자연어로 와인 정보 검색 및 SQL 쿼리 실행
 - **벡터 검색 지원**: 시맨틱 유사도 기반 관련 기사 탐색 (향후 확장)
+- **거래/운영 신호 보강**: importer story, market report, association statistics를 함께 읽어 실제 사업 신호를 강화
 
 ## 데모
 
@@ -182,6 +183,13 @@ WineRadar/
 - **알림**: Telegram Bot API (확장 가능)
 - **테스트**: `pytest`
 
+## 소스 전략
+
+- `공식`: 국가/협회/연구기관 market report와 statistics
+- `운영`: importer portfolio, distributor promotion, market analysis
+- `시장`: 국제 와인 미디어와 trade publication
+- `커뮤니티`: Reddit 기반 소비자/애호가 담론
+
 ## 개발 상태
 
 ### ✅ 완료 (2025-11-19)
@@ -259,3 +267,15 @@ WineRadar/
 ## 라이선스
 
 MIT License – 자세한 내용은 [LICENSE](LICENSE)를 참고하세요.
+
+<!-- DATAHUB-OPS-AUDIT:START -->
+## DataHub Operations
+
+- CI/CD workflows: `crawler.yml`, `pr-checks.yml`, `radar-crawler.yml`, `release.yml`.
+- GitHub Pages visualization: `reports/index.html` (valid HTML); https://ai-frendly-datahub.github.io/WineRadar/.
+- Latest remote Pages check: HTTP 200, HTML.
+- Local workspace audit: 120 Python files parsed, 0 syntax errors.
+- Re-run audit from the workspace root: `python scripts/audit_ci_pages_readme.py --syntax-check --write`.
+- Latest audit report: `_workspace/2026-04-14_github_ci_pages_readme_audit.md`.
+- Latest Pages URL report: `_workspace/2026-04-14_github_pages_url_check.md`.
+<!-- DATAHUB-OPS-AUDIT:END -->
