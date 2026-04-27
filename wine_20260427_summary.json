@@ -1,43 +1,45 @@
 {
   "date": "2026-04-27",
   "category": "wine",
-  "article_count": 60,
-  "source_count": 15,
-  "matched_count": 29,
+  "article_count": 59,
+  "source_count": 17,
+  "matched_count": 28,
   "top_entities": [
     {
-      "name": "region",
-      "count": 53
+      "name": "grape_variety",
+      "count": 47
     },
     {
-      "name": "grape_variety",
-      "count": 44
+      "name": "region",
+      "count": 47
     },
     {
       "name": "climate_zone",
-      "count": 26
+      "count": 27
     },
     {
       "name": "winery",
-      "count": 21
+      "count": 20
     }
   ],
   "sources": {
+    "Wine21": 11,
+    "Drinkhacker": 4,
+    "Jamie Goode's Wine Blog": 2,
     "Enolife": 3,
-    "Jancis Robinson": 2,
-    "Gambero Rosso": 10,
+    "Jancis Robinson": 1,
+    "Gambero Rosso": 8,
     "Decanter": 2,
     "Rioja Wine Official": 1,
-    "Wine21": 10,
-    "Vino Joy News": 5,
+    "Vino Joy News": 4,
+    "Wine Dharma": 1,
     "Terre de Vins": 1,
     "Vinography": 1,
     "Wine Magazine South Africa": 1,
     "Sonoma Magazine": 2,
-    "Wine Industry Advisor": 11,
-    "Drinkhacker": 1,
-    "Wine Enthusiast": 2,
-    "The Drinks Business": 8
+    "Wine Industry Advisor": 8,
+    "The Drinks Business": 8,
+    "Wine Enthusiast": 1
   },
-  "generated_at": "2026-04-27T08:40:47.697086+09:00"
+  "generated_at": "2026-04-27T10:51:45.115454+09:00"
 }
