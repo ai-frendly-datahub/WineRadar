@@ -17,6 +17,7 @@ from date_storage import apply_date_storage_policy
 from graph import graph_store
 from graph.graph_queries import get_view
 from graph.search_index import SearchIndex
+from radar_core.ontology import build_event_model_payload
 from raw_logger import RawLogger
 from reporters.kpi_logger import KPILogger
 from wineradar import models as radar_models
@@ -195,6 +196,8 @@ def _generate_html_reports(
             )
 
     articles: list[Any] = list(articles_by_url.values())
+    for article in articles:
+        _attach_wine_event_model_payload(article)
     sources = {
         source
         for article in articles
@@ -226,6 +229,94 @@ def _generate_html_reports(
 
 def _report_item_matches_scope(entities: dict[str, Any]) -> bool:
     return any(isinstance(values, list) and values for values in entities.values())
+
+
+_WINERADAR_REPO_NAME = "WineRadar"
+
+# Source name → contract event_model_key. Limited hardcoded mapping per the
+# cycle 13 plan: only sources whose canonical Article fields (title / link /
+# published) reach 3/3 coverage of the target contract's required_fields. The
+# `market_report` / `daily_briefing` / `education` event_models all require
+# (title, published_date, source_url) which the canonical Article carries
+# directly. Sources outside this table resolve to None and skip enrichment.
+_WINE_SOURCE_EVENT_MODEL: dict[str, str] = {
+    "Wine Spectator": "market_report",
+    "Decanter": "market_report",
+    "The Drinks Business": "market_report",
+    "Wine Enthusiast": "market_report",
+    "Jancis Robinson": "market_report",
+    "Meininger's Wine Business International": "market_report",
+    "Wine & Spirits Magazine": "market_report",
+    "r/wine": "daily_briefing",
+}
+
+
+def _resolve_event_model_key(article: Any) -> str | None:
+    """Return the contract event_model key for an Article based on its source.
+
+    Sources that do not appear in the limited mapping table return None so the
+    enrichment loop can skip them (no event_model_payload attached). This keeps
+    the wiring opt-in per source and matches the cycle 13 plan: only sources
+    whose canonical fields satisfy the contract's required_fields are wired.
+    """
+    source = getattr(article, "source", None)
+    if not isinstance(source, str):
+        return None
+    return _WINE_SOURCE_EVENT_MODEL.get(source.strip())
+
+
+def _attach_wine_event_model_payload(article: Any) -> None:
+    """Stash a contract-bound event_model_payload on Article.ontology in place.
+
+    Resolves the article's source to a WineRadar runtime contract event_model
+    key, then calls ``build_event_model_payload`` with a ``published_date``
+    override sourced from ``article.published`` (the contract requires
+    ``published_date`` whereas the canonical Article carries ``published``).
+    Articles whose source is not in the mapping table are skipped, leaving
+    ``article.ontology`` untouched. The downstream propagation in
+    ``radar-core.report_utils.generate_report`` (cycle 13) lifts the payload
+    into the auto-emitted summary JSON's ``articles`` list.
+    """
+    event_model_key = _resolve_event_model_key(article)
+    if not event_model_key:
+        return
+
+    overrides: dict[str, Any] = {}
+    published = getattr(article, "published", None)
+    if published is not None:
+        iso = getattr(published, "isoformat", None)
+        if callable(iso):
+            try:
+                overrides["published_date"] = iso()
+            except (TypeError, ValueError):
+                pass
+        else:
+            overrides["published_date"] = str(published)
+
+    try:
+        payload = build_event_model_payload(
+            article,
+            repo_name=_WINERADAR_REPO_NAME,
+            event_model_key=event_model_key,
+            overrides=overrides,
+            search_from=Path(__file__).resolve(),
+        )
+    except Exception:  # noqa: BLE001 — best-effort enrichment, never fatal
+        return
+
+    if not payload:
+        return
+
+    ontology = getattr(article, "ontology", None)
+    if not isinstance(ontology, dict):
+        # Article instances always default ontology to an empty dict, but a
+        # defensive re-init keeps the helper safe against custom subclasses.
+        try:
+            article.ontology = {}
+            ontology = article.ontology
+        except AttributeError:
+            return
+    ontology["event_model_payload"] = payload
 
 
 def _normalize_collected_item(item: dict[str, Any], collector: Any, now: datetime) -> dict[str, Any]:

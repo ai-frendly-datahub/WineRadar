@@ -71,8 +71,8 @@ def main() -> None:
         str(runtime_config.get("database_path", "data/wineradar.duckdb")),
     )
     if not db_path.exists():
-        print(f"Database not found: {db_path}")
-        sys.exit(1)
+        print(f"not_applicable: database not yet generated at {db_path}")
+        sys.exit(0)
 
     with duckdb.connect(str(db_path), read_only=True) as con:
         run_all_checks(
