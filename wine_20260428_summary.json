@@ -1,7 +1,7 @@
 {
   "date": "2026-04-28",
   "category": "wine",
-  "article_count": 68,
+  "article_count": 65,
   "source_count": 14,
   "matched_count": 30,
   "top_entities": [
@@ -24,7 +24,8 @@
   ],
   "sources": {
     "Wine21": 13,
-    "Wine Industry Advisor": 16,
+    "Vino Joy News": 2,
+    "Wine Industry Advisor": 13,
     "Enolife": 2,
     "Sonoma Magazine": 2,
     "Drinkhacker": 1,
@@ -32,11 +33,10 @@
     "Gambero Rosso": 7,
     "Wine Enthusiast": 2,
     "Decanter": 2,
-    "Vino Joy News": 2,
     "Terre de Vins": 3,
     "The Drinks Business": 13,
     "Vinography": 2,
     "Wine Magazine South Africa": 1
   },
-  "generated_at": "2026-04-28T08:54:58.869912+09:00"
+  "generated_at": "2026-04-28T10:59:40.130417+09:00"
 }
