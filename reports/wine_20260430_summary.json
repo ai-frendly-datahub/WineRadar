@@ -1,0 +1,45 @@
+{
+  "date": "2026-04-30",
+  "category": "wine",
+  "article_count": 71,
+  "source_count": 17,
+  "matched_count": 37,
+  "top_entities": [
+    {
+      "name": "region",
+      "count": 70
+    },
+    {
+      "name": "grape_variety",
+      "count": 47
+    },
+    {
+      "name": "climate_zone",
+      "count": 32
+    },
+    {
+      "name": "winery",
+      "count": 20
+    }
+  ],
+  "sources": {
+    "Wine21": 11,
+    "Wine Industry Advisor": 16,
+    "Sonoma Magazine": 2,
+    "Enolife": 3,
+    "Rioja Wine Official": 1,
+    "WineAmerica": 2,
+    "Gambero Rosso": 8,
+    "Decanter": 3,
+    "Jamie Goode's Wine Blog": 1,
+    "Vino Joy News": 4,
+    "Wine Dharma": 1,
+    "The Drinks Business": 11,
+    "Terre de Vins": 4,
+    "Drinkhacker": 1,
+    "Wine Enthusiast": 1,
+    "The Wine Economist": 1,
+    "Vinography": 1
+  },
+  "generated_at": "2026-04-30T11:01:39.093966+09:00"
+}
