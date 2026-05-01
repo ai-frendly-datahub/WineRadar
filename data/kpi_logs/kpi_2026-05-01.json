@@ -1,0 +1,41 @@
+{
+  "run_date": "2026-05-01",
+  "run_timestamp": "2026-05-01T02:04:14.431168+00:00",
+  "collection": {
+    "sources_active": 49,
+    "sources_attempted": 49,
+    "sources_succeeded": 41,
+    "sources_failed": 8,
+    "success_rate": "83.7%"
+  },
+  "articles": {
+    "collected": 1144,
+    "new": 1144,
+    "duplicate": 0
+  },
+  "entities": {
+    "extracted": 2099
+  },
+  "report": {
+    "generated": true,
+    "cards": 64,
+    "sections": 0
+  },
+  "top_source": {
+    "name": "Gambero Rosso",
+    "count": 661,
+    "percentage": 31.1
+  },
+  "runtime_seconds": 183.17231392860413,
+  "errors": [
+    "PlaywrightCollector: No items collected",
+    "PlaywrightCollector: No items collected",
+    "RSSCollector: HTTPSConnectionPool(host='www.timatkin.com', port=443): Max retries exceeded with url: /feed/ (Cause",
+    "RSSCollector: No items collected",
+    "RSSCollector: 401 Client Error: Unauthorized for url: https://magazine.wein.plus/feed.xml",
+    "RSSCollector: 403 Client Error: Forbidden for url: https://wineeducators.com/feed/",
+    "RSSCollector: 403 Client Error: Forbidden for url: https://winetitles.com.au/feed/",
+    "RSSCollector: 403 Client Error: Forbidden for url: https://winereviewonline.com/feed/"
+  ],
+  "notes": null
+}
