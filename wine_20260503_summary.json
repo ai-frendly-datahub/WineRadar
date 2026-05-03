@@ -3,15 +3,15 @@
   "category": "wine",
   "article_count": 68,
   "source_count": 15,
-  "matched_count": 38,
+  "matched_count": 37,
   "top_entities": [
     {
       "name": "region",
-      "count": 66
+      "count": 68
     },
     {
       "name": "grape_variety",
-      "count": 34
+      "count": 35
     },
     {
       "name": "climate_zone",
@@ -23,21 +23,21 @@
     }
   ],
   "sources": {
+    "Enolife": 5,
+    "Drinkhacker": 3,
     "Gambero Rosso": 7,
-    "Drinkhacker": 2,
     "Decanter": 6,
     "Jamie Goode's Wine Blog": 5,
-    "Jancis Robinson": 2,
+    "Jancis Robinson": 1,
     "Terre de Vins": 2,
-    "Enolife": 4,
-    "Wine21": 11,
     "WineAmerica": 2,
+    "Wine21": 11,
     "Vino Joy News": 4,
     "Wine Dharma": 1,
     "Vinography": 1,
-    "Wine Industry Advisor": 14,
+    "Wine Industry Advisor": 13,
     "Wine Enthusiast": 4,
     "The Drinks Business": 3
   },
-  "generated_at": "2026-05-03T08:43:38.713321+09:00"
+  "generated_at": "2026-05-03T10:54:46.662715+09:00"
 }
