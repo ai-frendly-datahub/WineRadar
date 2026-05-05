@@ -3,11 +3,11 @@
   "category": "wine",
   "article_count": 72,
   "source_count": 17,
-  "matched_count": 39,
+  "matched_count": 38,
   "top_entities": [
     {
       "name": "region",
-      "count": 77
+      "count": 76
     },
     {
       "name": "grape_variety",
@@ -24,8 +24,9 @@
   ],
   "sources": {
     "Wine21": 10,
+    "Enolife": 2,
     "Wine Industry Advisor": 20,
-    "Sonoma Magazine": 3,
+    "Sonoma Magazine": 2,
     "Wine Enthusiast": 3,
     "Gambero Rosso": 9,
     "Vino Joy News": 5,
@@ -38,8 +39,7 @@
     "Drinkhacker": 1,
     "ACE Vinos": 1,
     "Vinography": 2,
-    "Enolife": 1,
     "The Drinks Business": 3
   },
-  "generated_at": "2026-05-05T08:55:16.985059+09:00"
+  "generated_at": "2026-05-05T10:56:23.577783+09:00"
 }
