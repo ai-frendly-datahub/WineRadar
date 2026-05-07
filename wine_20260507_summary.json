@@ -1,8 +1,8 @@
 {
   "date": "2026-05-07",
   "category": "wine",
-  "article_count": 55,
-  "source_count": 8,
+  "article_count": 54,
+  "source_count": 9,
   "matched_count": 24,
   "top_entities": [
     {
@@ -23,14 +23,15 @@
     }
   ],
   "sources": {
-    "Wine21": 10,
-    "Wine Industry Advisor": 16,
+    "Wine21": 11,
+    "Enolife": 1,
+    "Wine Industry Advisor": 14,
     "Sonoma Magazine": 2,
     "The Drinks Business": 11,
     "Wine Enthusiast": 2,
     "Gambero Rosso": 8,
-    "Vino Joy News": 5,
+    "Vino Joy News": 4,
     "Terre de Vins": 1
   },
-  "generated_at": "2026-05-07T08:53:14.329566+09:00"
+  "generated_at": "2026-05-07T10:59:41.438772+09:00"
 }
