@@ -1,0 +1,39 @@
+{
+  "date": "2026-05-08",
+  "category": "wine",
+  "article_count": 59,
+  "source_count": 11,
+  "matched_count": 31,
+  "top_entities": [
+    {
+      "name": "region",
+      "count": 77
+    },
+    {
+      "name": "climate_zone",
+      "count": 24
+    },
+    {
+      "name": "grape_variety",
+      "count": 23
+    },
+    {
+      "name": "winery",
+      "count": 23
+    }
+  ],
+  "sources": {
+    "Wine21": 11,
+    "Enolife": 2,
+    "Wine Industry Advisor": 12,
+    "Sonoma Magazine": 3,
+    "Drinkhacker": 2,
+    "Wine Enthusiast": 1,
+    "Gambero Rosso": 9,
+    "Decanter": 2,
+    "Vino Joy News": 4,
+    "The Drinks Business": 10,
+    "Terre de Vins": 3
+  },
+  "generated_at": "2026-05-08T08:54:20.182441+09:00"
+}
