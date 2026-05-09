@@ -2,16 +2,16 @@
   "date": "2026-05-09",
   "category": "wine",
   "article_count": 68,
-  "source_count": 12,
-  "matched_count": 33,
+  "source_count": 13,
+  "matched_count": 32,
   "top_entities": [
     {
       "name": "region",
-      "count": 86
+      "count": 85
     },
     {
       "name": "climate_zone",
-      "count": 24
+      "count": 23
     },
     {
       "name": "grape_variety",
@@ -24,17 +24,18 @@
   ],
   "sources": {
     "Wine21": 11,
+    "Jancis Robinson": 1,
     "Enolife": 2,
     "Wine Industry Advisor": 18,
     "Wine Enthusiast": 3,
     "Gambero Rosso": 6,
     "Decanter": 3,
     "Vino Joy News": 4,
-    "The Drinks Business": 13,
+    "The Drinks Business": 12,
     "Drinkhacker": 3,
     "wein.plus Magazine": 2,
     "Terre de Vins": 2,
     "Sonoma Magazine": 1
   },
-  "generated_at": "2026-05-09T08:57:13.638709+09:00"
+  "generated_at": "2026-05-09T11:00:26.835658+09:00"
 }
