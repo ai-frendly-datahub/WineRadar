@@ -1,0 +1,163 @@
+{
+  "date": "2026-04-30",
+  "category": "wine",
+  "article_count": 72,
+  "source_count": 19,
+  "matched_count": 72,
+  "top_entities": [
+    {
+      "name": "topic",
+      "count": 109
+    },
+    {
+      "name": "region",
+      "count": 80
+    },
+    {
+      "name": "grape_variety",
+      "count": 39
+    },
+    {
+      "name": "climate_zone",
+      "count": 26
+    },
+    {
+      "name": "winery",
+      "count": 20
+    }
+  ],
+  "sources": {
+    "Wine21": 9,
+    "Sonoma Magazine": 1,
+    "Enolife": 3,
+    "Gambero Rosso": 5,
+    "Decanter": 3,
+    "Drinkhacker": 1,
+    "VinePair": 5,
+    "Jamie Goode's Wine Blog": 1,
+    "Federdoc": 9,
+    "Wine Review Online": 2,
+    "Korean Wine Consumer Association": 4,
+    "Wine Institute": 10,
+    "Wine Industry Advisor": 6,
+    "The Drinks Business": 6,
+    "Tim Atkin MW": 1,
+    "Terre de Vins": 3,
+    "Winetitles Australia": 1,
+    "Wine Enthusiast": 1,
+    "The Wine Economist": 1
+  },
+  "generated_at": "2026-04-30T09:21:34.514068+09:00",
+  "articles": [
+    {
+      "event_model_payload": {
+        "title": "Gen Z Wine Challenge: Emily, 26",
+        "published_date": "2026-04-29T19:34:22",
+        "source_url": "https://www.decanter.com/wine-news/guest-blog/gen-z-wine-challenge-emily-26"
+      }
+    },
+    {
+      "event_model_payload": {
+        "title": "Five key takeaways from Bordeaux 2025: Early, concentrated and full of promise",
+        "published_date": "2026-04-29T13:00:00",
+        "source_url": "https://www.decanter.com/wine/bordeaux-wines/five-key-takeaways-from-bordeaux-2025-early-concentrated-and-full-of-promise"
+      }
+    },
+    {
+      "event_model_payload": {
+        "title": "Pahlmeyer's star winemaker Katie Vogt on Napa, travel and great wine for rotisserie chicken",
+        "published_date": "2026-04-29T12:13:28",
+        "source_url": "https://www.decanter.com/wine-news/pahlmeyers-star-winemaker-katie-vogt-on-napa-travel-and-great-wine-for-rotisserie-chicken"
+      }
+    },
+    {
+      "event_model_payload": {
+        "title": "Grupo Peñaflor owner acquires Off-Piste Wines",
+        "published_date": "2026-04-29T14:00:58",
+        "source_url": "https://www.thedrinksbusiness.com/2026/04/grupo-penaflor-owner-acquires-off-piste-wines/"
+      }
+    },
+    {
+      "event_model_payload": {
+        "title": "Henkell Freixenet eyes growth as 2025 sales stall at €1.25bn",
+        "published_date": "2026-04-29T10:39:04",
+        "source_url": "https://www.thedrinksbusiness.com/2026/04/henkell-freixenet-eyes-growth-as-2025-sales-stall-at-e1-25bn/"
+      }
+    },
+    {
+      "event_model_payload": {
+        "title": "Uruguay declares wine a living culture in landmark policy move",
+        "published_date": "2026-04-29T10:03:16",
+        "source_url": "https://www.thedrinksbusiness.com/2026/04/uruguay-declares-wine-a-living-culture-in-landmark-policy-move/"
+      }
+    },
+    {
+      "event_model_payload": {
+        "title": "Spy documentary revisits Peter Sichel’s CIA past",
+        "published_date": "2026-04-29T10:41:28",
+        "source_url": "https://www.thedrinksbusiness.com/2026/04/blue-nun-spy-documentary-revisits-peter-sichels-cia-past/"
+      }
+    },
+    {
+      "event_model_payload": {
+        "title": "The Dreamiest Winery Guest Houses to Book Around the World",
+        "published_date": "2026-04-28T14:54:11",
+        "source_url": "https://www.wineenthusiast.com/culture/travel/winery-guest-houses/"
+      }
+    },
+    {
+      "event_model_payload": {
+        "title": "Taittinger extends FIFA partnership",
+        "published_date": "2026-04-28T10:59:15",
+        "source_url": "https://www.thedrinksbusiness.com/2026/04/taittinger-extends-fifa-partnership/"
+      }
+    },
+    {
+      "event_model_payload": {
+        "title": "Château Lafite from the cellar of Nathaniel Rothschild goes under the hammer",
+        "published_date": "2026-04-28T09:56:05",
+        "source_url": "https://www.thedrinksbusiness.com/2026/04/chateau-lafite-from-the-cellar-of-nathaniel-rothschild-goes-under-the-hammer/"
+      }
+    }
+  ],
+  "ontology": {
+    "repo": "WineRadar",
+    "category": "wine",
+    "ontology_version": "0.1.0",
+    "event_model_ids": [
+      "wine.auction_price",
+      "wine.daily_briefing",
+      "wine.education",
+      "wine.importer_portfolio_signal",
+      "wine.market_report",
+      "wine.restaurant_wine_list"
+    ],
+    "event_model_mappings": {
+      "auction_price": "wine.auction_price",
+      "restaurant_wine_list": "wine.restaurant_wine_list",
+      "importer_portfolio_signal": "wine.importer_portfolio_signal",
+      "market_report": "wine.market_report",
+      "daily_briefing": "wine.daily_briefing",
+      "education": "wine.education"
+    },
+    "entity_type_hints": [
+      "beverage.wine_label",
+      "organization.company"
+    ],
+    "source_role_ids": [
+      "community_signal",
+      "operational_evidence"
+    ],
+    "source_role_mappings": {
+      "Wine Spectator": "operational_evidence",
+      "Decanter": "operational_evidence",
+      "The Drinks Business": "operational_evidence",
+      "r/wine": "community_signal"
+    },
+    "evidence_policy_ids": [
+      "traceable_url_required",
+      "cross_reference_required",
+      "non_authoritative_context_only"
+    ]
+  }
+}

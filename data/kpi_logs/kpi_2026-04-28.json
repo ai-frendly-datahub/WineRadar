@@ -1,32 +1,32 @@
 {
   "run_date": "2026-04-28",
-  "run_timestamp": "2026-04-28T12:55:27.381477+00:00",
+  "run_timestamp": "2026-04-28T15:12:19.858439+00:00",
   "collection": {
-    "sources_active": 0,
-    "sources_attempted": 2,
-    "sources_succeeded": 2,
+    "sources_active": 44,
+    "sources_attempted": 44,
+    "sources_succeeded": 44,
     "sources_failed": 0,
     "success_rate": "100.0%"
   },
   "articles": {
-    "collected": 5,
-    "new": 5,
+    "collected": 430,
+    "new": 430,
     "duplicate": 0
   },
   "entities": {
-    "extracted": 10
+    "extracted": 2167
   },
   "report": {
-    "generated": false,
-    "cards": 0,
+    "generated": true,
+    "cards": 60,
     "sections": 0
   },
   "top_source": {
-    "name": "Unknown",
-    "count": 0,
-    "percentage": 0.0
+    "name": "ACE Vinos",
+    "count": 10,
+    "percentage": 2.4
   },
-  "runtime_seconds": 4.76837158203125e-05,
+  "runtime_seconds": 108.55968141555786,
   "errors": [],
   "notes": null
 }

@@ -1004,11 +1004,10 @@ sources:
   enabled: true
   id: media_acevinos_es
   info_purpose:
-  - P1_daily_briefing
   - P4_trend_discovery
   language: es
   name: ACE Vinos
-  notes: Spanish wine enology and news portal (acenologia.com)
+  notes: Spanish wine enology and news portal (acenologia.com); audited 2026-04-30 as slow research/trend context, not active daily briefing.
   producer_role: trade_media
   region: Europe/Southern/Spain
   requires_login: false
@@ -1067,7 +1066,7 @@ sources:
   config:
     collection_method: rss
     list_url: https://www.timatkin.com/feed/
-    freshness_sla_days: 4
+    freshness_sla_days: 8
   content_type: news_review
   continent: OLD_WORLD
   country: GB
@@ -1078,7 +1077,7 @@ sources:
   - P3_investment
   language: en
   name: Tim Atkin MW
-  notes: Master of Wine, independent wine critic and journalist; posting cadence is often every 3-4 days rather than daily
+  notes: Master of Wine, independent wine critic and journalist; audited 2026-04-30 as a weekly column cadence, so source-local SLA allows a full weekly cycle plus margin.
   producer_role: expert_media
   region: Europe/Western/UK
   requires_login: false
@@ -1091,7 +1090,7 @@ sources:
   config:
     collection_method: rss
     list_url: https://www.winereview.co.kr/feed/
-    freshness_sla_days: 16
+    freshness_sla_days: 24
   content_type: news_review
   continent: ASIA
   country: KR
@@ -1102,8 +1101,7 @@ sources:
   - P4_trend_discovery
   language: ko
   name: Wine Review Korea RSS
-  notes: Alternative RSS feed for Wine Review - Asian market coverage enhancement with 2-week quiet windows between updates
-    (Phase 4)
+  notes: Alternative RSS feed for Wine Review - Asian market coverage enhancement with clustered Korean-language posts and observed 2-3 week quiet windows (audited 2026-04-30).
   producer_role: trade_media
   region: Asia/East/Korea
   requires_login: false
@@ -1231,22 +1229,17 @@ sources:
   type: media
   weight: 2.5
 - collection_tier: C1_rss
-  config:
-    collection_method: rss
-    list_url: https://magazine.wein.plus/feed.xml
-    freshness_sla_days: 21
   content_type: news_review
   continent: OLD_WORLD
   country: DE
-  enabled: true
+  enabled: false
   id: media_weinplus_de
   info_purpose:
   - P1_daily_briefing
   - P4_trend_discovery
   language: en
   name: wein.plus Magazine
-  notes: International wine magazine with expert reviews and interviews (Added 2026-04-08,
-    replacement for wine-what.jp)
+  notes: "DISABLED 2026-05-07: feed returned HTTP 403 in direct verification and collection smoke; keep as expert-media backlog until access conditions or a replacement feed are verified."
   producer_role: expert_media
   region: Europe/Western/Germany
   requires_login: false
@@ -1255,6 +1248,12 @@ sources:
   trust_tier: T2_expert
   type: media
   weight: 2.8
+  config:
+    collection_method: rss
+    list_url: https://magazine.wein.plus/feed.xml
+    freshness_sla_days: 21
+    skip_reason: "RSS feed returns HTTP 403 in the current collection runtime."
+    retry_policy: "verify access terms or replacement feed before re-enabling"
 - collection_tier: C1_rss
   config:
     collection_method: rss
@@ -1395,7 +1394,7 @@ sources:
   config:
     collection_method: rss
     list_url: https://www.wineswithattitude.co.uk/feed/
-    freshness_sla_days: 30
+    freshness_sla_days: 60
   content_type: news_review
   continent: OLD_WORLD
   country: GB
@@ -1405,7 +1404,7 @@ sources:
   - P1_daily_briefing
   language: en
   name: Wines With Attitude
-  notes: UK wine retailer with educational grape profiles (Added 2026-04-08)
+  notes: UK wine retailer with educational grape profiles; audited as irregular educational/review cadence rather than daily trade news (Added 2026-04-08)
   producer_role: trade_media
   region: Europe/Western/UK
   requires_login: false
@@ -1442,7 +1441,7 @@ sources:
   config:
     collection_method: rss
     list_url: https://riojawine.com/feed/
-    freshness_sla_days: 8
+    freshness_sla_days: 14
   content_type: news_review
   continent: OLD_WORLD
   country: ES
@@ -1452,7 +1451,7 @@ sources:
   - P1_daily_briefing
   language: es
   name: Rioja Wine Official
-  notes: Official Rioja DOCa Consejo Regulador; weekly posting cadence often runs 7-8 days (Added 2026-04-08)
+  notes: Official Rioja DOCa Consejo Regulador; weekly-to-biweekly posting cadence is tracked as official regional context rather than daily briefing (Added 2026-04-08)
   producer_role: industry_assoc
   region: Europe/Southern/Spain
   requires_login: false
@@ -1486,7 +1485,7 @@ sources:
 - collection_tier: C1_rss
   config:
     collection_method: rss
-    freshness_sla_days: 4
+    freshness_sla_days: 45
     list_url: https://www.1winedude.com/feed/
   content_type: news_review
   continent: NEW_WORLD
@@ -1498,7 +1497,7 @@ sources:
   - P4_trend_discovery
   language: en
   name: 1 Wine Dude
-  notes: Wine blog with reviews and industry commentary by Joe Roberts; recent cadence is typically every 3-4 days (Added 2026-04-08)
+  notes: Wine blog with reviews and industry commentary by Joe Roberts; audited 2026-04-30 as weekly-to-multiweek commentary rather than daily news.
   producer_role: trade_media
   region: Americas/North/USA
   requires_login: false
@@ -1511,17 +1510,18 @@ sources:
   config:
     collection_method: rss
     list_url: https://wineeducators.com/feed
+    skip_reason: live RSS timed out from this runner at 10s and 25s on 2026-04-30
+    retry_policy: live_feed_200_within_timeout_two_consecutive_runs_then_parser_smoke
   content_type: education
   continent: OLD_WORLD
   country: GB
-  enabled: true
+  enabled: false
   id: official_wineeducators_uk
   info_purpose:
   - P5_education
   language: en
   name: Association of Wine Educators
-  notes: UK wine educators association with professional education content (Added
-    2026-04-08)
+  notes: "DISABLED 2026-04-30: live RSS read timed out repeatedly from this runner; retained as education backlog until feed availability is verified."
   producer_role: industry_assoc
   region: Europe/Western/UK
   requires_login: false
@@ -1695,7 +1695,7 @@ sources:
   config:
     collection_method: rss
     list_url: https://www.napawineproject.com/feed/
-    freshness_sla_days: 14
+    freshness_sla_days: 45
   content_type: news_review
   continent: NEW_WORLD
   country: US
@@ -1706,7 +1706,7 @@ sources:
   - P1_daily_briefing
   language: en
   name: The Napa Wine Project
-  notes: Napa Valley winery reviews and news (Added 2026-04-08)
+  notes: Napa Valley winery reviews and news; audited as review-driven content with irregular multi-week gaps rather than daily trade news.
   producer_role: trade_media
   region: Americas/North/USA
   requires_login: false
@@ -1719,6 +1719,7 @@ sources:
   config:
     collection_method: rss
     list_url: https://winereviewonline.com/feed/
+    freshness_sla_days: 8
   content_type: news_review
   continent: NEW_WORLD
   country: US
@@ -1729,7 +1730,7 @@ sources:
   - P4_trend_discovery
   language: en
   name: Wine Review Online
-  notes: Wine reviews and recommendations from industry experts (Added 2026-04-08)
+  notes: Wine reviews and recommendations from industry experts; audited 2026-04-30 as weekly batches with multiple same-day posts.
   producer_role: expert_media
   region: Americas/North/USA
   requires_login: false
