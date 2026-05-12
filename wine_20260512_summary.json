@@ -1,13 +1,13 @@
 {
   "date": "2026-05-12",
   "category": "wine",
-  "article_count": 63,
-  "source_count": 15,
-  "matched_count": 29,
+  "article_count": 65,
+  "source_count": 16,
+  "matched_count": 30,
   "top_entities": [
     {
       "name": "region",
-      "count": 70
+      "count": 69
     },
     {
       "name": "grape_variety",
@@ -15,7 +15,7 @@
     },
     {
       "name": "climate_zone",
-      "count": 23
+      "count": 21
     },
     {
       "name": "winery",
@@ -23,21 +23,22 @@
     }
   ],
   "sources": {
-    "Wine21": 12,
-    "Wine Industry Advisor": 14,
+    "Wine21": 11,
+    "Wine Industry Advisor": 16,
+    "Enolife": 1,
+    "Vino Joy News": 4,
     "Wine Enthusiast": 4,
     "wein.plus Magazine": 2,
-    "Sonoma Magazine": 2,
     "Rioja Wine Official": 1,
     "Gambero Rosso": 7,
     "Jeb Dunnuck": 1,
-    "Vino Joy News": 3,
     "Wine Dharma": 6,
     "Decanter": 2,
     "1 Wine Dude": 1,
     "The Drinks Business": 3,
     "Terre de Vins": 2,
+    "Sonoma Magazine": 1,
     "Drinkhacker": 3
   },
-  "generated_at": "2026-05-12T08:59:04.608169+09:00"
+  "generated_at": "2026-05-12T11:04:52.759412+09:00"
 }
