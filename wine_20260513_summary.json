@@ -2,16 +2,16 @@
   "date": "2026-05-13",
   "category": "wine",
   "article_count": 58,
-  "source_count": 14,
+  "source_count": 15,
   "matched_count": 58,
   "top_entities": [
     {
       "name": "topic",
-      "count": 93
+      "count": 96
     },
     {
       "name": "region",
-      "count": 87
+      "count": 88
     },
     {
       "name": "grape_variety",
@@ -19,7 +19,7 @@
     },
     {
       "name": "climate_zone",
-      "count": 20
+      "count": 21
     },
     {
       "name": "winery",
@@ -28,6 +28,7 @@
   ],
   "sources": {
     "Wine21": 8,
+    "Wine Magazine South Africa": 1,
     "Enolife": 1,
     "Sonoma Magazine": 5,
     "Drinkhacker": 4,
@@ -39,8 +40,8 @@
     "Jamie Goode's Wine Blog": 1,
     "Korean Wine Consumer Association": 4,
     "Wine Institute": 10,
-    "Wine Industry Advisor": 4,
+    "Wine Industry Advisor": 3,
     "The Drinks Business": 4
   },
-  "generated_at": "2026-05-13T12:50:40.701295+09:00"
+  "generated_at": "2026-05-13T13:09:57.437255+09:00"
 }
