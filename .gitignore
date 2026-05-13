@@ -209,6 +209,11 @@ __marimo__/
 # WineRadar data files
 data/*.duckdb
 data/*.duckdb.wal
+data/raw/
+!data/raw/.gitkeep
+data/kpi_logs/*.json
+!data/kpi_logs/.gitkeep
+data/search_index.db*
 # Exception: allow snapshot duckdb files to be tracked
 !data/snapshots/**/*.duckdb
 
@@ -217,3 +222,6 @@ data/*.duckdb.wal
 *.duckdb.wal
 data/snapshots/
 !data/snapshots/.gitkeep
+
+# Large daily DuckDB snapshots (regenerable by daily crawler)
+data/daily/*.duckdb
