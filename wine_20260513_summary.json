@@ -1,9 +1,9 @@
 {
   "date": "2026-05-13",
   "category": "wine",
-  "article_count": 56,
+  "article_count": 58,
   "source_count": 14,
-  "matched_count": 56,
+  "matched_count": 58,
   "top_entities": [
     {
       "name": "topic",
@@ -27,20 +27,20 @@
     }
   ],
   "sources": {
-    "Wine21": 6,
+    "Wine21": 8,
+    "Enolife": 1,
     "Sonoma Magazine": 5,
-    "Drinkhacker": 3,
+    "Drinkhacker": 4,
     "Wine Enthusiast": 2,
     "Terre de Vins": 3,
-    "Gambero Rosso": 2,
-    "The Drinks Business": 5,
     "Federdoc": 9,
+    "Gambero Rosso": 2,
     "Decanter": 1,
     "Jamie Goode's Wine Blog": 1,
     "Korean Wine Consumer Association": 4,
     "Wine Institute": 10,
     "Wine Industry Advisor": 4,
-    "Vinography": 1
+    "The Drinks Business": 4
   },
-  "generated_at": "2026-05-13T08:59:22.971971+09:00"
+  "generated_at": "2026-05-13T12:50:40.701295+09:00"
 }
