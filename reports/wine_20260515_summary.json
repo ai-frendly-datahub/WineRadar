@@ -7,11 +7,11 @@
   "top_entities": [
     {
       "name": "topic",
-      "count": 96
+      "count": 95
     },
     {
       "name": "region",
-      "count": 65
+      "count": 67
     },
     {
       "name": "grape_variety",
@@ -19,29 +19,29 @@
     },
     {
       "name": "climate_zone",
-      "count": 27
+      "count": 28
     },
     {
       "name": "winery",
-      "count": 21
+      "count": 22
     }
   ],
   "sources": {
     "Wine21": 7,
+    "Sonoma Magazine": 2,
     "Wine Enthusiast": 3,
     "Drinkhacker": 1,
     "Rioja Wine Official": 1,
     "The Drinks Business": 8,
-    "Sonoma Magazine": 1,
     "Gambero Rosso": 6,
-    "Korean Wine Consumer Association": 4,
     "Federdoc": 9,
     "Decanter": 1,
     "Jamie Goode's Wine Blog": 1,
+    "Korean Wine Consumer Association": 4,
     "Wine Institute": 10,
-    "Wine Industry Advisor": 5,
+    "Wine Industry Advisor": 4,
     "VinePair": 2,
     "Terre de Vins": 2
   },
-  "generated_at": "2026-05-15T07:45:24.663544+09:00"
+  "generated_at": "2026-05-15T08:58:21.596892+09:00"
 }
