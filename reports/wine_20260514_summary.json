@@ -1,13 +1,13 @@
 {
   "date": "2026-05-14",
   "category": "wine",
-  "article_count": 61,
-  "source_count": 18,
-  "matched_count": 61,
+  "article_count": 71,
+  "source_count": 19,
+  "matched_count": 71,
   "top_entities": [
     {
       "name": "topic",
-      "count": 101
+      "count": 118
     },
     {
       "name": "region",
@@ -35,9 +35,10 @@
     "Sonoma Magazine": 1,
     "Terre de Vins": 2,
     "Gambero Rosso": 4,
+    "Korean Wine Consumer Association": 4,
     "Federdoc": 9,
     "Jamie Goode's Wine Blog": 2,
-    "Korean Wine Consumer Association": 4,
+    "Shinsegae L&B": 10,
     "Wine Institute": 10,
     "Vinography": 1,
     "Wine Industry Advisor": 6,
@@ -46,5 +47,5 @@
     "Tim Atkin MW": 1,
     "Jancis Robinson": 1
   },
-  "generated_at": "2026-05-14T11:23:20.389944+09:00"
+  "generated_at": "2026-05-14T12:25:16.257975+09:00"
 }
