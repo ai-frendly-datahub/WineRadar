@@ -1,13 +1,13 @@
 {
   "date": "2026-05-14",
   "category": "wine",
-  "article_count": 71,
-  "source_count": 19,
-  "matched_count": 71,
+  "article_count": 61,
+  "source_count": 18,
+  "matched_count": 61,
   "top_entities": [
     {
       "name": "topic",
-      "count": 118
+      "count": 101
     },
     {
       "name": "region",
@@ -37,7 +37,6 @@
     "Gambero Rosso": 4,
     "Federdoc": 9,
     "Jamie Goode's Wine Blog": 2,
-    "Shinsegae L&B": 10,
     "Korean Wine Consumer Association": 4,
     "Wine Institute": 10,
     "Vinography": 1,
@@ -47,5 +46,5 @@
     "Tim Atkin MW": 1,
     "Jancis Robinson": 1
   },
-  "generated_at": "2026-05-14T10:04:08.428019+09:00"
+  "generated_at": "2026-05-14T11:23:20.389944+09:00"
 }
