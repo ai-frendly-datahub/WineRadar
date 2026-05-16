@@ -1,6 +1,6 @@
 {
   "run_date": "2026-05-16",
-  "run_timestamp": "2026-05-16T11:46:30.446788+00:00",
+  "run_timestamp": "2026-05-16T23:53:13.757747+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
@@ -14,19 +14,19 @@
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1808
+    "extracted": 1811
   },
   "report": {
     "generated": true,
-    "cards": 61,
+    "cards": 58,
     "sections": 0
   },
   "top_source": {
     "name": "The Drinks Business",
     "count": 35,
-    "percentage": 6.7
+    "percentage": 6.6
   },
-  "runtime_seconds": 50.23915982246399,
+  "runtime_seconds": 70.10190987586975,
   "errors": [
     "Wine Review Korea RSS: RSSCollector: No items collected",
     "Winetitles Australia: RSSCollector: 403 Client Error: Forbidden for url: https://winetitles.com.au/feed/",
