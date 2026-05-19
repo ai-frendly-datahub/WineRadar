@@ -1,6 +1,6 @@
 {
   "run_date": "2026-05-19",
-  "run_timestamp": "2026-05-19T13:46:09.583882+00:00",
+  "run_timestamp": "2026-05-19T13:54:48.172789+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
@@ -18,7 +18,7 @@
   },
   "report": {
     "generated": true,
-    "cards": 71,
+    "cards": 61,
     "sections": 0
   },
   "top_source": {
@@ -26,7 +26,7 @@
     "count": 56,
     "percentage": 8.7
   },
-  "runtime_seconds": 56.07479953765869,
+  "runtime_seconds": 60.03862738609314,
   "errors": [
     "Wine Review Korea RSS: RSSCollector: No items collected",
     "Winetitles Australia: RSSCollector: 403 Client Error: Forbidden for url: https://winetitles.com.au/feed/",
