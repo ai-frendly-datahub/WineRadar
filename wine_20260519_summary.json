@@ -1,13 +1,13 @@
 {
   "date": "2026-05-19",
   "category": "wine",
-  "article_count": 71,
-  "source_count": 18,
-  "matched_count": 71,
+  "article_count": 61,
+  "source_count": 17,
+  "matched_count": 61,
   "top_entities": [
     {
       "name": "topic",
-      "count": 125
+      "count": 108
     },
     {
       "name": "region",
@@ -36,15 +36,14 @@
     "Terre de Vins": 2,
     "Wine Magazine South Africa": 1,
     "The Drinks Business": 8,
+    "Korean Wine Consumer Association": 4,
     "Federdoc": 9,
     "The Wine Economist": 1,
     "Jancis Robinson": 2,
-    "Shinsegae L&B": 10,
-    "Korean Wine Consumer Association": 4,
     "Wine Institute": 10,
     "Wine Industry Advisor": 2,
     "WineAmerica": 1,
     "The Napa Wine Project": 1
   },
-  "generated_at": "2026-05-19T22:46:09.525714+09:00"
+  "generated_at": "2026-05-19T22:54:48.119119+09:00"
 }
