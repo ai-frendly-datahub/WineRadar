@@ -4,13 +4,13 @@
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
-    "sources_succeeded": 39,
-    "sources_failed": 3,
-    "success_rate": "92.9%"
+    "sources_succeeded": 42,
+    "sources_failed": 0,
+    "success_rate": "100.0%"
   },
   "articles": {
-    "collected": 385,
-    "new": 385,
+    "collected": 84,
+    "new": 84,
     "duplicate": 0
   },
   "entities": {
@@ -18,7 +18,7 @@
   },
   "report": {
     "generated": true,
-    "cards": 61,
+    "cards": 63,
     "sections": 0
   },
   "top_source": {

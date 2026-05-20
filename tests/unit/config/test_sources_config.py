@@ -107,3 +107,19 @@ def test_data_quality_config_tracks_operational_source_backlog(
         assert isinstance(config.get("event_model"), str) and config["event_model"]
         assert isinstance(config.get("skip_reason"), str) and config["skip_reason"]
         assert isinstance(config.get("retry_policy"), str) and config["retry_policy"]
+
+
+def test_long_form_wine_sources_have_cadence_appropriate_freshness_slas(
+    sources_config: dict[str, Any],
+) -> None:
+    sources_by_id = {source["id"]: source for source in sources_config.get("sources", [])}
+
+    wine_cellar = sources_by_id["media_winecellarinsider_us"]
+    assert wine_cellar["info_purpose"] == ["P3_investment"]
+    assert wine_cellar["config"]["freshness_sla_days"] == 75
+    assert "long-form vintage guide" in wine_cellar["notes"]
+
+    opening_a_bottle = sources_by_id["media_openingabottle_us"]
+    assert opening_a_bottle["content_type"] == "education"
+    assert opening_a_bottle["config"]["freshness_sla_days"] == 45
+    assert "monthly quiet windows" in opening_a_bottle["notes"]

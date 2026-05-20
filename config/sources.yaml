@@ -1348,18 +1348,17 @@ sources:
   config:
     collection_method: rss
     list_url: https://www.thewinecellarinsider.com/feed/
-    freshness_sla_days: 45
+    freshness_sla_days: 75
   content_type: news_review
   continent: NEW_WORLD
   country: US
   enabled: true
   id: media_winecellarinsider_us
   info_purpose:
-  - P1_daily_briefing
   - P3_investment
   language: en
   name: The Wine Cellar Insider
-  notes: Bordeaux wine guide with reviews and buying advice (Added 2026-04-08)
+  notes: Bordeaux long-form vintage guide with reviews and buying advice; observed quiet windows can exceed daily-briefing cadence, so freshness is tracked as investment context rather than P1 daily briefing. (Added 2026-04-08; SLA adjusted 2026-05-20)
   producer_role: expert_media
   region: Americas/North/USA
   requires_login: false
@@ -1743,6 +1742,7 @@ sources:
   config:
     collection_method: rss
     list_url: https://www.openingabottle.com/feed/
+    freshness_sla_days: 45
   content_type: education
   continent: OLD_WORLD
   country: IT
@@ -1752,7 +1752,7 @@ sources:
   - P5_education
   language: en
   name: Opening a Bottle
-  notes: Italian wine magazine and education by Kevin Day (Added 2026-04-08)
+  notes: Italian wine magazine and education by Kevin Day; long-form education posts are expected to have monthly quiet windows. (Added 2026-04-08; SLA adjusted 2026-05-20)
   producer_role: expert_media
   region: Europe/Southern/Italy
   requires_login: false
