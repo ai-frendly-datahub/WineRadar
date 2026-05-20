@@ -1,25 +1,25 @@
 {
   "date": "2026-05-20",
   "category": "wine",
-  "article_count": 70,
-  "source_count": 18,
-  "matched_count": 70,
+  "article_count": 60,
+  "source_count": 16,
+  "matched_count": 60,
   "top_entities": [
     {
-      "name": "topic",
-      "count": 112
+      "name": "region",
+      "count": 108
     },
     {
-      "name": "region",
-      "count": 93
+      "name": "topic",
+      "count": 105
     },
     {
       "name": "grape_variety",
-      "count": 40
+      "count": 52
     },
     {
       "name": "climate_zone",
-      "count": 32
+      "count": 26
     },
     {
       "name": "winery",
@@ -28,23 +28,21 @@
   ],
   "sources": {
     "Wine21": 9,
-    "Enolife": 4,
-    "Sonoma Magazine": 3,
-    "Wine Enthusiast": 4,
-    "Drinkhacker": 3,
-    "The Napa Wine Project": 3,
-    "Federdoc": 9,
-    "Gambero Rosso": 4,
-    "Decanter": 2,
-    "Korean Wine Consumer Association": 4,
-    "Terre de Vins": 3,
-    "Wine Institute": 10,
-    "Vinography": 1,
-    "Wine Industry Advisor": 3,
-    "VinePair": 1,
-    "Wine Magazine South Africa": 1,
+    "Gambero Rosso": 6,
     "The Drinks Business": 5,
-    "WineAmerica": 1
+    "1 Wine Dude": 1,
+    "Enolife": 1,
+    "VinePair": 3,
+    "Wine Enthusiast": 3,
+    "Drinkhacker": 2,
+    "Wine Magazine South Africa": 1,
+    "Korean Wine Consumer Association": 4,
+    "Federdoc": 9,
+    "Decanter": 1,
+    "Wine Institute": 10,
+    "Wine Industry Advisor": 3,
+    "The Napa Wine Project": 1,
+    "Terre de Vins": 1
   },
-  "generated_at": "2026-05-20T11:57:22.802453+09:00"
+  "generated_at": "2026-05-20T22:41:03.100390+09:00"
 }
