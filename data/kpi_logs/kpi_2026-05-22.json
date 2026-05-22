@@ -1,6 +1,6 @@
 {
   "run_date": "2026-05-22",
-  "run_timestamp": "2026-05-22T00:02:02.686510+00:00",
+  "run_timestamp": "2026-05-22T13:28:57.505449+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
@@ -14,19 +14,19 @@
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1959
+    "extracted": 1893
   },
   "report": {
     "generated": true,
-    "cards": 56,
+    "cards": 61,
     "sections": 0
   },
   "top_source": {
     "name": "Gambero Rosso",
-    "count": 89,
-    "percentage": 11.1
+    "count": 99,
+    "percentage": 11.8
   },
-  "runtime_seconds": 63.601240396499634,
+  "runtime_seconds": 59.71694087982178,
   "errors": [
     "Wine Review Korea RSS: RSSCollector: No items collected",
     "Winetitles Australia: RSSCollector: 403 Client Error: Forbidden for url: https://winetitles.com.au/feed/",
