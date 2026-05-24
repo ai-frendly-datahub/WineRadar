@@ -1,13 +1,13 @@
 {
   "date": "2026-05-24",
   "category": "wine",
-  "article_count": 54,
-  "source_count": 15,
-  "matched_count": 54,
+  "article_count": 53,
+  "source_count": 14,
+  "matched_count": 53,
   "top_entities": [
     {
       "name": "topic",
-      "count": 87
+      "count": 86
     },
     {
       "name": "region",
@@ -30,7 +30,6 @@
     "Wine21": 9,
     "Jamie Goode's Wine Blog": 3,
     "Drinkhacker": 2,
-    "Gambero Rosso": 1,
     "Federdoc": 9,
     "Korean Wine Consumer Association": 4,
     "Wine Institute": 10,
@@ -43,5 +42,5 @@
     "The Drinks Business": 3,
     "VinePair": 2
   },
-  "generated_at": "2026-05-24T08:57:59.202311+09:00"
+  "generated_at": "2026-05-24T21:00:34.315465+09:00"
 }
