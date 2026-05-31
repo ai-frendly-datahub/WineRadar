@@ -934,46 +934,6 @@
 
 
 
-
-      <section id="wine-quality" class="section" aria-label="Wine quality">
-        <div class="section-hd">
-          <h2>Wine Quality</h2>
-          <div class="right">
-            <span class="kbd">wine_quality.json</span>
-          </div>
-        </div>
-        <article class="panel">
-          <header class="panel-hd">
-            <div>
-              <p class="panel-title">Operational Source Checks</p>
-              <p class="panel-sub">freshness, disabled high-value sources, and auction/list candidates</p>
-            </div>
-          </header>
-          <div class="panel-bd">
-            <div class="row" aria-label="Wine quality summary">
-              <span class="chip"><strong>fresh</strong> 27</span>
-<span class="chip"><strong>stale</strong> 2</span>
-<span class="chip"><strong>missing</strong> 3</span>
-<span class="chip"><strong>disabled high-value</strong> 25</span>
-<span class="chip"><strong>auction</strong> 0</span>
-<span class="chip"><strong>restaurant lists</strong> 0</span>
-<span class="chip"><strong>market</strong> 5</span>
-            </div>
-            <p class="muted small">Auction price and restaurant wine-list candidates remain disabled until access terms, parser stability, and canonical wine-key mapping are verified.</p>
-            <ul><li><strong>Wine Review Korea RSS</strong>: missing (daily_briefing)</li>
-<li><strong>Wines With Attitude</strong>: stale (daily_briefing, age 60.31d)</li>
-<li><strong>WineAmerica</strong>: stale (market_report, age 8.23d)</li>
-<li><strong>Winetitles Australia</strong>: missing (market_report)</li>
-<li><strong>Wine Review Online</strong>: missing (daily_briefing)</li></ul>
-            <ul><li><strong>Wine Review</strong>: daily_briefing; covered by active RSS source media_winereview_rss_kr; HTML path kept as fallback after legacy /news returned 404</li>
-<li><strong>La Revue du vin de France</strong>: daily_briefing; disabled in source config; review parser and access conditions before enabling</li>
-<li><strong>Institut Français de la Vigne et du Vin</strong>: ; French viticulture research institute, statistics [disabled pending 403/404 retest noted in SOURCE_STATUS]</li>
-<li><strong>Winenara Stories</strong>: daily_briefing; disabled in source config; review parser and access conditions before enabling</li>
-<li><strong>Liv-ex Market Data</strong>: auction_price; API or data-license review required before collection; retry review_contract_then_parser_smoke</li>
-<li><strong>Sotheby&#x27;s Wine Auction Results</strong>: auction_price; lot permalink and hammer-price parser require ToS/robots review; retry tos_review_then_lot_parser_smoke</li></ul>
-          </div>
-        </article>
-      </section>
       <section id="entities" class="section" aria-label="Entity table">
         <div class="section-hd">
           <h2>Entities</h2>
