@@ -1,33 +1,34 @@
 {
   "run_date": "2026-06-01",
-  "run_timestamp": "2026-06-01T00:06:32.378528+00:00",
+  "run_timestamp": "2026-06-01T16:36:38.275652+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
-    "sources_succeeded": 38,
-    "sources_failed": 4,
-    "success_rate": "90.5%"
+    "sources_succeeded": 37,
+    "sources_failed": 5,
+    "success_rate": "88.1%"
   },
   "articles": {
-    "collected": 375,
-    "new": 375,
+    "collected": 365,
+    "new": 365,
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1896
+    "extracted": 1846
   },
   "report": {
     "generated": true,
-    "cards": 59,
+    "cards": 64,
     "sections": 0
   },
   "top_source": {
     "name": "Gambero Rosso",
-    "count": 164,
-    "percentage": 13.5
+    "count": 169,
+    "percentage": 13.4
   },
-  "runtime_seconds": 65.63795804977417,
+  "runtime_seconds": 94.15016746520996,
   "errors": [
+    "Tim Atkin MW: RSSCollector: HTTPSConnectionPool(host='www.timatkin.com', port=443): Max retries exceeded with url: /feed/ (Cause",
     "Wine Review Korea RSS: RSSCollector: No items collected",
     "1 Wine Dude: RSSCollector: 403 Client Error: Forbidden for url: https://www.1winedude.com/feed/",
     "Winetitles Australia: RSSCollector: 403 Client Error: Forbidden for url: https://winetitles.com.au/feed/",
