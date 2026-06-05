@@ -1,6 +1,6 @@
 {
   "run_date": "2026-06-05",
-  "run_timestamp": "2026-06-05T00:07:28.922094+00:00",
+  "run_timestamp": "2026-06-05T13:53:05.994425+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
@@ -14,19 +14,19 @@
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1958
+    "extracted": 1937
   },
   "report": {
     "generated": true,
-    "cards": 60,
+    "cards": 53,
     "sections": 0
   },
   "top_source": {
     "name": "Gambero Rosso",
-    "count": 193,
-    "percentage": 13.1
+    "count": 199,
+    "percentage": 13.2
   },
-  "runtime_seconds": 78.88488245010376,
+  "runtime_seconds": 74.63008904457092,
   "errors": [
     "Wine Review Korea RSS: RSSCollector: No items collected",
     "1 Wine Dude: RSSCollector: 403 Client Error: Forbidden for url: https://www.1winedude.com/feed/",
