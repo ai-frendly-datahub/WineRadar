@@ -1,6 +1,6 @@
 {
   "run_date": "2026-06-07",
-  "run_timestamp": "2026-06-07T00:05:00.507569+00:00",
+  "run_timestamp": "2026-06-07T12:20:41.793340+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
@@ -14,7 +14,7 @@
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1856
+    "extracted": 1896
   },
   "report": {
     "generated": true,
@@ -23,15 +23,15 @@
   },
   "top_source": {
     "name": "Gambero Rosso",
-    "count": 204,
-    "percentage": 13.2
+    "count": 208,
+    "percentage": 13.4
   },
-  "runtime_seconds": 95.93579602241516,
+  "runtime_seconds": 107.53686285018921,
   "errors": [
-    "Tim Atkin MW: RSSCollector: HTTPSConnectionPool(host='www.timatkin.com', port=443): Max retries exceeded with url: /feed/ (Cause",
     "Wine Review Korea RSS: RSSCollector: No items collected",
     "1 Wine Dude: RSSCollector: 403 Client Error: Forbidden for url: https://www.1winedude.com/feed/",
     "Winetitles Australia: RSSCollector: 403 Client Error: Forbidden for url: https://winetitles.com.au/feed/",
+    "The Napa Wine Project: RSSCollector: HTTPSConnectionPool(host='www.napawineproject.com', port=443): Read timed out. (read timeout=10)",
     "Wine Review Online: RSSCollector: 403 Client Error: Forbidden for url: https://winereviewonline.com/feed/"
   ],
   "notes": null

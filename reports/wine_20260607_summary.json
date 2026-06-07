@@ -6,11 +6,11 @@
   "matched_count": 54,
   "top_entities": [
     {
-      "name": "region",
-      "count": 88
+      "name": "topic",
+      "count": 84
     },
     {
-      "name": "topic",
+      "name": "region",
       "count": 83
     },
     {
@@ -19,7 +19,7 @@
     },
     {
       "name": "climate_zone",
-      "count": 24
+      "count": 23
     },
     {
       "name": "winery",
@@ -28,21 +28,21 @@
   ],
   "sources": {
     "Wine21": 6,
+    "Gambero Rosso": 3,
     "Drinkhacker": 2,
-    "Jamie Goode's Wine Blog": 3,
-    "Gambero Rosso": 1,
-    "Jancis Robinson": 2,
-    "Terre de Vins": 2,
+    "Jamie Goode's Wine Blog": 2,
     "Federdoc": 9,
-    "Wine Enthusiast": 3,
+    "Jancis Robinson": 2,
     "Korean Wine Consumer Association": 4,
     "Wine Institute": 10,
     "Enolife": 3,
     "Vinography": 1,
     "Sonoma Magazine": 1,
+    "Wine Enthusiast": 3,
     "Wine Industry Advisor": 3,
+    "Terre de Vins": 1,
     "The Drinks Business": 3,
     "VinePair": 1
   },
-  "generated_at": "2026-06-07T09:05:00.443904+09:00"
+  "generated_at": "2026-06-07T21:20:41.731686+09:00"
 }
