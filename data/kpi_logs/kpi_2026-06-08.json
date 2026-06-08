@@ -1,0 +1,45 @@
+{
+  "run_date": "2026-06-08",
+  "run_timestamp": "2026-06-08T00:07:43.588506+00:00",
+  "collection": {
+    "sources_active": 42,
+    "sources_attempted": 42,
+    "sources_succeeded": 30,
+    "sources_failed": 12,
+    "success_rate": "71.4%"
+  },
+  "articles": {
+    "collected": 295,
+    "new": 295,
+    "duplicate": 0
+  },
+  "entities": {
+    "extracted": 1606
+  },
+  "report": {
+    "generated": true,
+    "cards": 64,
+    "sections": 0
+  },
+  "top_source": {
+    "name": "Gambero Rosso",
+    "count": 208,
+    "percentage": 13.4
+  },
+  "runtime_seconds": 93.33094596862793,
+  "errors": [
+    "Tim Atkin MW: RSSCollector: HTTPSConnectionPool(host='www.timatkin.com', port=443): Max retries exceeded with url: /feed/ (Cause",
+    "Wine Review Korea RSS: RSSCollector: No items collected",
+    "Jamie Goode's Wine Blog: RSSCollector: 415 Client Error: Unsupported Media Type for url: https://wineanorak.com/feed/",
+    "Wine Industry Advisor: RSSCollector: 415 Client Error: Unsupported Media Type for url: https://wineindustryadvisor.com/feed/",
+    "Drinkhacker: RSSCollector: 415 Client Error: Unsupported Media Type for url: https://www.drinkhacker.com/feed/",
+    "Wine Dharma: RSSCollector: 503 Server Error: Service Unavailable for url: https://winedharma.com/feed/",
+    "1 Wine Dude: RSSCollector: 403 Client Error: Forbidden for url: https://www.1winedude.com/feed/",
+    "Finger Lakes Wine Alliance: RSSCollector: 415 Client Error: Unsupported Media Type for url: https://fingerlakeswinealliance.com/feed/",
+    "WineAmerica: RSSCollector: 415 Client Error: Unsupported Media Type for url: https://wineamerica.org/feed/",
+    "South Africa Wine Research Library: RSSCollector: HTTPSConnectionPool(host='winetechlibrary.co.za', port=443): Max retries exceeded with url: /feed/ (",
+    "Winetitles Australia: RSSCollector: 403 Client Error: Forbidden for url: https://winetitles.com.au/feed/",
+    "Wine Review Online: RSSCollector: 403 Client Error: Forbidden for url: https://winereviewonline.com/feed/"
+  ],
+  "notes": null
+}
