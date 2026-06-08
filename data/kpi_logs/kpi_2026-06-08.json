@@ -1,43 +1,35 @@
 {
   "run_date": "2026-06-08",
-  "run_timestamp": "2026-06-08T00:07:43.588506+00:00",
+  "run_timestamp": "2026-06-08T14:47:29.426808+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
-    "sources_succeeded": 30,
-    "sources_failed": 12,
-    "success_rate": "71.4%"
+    "sources_succeeded": 38,
+    "sources_failed": 4,
+    "success_rate": "90.5%"
   },
   "articles": {
-    "collected": 295,
-    "new": 295,
+    "collected": 375,
+    "new": 375,
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1606
+    "extracted": 1933
   },
   "report": {
     "generated": true,
-    "cards": 64,
+    "cards": 57,
     "sections": 0
   },
   "top_source": {
     "name": "Gambero Rosso",
-    "count": 208,
-    "percentage": 13.4
+    "count": 216,
+    "percentage": 13.5
   },
-  "runtime_seconds": 93.33094596862793,
+  "runtime_seconds": 81.53930139541626,
   "errors": [
-    "Tim Atkin MW: RSSCollector: HTTPSConnectionPool(host='www.timatkin.com', port=443): Max retries exceeded with url: /feed/ (Cause",
     "Wine Review Korea RSS: RSSCollector: No items collected",
-    "Jamie Goode's Wine Blog: RSSCollector: 415 Client Error: Unsupported Media Type for url: https://wineanorak.com/feed/",
-    "Wine Industry Advisor: RSSCollector: 415 Client Error: Unsupported Media Type for url: https://wineindustryadvisor.com/feed/",
-    "Drinkhacker: RSSCollector: 415 Client Error: Unsupported Media Type for url: https://www.drinkhacker.com/feed/",
-    "Wine Dharma: RSSCollector: 503 Server Error: Service Unavailable for url: https://winedharma.com/feed/",
     "1 Wine Dude: RSSCollector: 403 Client Error: Forbidden for url: https://www.1winedude.com/feed/",
-    "Finger Lakes Wine Alliance: RSSCollector: 415 Client Error: Unsupported Media Type for url: https://fingerlakeswinealliance.com/feed/",
-    "WineAmerica: RSSCollector: 415 Client Error: Unsupported Media Type for url: https://wineamerica.org/feed/",
-    "South Africa Wine Research Library: RSSCollector: HTTPSConnectionPool(host='winetechlibrary.co.za', port=443): Max retries exceeded with url: /feed/ (",
     "Winetitles Australia: RSSCollector: 403 Client Error: Forbidden for url: https://winetitles.com.au/feed/",
     "Wine Review Online: RSSCollector: 403 Client Error: Forbidden for url: https://winereviewonline.com/feed/"
   ],
