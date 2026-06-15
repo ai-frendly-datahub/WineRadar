@@ -1,0 +1,46 @@
+{
+  "date": "2026-06-15",
+  "category": "wine",
+  "article_count": 51,
+  "source_count": 14,
+  "matched_count": 51,
+  "top_entities": [
+    {
+      "name": "region",
+      "count": 117
+    },
+    {
+      "name": "topic",
+      "count": 92
+    },
+    {
+      "name": "grape_variety",
+      "count": 73
+    },
+    {
+      "name": "climate_zone",
+      "count": 28
+    },
+    {
+      "name": "winery",
+      "count": 20
+    }
+  ],
+  "sources": {
+    "Wine21": 6,
+    "Enolife": 2,
+    "Gambero Rosso": 1,
+    "Federdoc": 9,
+    "Jamie Goode's Wine Blog": 1,
+    "Korean Wine Consumer Association": 4,
+    "Wine Institute": 10,
+    "Wine Industry Advisor": 3,
+    "Drinkhacker": 2,
+    "Terre de Vins": 3,
+    "Wine Enthusiast": 2,
+    "The Drinks Business": 5,
+    "VinePair": 2,
+    "Wine Magazine South Africa": 1
+  },
+  "generated_at": "2026-06-15T09:08:59.005439+09:00"
+}
