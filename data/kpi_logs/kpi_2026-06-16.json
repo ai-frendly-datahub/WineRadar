@@ -1,6 +1,6 @@
 {
   "run_date": "2026-06-16",
-  "run_timestamp": "2026-06-16T01:42:07.930586+00:00",
+  "run_timestamp": "2026-06-16T15:52:36.698422+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
@@ -14,19 +14,19 @@
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1687
+    "extracted": 1762
   },
   "report": {
     "generated": true,
-    "cards": 65,
+    "cards": 52,
     "sections": 0
   },
   "top_source": {
     "name": "Wine Industry Advisor",
-    "count": 246,
+    "count": 252,
     "percentage": 13.7
   },
-  "runtime_seconds": 85.83268332481384,
+  "runtime_seconds": 85.91363620758057,
   "errors": [
     "Tim Atkin MW: RSSCollector: HTTPSConnectionPool(host='www.timatkin.com', port=443): Max retries exceeded with url: /feed/ (Cause",
     "Wine Review Korea RSS: RSSCollector: No items collected",
