@@ -1,6 +1,6 @@
 {
   "run_date": "2026-06-23",
-  "run_timestamp": "2026-06-23T13:42:20.993305+00:00",
+  "run_timestamp": "2026-06-23T23:57:24.825213+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
@@ -14,19 +14,19 @@
     "duplicate": 0
   },
   "entities": {
-    "extracted": 2033
+    "extracted": 2049
   },
   "report": {
     "generated": true,
-    "cards": 50,
+    "cards": 53,
     "sections": 0
   },
   "top_source": {
     "name": "Wine Industry Advisor",
-    "count": 250,
-    "percentage": 13.6
+    "count": 260,
+    "percentage": 13.8
   },
-  "runtime_seconds": 69.09454989433289,
+  "runtime_seconds": 91.59686350822449,
   "errors": [
     "Wine Review Korea RSS: RSSCollector: No items collected",
     "1 Wine Dude: RSSCollector: 403 Client Error: Forbidden for url: https://www.1winedude.com/feed/",
