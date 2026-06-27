@@ -1,0 +1,49 @@
+{
+  "date": "2026-06-27",
+  "category": "wine",
+  "article_count": 54,
+  "source_count": 17,
+  "matched_count": 54,
+  "top_entities": [
+    {
+      "name": "topic",
+      "count": 90
+    },
+    {
+      "name": "region",
+      "count": 83
+    },
+    {
+      "name": "grape_variety",
+      "count": 38
+    },
+    {
+      "name": "climate_zone",
+      "count": 26
+    },
+    {
+      "name": "winery",
+      "count": 21
+    }
+  ],
+  "sources": {
+    "Wine21": 5,
+    "Jancis Robinson": 1,
+    "Enolife": 2,
+    "Sonoma Magazine": 1,
+    "Drinkhacker": 1,
+    "Jamie Goode's Wine Blog": 3,
+    "VinePair": 2,
+    "Federdoc": 9,
+    "Wine Enthusiast": 2,
+    "Gambero Rosso": 1,
+    "Korean Wine Consumer Association": 4,
+    "Wine Institute": 10,
+    "Wine Industry Advisor": 5,
+    "Vinography": 1,
+    "The Drinks Business": 4,
+    "Winetitles Australia": 2,
+    "Terre de Vins": 1
+  },
+  "generated_at": "2026-06-27T09:07:27.794888+09:00"
+}
