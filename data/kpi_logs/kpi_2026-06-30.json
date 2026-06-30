@@ -1,0 +1,39 @@
+{
+  "run_date": "2026-06-30",
+  "run_timestamp": "2026-06-30T00:05:23.540292+00:00",
+  "collection": {
+    "sources_active": 42,
+    "sources_attempted": 42,
+    "sources_succeeded": 36,
+    "sources_failed": 6,
+    "success_rate": "85.7%"
+  },
+  "articles": {
+    "collected": 355,
+    "new": 355,
+    "duplicate": 0
+  },
+  "entities": {
+    "extracted": 1937
+  },
+  "report": {
+    "generated": true,
+    "cards": 56,
+    "sections": 0
+  },
+  "top_source": {
+    "name": "Wine Industry Advisor",
+    "count": 259,
+    "percentage": 13.9
+  },
+  "runtime_seconds": 98.89435458183289,
+  "errors": [
+    "Tim Atkin MW: RSSCollector: HTTPSConnectionPool(host='www.timatkin.com', port=443): Max retries exceeded with url: /feed/ (Cause",
+    "Wine Review Korea RSS: RSSCollector: No items collected",
+    "Wine Dharma: RSSCollector: 503 Server Error: Service Unavailable for url: https://winedharma.com/feed/",
+    "1 Wine Dude: RSSCollector: 403 Client Error: Forbidden for url: https://www.1winedude.com/feed/",
+    "South Africa Wine Research Library: RSSCollector: HTTPSConnectionPool(host='winetechlibrary.co.za', port=443): Max retries exceeded with url: /feed/ (",
+    "Wine Review Online: RSSCollector: 403 Client Error: Forbidden for url: https://winereviewonline.com/feed/"
+  ],
+  "notes": null
+}
