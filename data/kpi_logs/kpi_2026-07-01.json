@@ -1,42 +1,35 @@
 {
   "run_date": "2026-07-01",
-  "run_timestamp": "2026-07-01T00:06:56.535549+00:00",
+  "run_timestamp": "2026-07-01T13:35:08.362874+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
-    "sources_succeeded": 32,
-    "sources_failed": 10,
-    "success_rate": "76.2%"
+    "sources_succeeded": 39,
+    "sources_failed": 3,
+    "success_rate": "92.9%"
   },
   "articles": {
-    "collected": 315,
-    "new": 315,
+    "collected": 385,
+    "new": 385,
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1700
+    "extracted": 1996
   },
   "report": {
     "generated": true,
-    "cards": 76,
+    "cards": 62,
     "sections": 0
   },
   "top_source": {
     "name": "Wine Industry Advisor",
-    "count": 260,
-    "percentage": 13.6
+    "count": 263,
+    "percentage": 13.7
   },
-  "runtime_seconds": 110.19018888473511,
+  "runtime_seconds": 99.96039533615112,
   "errors": [
-    "Tim Atkin MW: RSSCollector: 415 Client Error: Unsupported Media Type for url: https://www.timatkin.com/feed/",
     "Wine Review Korea RSS: RSSCollector: No items collected",
-    "Jamie Goode's Wine Blog: RSSCollector: 415 Client Error: Unsupported Media Type for url: https://wineanorak.com/feed/",
-    "Wine Industry Advisor: RSSCollector: 415 Client Error: Unsupported Media Type for url: https://wineindustryadvisor.com/feed/",
-    "Drinkhacker: RSSCollector: 415 Client Error: Unsupported Media Type for url: https://www.drinkhacker.com/feed/",
     "1 Wine Dude: RSSCollector: 403 Client Error: Forbidden for url: https://www.1winedude.com/feed/",
-    "Finger Lakes Wine Alliance: RSSCollector: 415 Client Error: Unsupported Media Type for url: https://fingerlakeswinealliance.com/feed/",
-    "WineAmerica: RSSCollector: 415 Client Error: Unsupported Media Type for url: https://wineamerica.org/feed/",
-    "South Africa Wine Research Library: RSSCollector: HTTPSConnectionPool(host='winetechlibrary.co.za', port=443): Max retries exceeded with url: /feed/ (",
     "Wine Review Online: RSSCollector: 403 Client Error: Forbidden for url: https://winereviewonline.com/feed/"
   ],
   "notes": null
