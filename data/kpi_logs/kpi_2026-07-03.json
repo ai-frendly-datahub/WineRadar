@@ -1,0 +1,35 @@
+{
+  "run_date": "2026-07-03",
+  "run_timestamp": "2026-07-03T00:06:39.281374+00:00",
+  "collection": {
+    "sources_active": 42,
+    "sources_attempted": 42,
+    "sources_succeeded": 40,
+    "sources_failed": 2,
+    "success_rate": "95.2%"
+  },
+  "articles": {
+    "collected": 395,
+    "new": 395,
+    "duplicate": 0
+  },
+  "entities": {
+    "extracted": 2045
+  },
+  "report": {
+    "generated": true,
+    "cards": 64,
+    "sections": 0
+  },
+  "top_source": {
+    "name": "Wine Industry Advisor",
+    "count": 263,
+    "percentage": 13.5
+  },
+  "runtime_seconds": 76.79729890823364,
+  "errors": [
+    "Wine Review Korea RSS: RSSCollector: No items collected",
+    "Wine Review Online: RSSCollector: 403 Client Error: Forbidden for url: https://winereviewonline.com/feed/"
+  ],
+  "notes": null
+}
