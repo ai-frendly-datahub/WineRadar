@@ -1,6 +1,6 @@
 {
   "run_date": "2026-07-23",
-  "run_timestamp": "2026-07-23T00:02:59.040668+00:00",
+  "run_timestamp": "2026-07-23T12:24:03.919764+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
@@ -14,11 +14,11 @@
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1974
+    "extracted": 2023
   },
   "report": {
     "generated": true,
-    "cards": 70,
+    "cards": 63,
     "sections": 0
   },
   "top_source": {
@@ -26,7 +26,7 @@
     "count": 282,
     "percentage": 14.2
   },
-  "runtime_seconds": 74.20039129257202,
+  "runtime_seconds": 78.68588399887085,
   "errors": [
     "Federdoc: HTMLCollector: No items collected",
     "Wine Review Korea RSS: RSSCollector: No items collected",
