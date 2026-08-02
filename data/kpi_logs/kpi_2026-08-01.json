@@ -1,6 +1,6 @@
 {
   "run_date": "2026-08-01",
-  "run_timestamp": "2026-08-01T12:02:29.116431+00:00",
+  "run_timestamp": "2026-08-01T23:59:57.800493+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
@@ -14,19 +14,19 @@
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1938
+    "extracted": 1918
   },
   "report": {
     "generated": true,
-    "cards": 67,
+    "cards": 56,
     "sections": 0
   },
   "top_source": {
     "name": "Gambero Rosso",
-    "count": 265,
+    "count": 264,
     "percentage": 13.7
   },
-  "runtime_seconds": 81.02184104919434,
+  "runtime_seconds": 106.70234847068787,
   "errors": [
     "Federdoc: HTMLCollector: No items collected",
     "Wine Review Korea RSS: RSSCollector: No items collected",
