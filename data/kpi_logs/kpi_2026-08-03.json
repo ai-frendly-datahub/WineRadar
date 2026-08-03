@@ -1,0 +1,43 @@
+{
+  "run_date": "2026-08-03",
+  "run_timestamp": "2026-08-03T00:01:16.333907+00:00",
+  "collection": {
+    "sources_active": 42,
+    "sources_attempted": 42,
+    "sources_succeeded": 32,
+    "sources_failed": 10,
+    "success_rate": "76.2%"
+  },
+  "articles": {
+    "collected": 315,
+    "new": 315,
+    "duplicate": 0
+  },
+  "entities": {
+    "extracted": 1600
+  },
+  "report": {
+    "generated": true,
+    "cards": 56,
+    "sections": 0
+  },
+  "top_source": {
+    "name": "Gambero Rosso",
+    "count": 261,
+    "percentage": 13.8
+  },
+  "runtime_seconds": 72.27096891403198,
+  "errors": [
+    "Federdoc: HTMLCollector: No items collected",
+    "Tim Atkin MW: RSSCollector: No items collected",
+    "Wine Review Korea RSS: RSSCollector: No items collected",
+    "Jamie Goode's Wine Blog: RSSCollector: No items collected",
+    "Wine Industry Advisor: RSSCollector: No items collected",
+    "Drinkhacker: RSSCollector: No items collected",
+    "Finger Lakes Wine Alliance: RSSCollector: No items collected",
+    "WineAmerica: RSSCollector: No items collected",
+    "The Napa Wine Project: RSSCollector: 500 Server Error: Internal Server Error for url: https://www.napawineproject.com/feed/",
+    "Wine Review Online: RSSCollector: 403 Client Error: Forbidden for url: https://winereviewonline.com/feed/"
+  ],
+  "notes": null
+}
