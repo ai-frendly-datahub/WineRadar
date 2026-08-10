@@ -1,35 +1,42 @@
 {
   "run_date": "2026-08-10",
-  "run_timestamp": "2026-08-10T11:47:44.217100+00:00",
+  "run_timestamp": "2026-08-10T23:37:19.831893+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
-    "sources_succeeded": 39,
-    "sources_failed": 3,
-    "success_rate": "92.9%"
+    "sources_succeeded": 32,
+    "sources_failed": 10,
+    "success_rate": "76.2%"
   },
   "articles": {
-    "collected": 385,
-    "new": 385,
+    "collected": 315,
+    "new": 315,
     "duplicate": 0
   },
   "entities": {
-    "extracted": 2001
+    "extracted": 1590
   },
   "report": {
     "generated": true,
-    "cards": 59,
+    "cards": 52,
     "sections": 0
   },
   "top_source": {
     "name": "Gambero Rosso",
-    "count": 254,
-    "percentage": 13.1
+    "count": 262,
+    "percentage": 13.4
   },
-  "runtime_seconds": 85.07393383979797,
+  "runtime_seconds": 99.19636726379395,
   "errors": [
+    "The Drinks Business: RSSCollector: No items collected",
     "Federdoc: HTMLCollector: No items collected",
+    "Tim Atkin MW: RSSCollector: HTTPSConnectionPool(host='www.timatkin.com', port=443): Max retries exceeded with url: /feed/ (Cause",
     "Wine Review Korea RSS: RSSCollector: No items collected",
+    "Jamie Goode's Wine Blog: RSSCollector: No items collected",
+    "Wine Industry Advisor: RSSCollector: No items collected",
+    "Drinkhacker: RSSCollector: No items collected",
+    "Finger Lakes Wine Alliance: RSSCollector: No items collected",
+    "WineAmerica: RSSCollector: No items collected",
     "Wine Review Online: RSSCollector: 403 Client Error: Forbidden for url: https://winereviewonline.com/feed/"
   ],
   "notes": null
