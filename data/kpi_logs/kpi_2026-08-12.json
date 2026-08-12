@@ -1,24 +1,24 @@
 {
   "run_date": "2026-08-12",
-  "run_timestamp": "2026-08-12T11:45:54.928817+00:00",
+  "run_timestamp": "2026-08-12T23:43:19.708144+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
-    "sources_succeeded": 31,
-    "sources_failed": 11,
-    "success_rate": "73.8%"
+    "sources_succeeded": 38,
+    "sources_failed": 4,
+    "success_rate": "90.5%"
   },
   "articles": {
-    "collected": 305,
-    "new": 305,
+    "collected": 375,
+    "new": 375,
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1696
+    "extracted": 2091
   },
   "report": {
     "generated": true,
-    "cards": 39,
+    "cards": 52,
     "sections": 0
   },
   "top_source": {
@@ -26,18 +26,11 @@
     "count": 269,
     "percentage": 13.6
   },
-  "runtime_seconds": 73.10131359100342,
+  "runtime_seconds": 86.97196984291077,
   "errors": [
     "The Drinks Business: RSSCollector: No items collected",
     "Federdoc: HTMLCollector: No items collected",
-    "Tim Atkin MW: RSSCollector: No items collected",
     "Wine Review Korea RSS: RSSCollector: No items collected",
-    "Jamie Goode's Wine Blog: RSSCollector: No items collected",
-    "Wine Industry Advisor: RSSCollector: No items collected",
-    "Drinkhacker: RSSCollector: No items collected",
-    "Wine Dharma: RSSCollector: 503 Server Error: Service Unavailable for url: https://winedharma.com/feed/",
-    "Finger Lakes Wine Alliance: RSSCollector: No items collected",
-    "WineAmerica: RSSCollector: No items collected",
     "Wine Review Online: RSSCollector: 403 Client Error: Forbidden for url: https://winereviewonline.com/feed/"
   ],
   "notes": null
