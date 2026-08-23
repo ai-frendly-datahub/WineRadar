@@ -7,11 +7,11 @@
   "top_entities": [
     {
       "name": "region",
-      "count": 118
+      "count": 117
     },
     {
       "name": "topic",
-      "count": 93
+      "count": 96
     },
     {
       "name": "grape_variety",
@@ -28,17 +28,17 @@
   ],
   "sources": {
     "Wine21": 6,
+    "Gambero Rosso": 6,
+    "Jancis Robinson": 5,
     "Drinkhacker": 2,
     "Enolife": 3,
-    "Gambero Rosso": 8,
-    "Jancis Robinson": 3,
     "Korean Wine Consumer Association": 4,
     "Wine Institute": 10,
-    "Wine Enthusiast": 4,
     "Terre de Vins": 2,
-    "Opening a Bottle": 2,
     "Wine Industry Advisor": 4,
+    "Wine Enthusiast": 4,
     "Punch": 1,
+    "Opening a Bottle": 2,
     "Wine Magazine South Africa": 1,
     "Winetitles Australia": 2,
     "Shinsegae L&B": 5,
@@ -46,5 +46,5 @@
     "Sonoma Magazine": 1,
     "Vino Joy News": 1
   },
-  "generated_at": "2026-08-23T08:23:30.892757+09:00"
+  "generated_at": "2026-08-23T20:21:24.168157+09:00"
 }
