@@ -1,48 +1,50 @@
 {
   "date": "2026-08-25",
   "category": "wine",
-  "article_count": 62,
-  "source_count": 16,
-  "matched_count": 62,
+  "article_count": 55,
+  "source_count": 18,
+  "matched_count": 55,
   "top_entities": [
     {
       "name": "region",
-      "count": 113
+      "count": 110
     },
     {
       "name": "topic",
-      "count": 95
+      "count": 84
     },
     {
       "name": "grape_variety",
-      "count": 62
+      "count": 70
     },
     {
       "name": "climate_zone",
-      "count": 34
+      "count": 31
     },
     {
       "name": "winery",
-      "count": 21
+      "count": 22
     }
   ],
   "sources": {
     "Wine21": 6,
-    "Sonoma Magazine": 3,
-    "Wine Enthusiast": 4,
-    "Terre de Vins": 5,
-    "Enolife": 1,
-    "Decanter": 3,
-    "VinePair": 4,
+    "VinePair": 6,
+    "Jancis Robinson": 3,
     "Korean Wine Consumer Association": 4,
     "Wine Institute": 10,
-    "Gambero Rosso": 2,
+    "The Wine Economist": 1,
+    "Decanter": 1,
+    "Terre de Vins": 3,
+    "Gambero Rosso": 1,
     "Jamie Goode's Wine Blog": 1,
-    "Shinsegae L&B": 10,
-    "Jancis Robinson": 1,
-    "Wine Industry Advisor": 6,
+    "Wine Magazine South Africa": 1,
+    "Winetitles Australia": 2,
+    "Enolife": 1,
+    "Sonoma Magazine": 3,
+    "Wine Enthusiast": 4,
+    "Shinsegae L&B": 5,
     "Drinkhacker": 1,
-    "Winetitles Australia": 1
+    "Wine Industry Advisor": 2
   },
-  "generated_at": "2026-08-25T08:25:35.235335+09:00"
+  "generated_at": "2026-08-25T20:27:07.739427+09:00"
 }
