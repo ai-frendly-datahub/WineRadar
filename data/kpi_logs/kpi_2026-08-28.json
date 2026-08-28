@@ -1,33 +1,34 @@
 {
   "run_date": "2026-08-28",
-  "run_timestamp": "2026-08-28T06:51:58.671398+00:00",
+  "run_timestamp": "2026-08-28T21:25:08.379381+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
-    "sources_succeeded": 37,
-    "sources_failed": 5,
-    "success_rate": "88.1%"
+    "sources_succeeded": 36,
+    "sources_failed": 6,
+    "success_rate": "85.7%"
   },
   "articles": {
-    "collected": 365,
-    "new": 365,
+    "collected": 355,
+    "new": 355,
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1820
+    "extracted": 1790
   },
   "report": {
     "generated": true,
-    "cards": 53,
+    "cards": 55,
     "sections": 0
   },
   "top_source": {
     "name": "Gambero Rosso",
-    "count": 276,
-    "percentage": 15.8
+    "count": 278,
+    "percentage": 15.7
   },
-  "runtime_seconds": 121.07189774513245,
+  "runtime_seconds": 106.8237988948822,
   "errors": [
+    "Korean Wine Consumer Association: HTMLCollector: No items collected",
     "The Drinks Business: RSSCollector: No items collected",
     "Federdoc: HTMLCollector: No items collected",
     "Wine Review Korea RSS: RSSCollector: No items collected",
