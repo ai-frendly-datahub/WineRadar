@@ -1,6 +1,6 @@
 {
   "run_date": "2026-08-30",
-  "run_timestamp": "2026-08-30T01:10:55.633747+00:00",
+  "run_timestamp": "2026-08-30T15:17:17.912736+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
@@ -14,23 +14,23 @@
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1743
+    "extracted": 1824
   },
   "report": {
     "generated": true,
-    "cards": 48,
+    "cards": 53,
     "sections": 0
   },
   "top_source": {
     "name": "Gambero Rosso",
-    "count": 274,
-    "percentage": 16.2
+    "count": 276,
+    "percentage": 16.4
   },
-  "runtime_seconds": 177.59348320960999,
+  "runtime_seconds": 186.10223412513733,
   "errors": [
     "The Drinks Business: RSSCollector: No items collected",
+    "Enolife: RSSCollector: HTTPSConnectionPool(host='enolife.com.ar', port=443): Read timed out. (read timeout=10)",
     "Federdoc: HTMLCollector: No items collected",
-    "Tim Atkin MW: RSSCollector: HTTPSConnectionPool(host='www.timatkin.com', port=443): Max retries exceeded with url: /feed/ (Cause",
     "Wine Review Korea RSS: RSSCollector: No items collected",
     "Wine Country: RSSCollector: HTTPSConnectionPool(host='www.winecountry.com', port=443): Max retries exceeded with url: /feed/ (Ca",
     "Wine Review Online: RSSCollector: 403 Client Error: Forbidden for url: https://winereviewonline.com/feed/"
