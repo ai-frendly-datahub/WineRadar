@@ -1,6 +1,6 @@
 {
   "run_date": "2026-09-02",
-  "run_timestamp": "2026-09-02T00:55:46.386949+00:00",
+  "run_timestamp": "2026-09-02T15:01:14.054215+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
@@ -14,19 +14,19 @@
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1786
+    "extracted": 1803
   },
   "report": {
     "generated": true,
-    "cards": 53,
+    "cards": 64,
     "sections": 0
   },
   "top_source": {
     "name": "Gambero Rosso",
-    "count": 291,
-    "percentage": 16.5
+    "count": 288,
+    "percentage": 16.4
   },
-  "runtime_seconds": 132.85107350349426,
+  "runtime_seconds": 107.0658802986145,
   "errors": [
     "The Drinks Business: RSSCollector: No items collected",
     "Enolife: RSSCollector: HTTPSConnectionPool(host='enolife.com.ar', port=443): Max retries exceeded with url: /feed/ (Caused ",
