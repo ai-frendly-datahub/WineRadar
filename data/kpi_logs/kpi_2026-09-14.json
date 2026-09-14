@@ -1,6 +1,6 @@
 {
   "run_date": "2026-09-14",
-  "run_timestamp": "2026-09-14T00:50:34.372504+00:00",
+  "run_timestamp": "2026-09-14T16:51:45.060135+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
@@ -14,19 +14,19 @@
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1893
+    "extracted": 1874
   },
   "report": {
     "generated": true,
-    "cards": 53,
+    "cards": 52,
     "sections": 0
   },
   "top_source": {
     "name": "Gambero Rosso",
-    "count": 284,
+    "count": 287,
     "percentage": 17.4
   },
-  "runtime_seconds": 90.22746586799622,
+  "runtime_seconds": 89.7562928199768,
   "errors": [
     "The Drinks Business: RSSCollector: No items collected",
     "Federdoc: HTMLCollector: No items collected",
