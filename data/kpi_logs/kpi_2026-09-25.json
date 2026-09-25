@@ -1,37 +1,38 @@
 {
   "run_date": "2026-09-25",
-  "run_timestamp": "2026-09-25T01:16:53.076230+00:00",
+  "run_timestamp": "2026-09-25T15:51:35.446230+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
-    "sources_succeeded": 37,
-    "sources_failed": 5,
-    "success_rate": "88.1%"
+    "sources_succeeded": 36,
+    "sources_failed": 6,
+    "success_rate": "85.7%"
   },
   "articles": {
-    "collected": 365,
-    "new": 365,
+    "collected": 355,
+    "new": 355,
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1750
+    "extracted": 1538
   },
   "report": {
     "generated": true,
-    "cards": 62,
+    "cards": 66,
     "sections": 0
   },
   "top_source": {
     "name": "Gambero Rosso",
-    "count": 302,
-    "percentage": 17.2
+    "count": 304,
+    "percentage": 17.3
   },
-  "runtime_seconds": 80.19361090660095,
+  "runtime_seconds": 101.07528018951416,
   "errors": [
     "The Drinks Business: RSSCollector: No items collected",
     "Federdoc: HTMLCollector: No items collected",
     "Wine Review Korea RSS: RSSCollector: No items collected",
     "Wine Country: RSSCollector: HTTPSConnectionPool(host='www.winecountry.com', port=443): Max retries exceeded with url: /feed/ (Ca",
+    "Wines With Attitude: RSSCollector: 504 Server Error: Gateway Timeout for url: https://www.wineswithattitude.co.uk/feed/",
     "Wine Review Online: RSSCollector: 403 Client Error: Forbidden for url: https://winereviewonline.com/feed/"
   ],
   "notes": null
