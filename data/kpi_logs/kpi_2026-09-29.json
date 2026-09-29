@@ -1,38 +1,37 @@
 {
   "run_date": "2026-09-29",
-  "run_timestamp": "2026-09-29T02:39:10.230820+00:00",
+  "run_timestamp": "2026-09-29T16:55:51.329265+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
-    "sources_succeeded": 36,
-    "sources_failed": 6,
-    "success_rate": "85.7%"
+    "sources_succeeded": 37,
+    "sources_failed": 5,
+    "success_rate": "88.1%"
   },
   "articles": {
-    "collected": 355,
-    "new": 355,
+    "collected": 365,
+    "new": 365,
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1811
+    "extracted": 1853
   },
   "report": {
     "generated": true,
-    "cards": 63,
+    "cards": 58,
     "sections": 0
   },
   "top_source": {
     "name": "Gambero Rosso",
-    "count": 304,
-    "percentage": 17.6
+    "count": 312,
+    "percentage": 17.7
   },
-  "runtime_seconds": 154.22629833221436,
+  "runtime_seconds": 130.0265510082245,
   "errors": [
     "The Drinks Business: RSSCollector: No items collected",
     "Federdoc: HTMLCollector: No items collected",
     "Wine Review Korea RSS: RSSCollector: No items collected",
     "Wine Country: RSSCollector: HTTPSConnectionPool(host='www.winecountry.com', port=443): Max retries exceeded with url: /feed/ (Ca",
-    "Rioja Wine Official: RSSCollector: HTTPSConnectionPool(host='riojawine.com', port=443): Read timed out. (read timeout=10)",
     "Wine Review Online: RSSCollector: 403 Client Error: Forbidden for url: https://winereviewonline.com/feed/"
   ],
   "notes": null
