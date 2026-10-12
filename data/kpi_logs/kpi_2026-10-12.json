@@ -1,6 +1,6 @@
 {
   "run_date": "2026-10-12",
-  "run_timestamp": "2026-10-12T02:13:28.930092+00:00",
+  "run_timestamp": "2026-10-12T20:17:49.164030+00:00",
   "collection": {
     "sources_active": 42,
     "sources_attempted": 42,
@@ -14,19 +14,19 @@
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1818
+    "extracted": 1896
   },
   "report": {
     "generated": true,
-    "cards": 48,
+    "cards": 50,
     "sections": 0
   },
   "top_source": {
     "name": "Wine Industry Advisor",
-    "count": 332,
-    "percentage": 18.7
+    "count": 342,
+    "percentage": 18.8
   },
-  "runtime_seconds": 87.96350121498108,
+  "runtime_seconds": 138.34861183166504,
   "errors": [
     "The Drinks Business: RSSCollector: No items collected",
     "Federdoc: HTMLCollector: No items collected",
