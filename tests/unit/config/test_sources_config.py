@@ -123,3 +123,24 @@ def test_long_form_wine_sources_have_cadence_appropriate_freshness_slas(
     assert opening_a_bottle["content_type"] == "education"
     assert opening_a_bottle["config"]["freshness_sla_days"] == 45
     assert "monthly quiet windows" in opening_a_bottle["notes"]
+
+
+def test_blocked_sources_stay_disabled(sources_config: dict[str, Any]) -> None:
+    sources_by_id = {source["id"]: source for source in sources_config.get("sources", [])}
+    blocked = {
+        "media_drinksbusiness_uk": "Cloudflare",
+        "media_winereviewonline_us": "Cloudflare",
+        "media_winereview_rss_kr": "cookie",
+        "media_winecountry_us": "certificate",
+        "media_winereview_kr": "404",
+    }
+    for source_id, marker in blocked.items():
+        source = sources_by_id[source_id]
+        reason = str(source["config"].get("skip_reason", ""))
+        assert source["enabled"] is False
+        assert marker.lower() in reason.lower() or marker in reason
+        assert source["config"].get("retry_policy")
+
+    federdoc = sources_by_id["official_federdoc_it"]
+    assert federdoc["enabled"] is True
+    assert federdoc["config"]["link_selector"] == "h4.entry-title a"

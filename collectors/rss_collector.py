@@ -57,9 +57,25 @@ class RSSCollector:
         headers = {
             "User-Agent": "Mozilla/5.0 (compatible; WineRadarBot/1.0; +https://github.com/zzragida/ai-frendly-datahub)",
         }
-        response = requests.get(url, timeout=10, headers=headers)
+        response = requests.get(url, timeout=self._timeout_seconds(), headers=headers)
         response.raise_for_status()
         return response.content
+
+    def _timeout_seconds(self) -> float:
+        """Read timeout for the feed request.
+
+        Slow or large feeds (ACE, Wines With Attitude) exceed the old 10s
+        budget and then burn the retry window. 45s matches the crawler
+        timeout used by the other radars. ``config.request_timeout`` overrides it.
+        """
+        raw = self.source_meta.get("config", {}).get("request_timeout", 45)
+        try:
+            timeout = float(raw)
+        except (TypeError, ValueError):
+            return 45.0
+        if timeout <= 0:
+            return 45.0
+        return timeout
 
     def collect(self) -> Iterable[RawItem]:
         raw_feed = self.fetcher(self.list_url)

@@ -17,6 +17,7 @@ import pytest
 
 from wineradar.common.validators import (
     detect_duplicate_articles,
+    is_challenge_or_error_page,
     is_similar_url,
     normalize_title,
     validate_article,
@@ -412,3 +413,51 @@ class TestValidatorsIntegration:
         is_valid, errors = validate_article(article)
         assert is_valid is True
         assert len(errors) == 0
+
+    def test_rejects_cloudflare_and_missing_page(self) -> None:
+        challenge = Article(
+            title="Just a moment...",
+            link="https://winereviewonline.com/feed/",
+            summary="Checking your browser before accessing. Cloudflare security verification.",
+            published=datetime.now(UTC),
+            source="Wine Review Online",
+            category="news_review",
+        )
+        is_valid, errors = validate_article(challenge)
+        assert is_valid is False
+        assert any("challenge" in error for error in errors)
+
+        attention = Article(
+            title="Attention Required! | Cloudflare",
+            link="https://www.thedrinksbusiness.com/feed/",
+            summary="Sorry, you have been blocked",
+            published=datetime.now(UTC),
+            source="The Drinks Business",
+            category="news_review",
+        )
+        is_valid, errors = validate_article(attention)
+        assert is_valid is False
+
+        missing = Article(
+            title="404 Not Found",
+            link="https://www.timatkin.com/feed/",
+            summary="The page you requested is not here",
+            published=datetime.now(UTC),
+            source="Tim Atkin MW",
+            category="news_review",
+        )
+        assert is_challenge_or_error_page(missing.title, missing.summary) is True
+        is_valid, errors = validate_article(missing)
+        assert is_valid is False
+
+        real = Article(
+            title="404 wines worth cellaring this year",
+            link="https://example.com/wines",
+            summary="A buyer guide, not an error page.",
+            published=datetime.now(UTC),
+            source="Example",
+            category="news_review",
+        )
+        assert is_challenge_or_error_page(real.title, real.summary) is False
+        is_valid, _errors = validate_article(real)
+        assert is_valid is True

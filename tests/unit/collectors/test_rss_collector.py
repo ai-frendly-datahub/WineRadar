@@ -62,6 +62,33 @@ def test_rss_collector_parses_entries(rss_source_meta):
     assert second["summary"] == "Summary B"
 
 
+CHALLENGE_AND_STORY = """<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Blocked</title>
+    <item>
+      <title>Just a moment...</title>
+      <link>https://example.com/cdn-cgi/challenge</link>
+      <description>Enable JavaScript. Cloudflare security verification.</description>
+    </item>
+    <item>
+      <title>Barolo vintage note</title>
+      <link>https://example.com/articles/barolo</link>
+      <description>A real tasting note.</description>
+    </item>
+  </channel>
+</rss>
+"""
+
+
+def test_rss_collector_drops_challenge_page(rss_source_meta):
+    collector = RSSCollector(
+        rss_source_meta, fetcher=lambda url: CHALLENGE_AND_STORY.encode("utf-8")
+    )
+    items = list(collector.collect())
+    assert [item["title"] for item in items] == ["Barolo vintage note"]
+
+
 def test_rss_collector_falls_back_to_title_when_summary_missing(rss_source_meta):
     collector = RSSCollector(
         rss_source_meta, fetcher=lambda url: SAMPLE_FEED_NO_SUMMARY.encode("utf-8")

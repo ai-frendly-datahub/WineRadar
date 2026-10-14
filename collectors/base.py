@@ -11,6 +11,7 @@ from typing import Any, Literal, Protocol, TypedDict
 import requests
 
 from resilience import SourceCircuitBreakerManager
+from wineradar.common.validators import is_challenge_or_error_page
 
 
 _DEFAULT_HEALTH_DB_PATH = "data/radar_data.duckdb"
@@ -313,10 +314,18 @@ def validate_raw_item(item: RawItem, source_name: str) -> list[str]:
             errors.append(f"{source_name}: Invalid URL format '{url}'")
 
     # Validate title length
-    if item.get("title"):
-        title = item["title"]
+    title = item.get("title")
+    if title:
         if isinstance(title, str) and len(title.strip()) < 3:
             errors.append(f"{source_name}: Title too short '{title}'")
+
+    summary = item.get("summary") if isinstance(item.get("summary"), str) else ""
+    content = item.get("content") if isinstance(item.get("content"), str) else ""
+    if is_challenge_or_error_page(
+        title if isinstance(title, str) else "",
+        f"{summary}\n{content}",
+    ):
+        errors.append(f"{source_name}: content appears to be a challenge or error page")
 
     return errors
 
