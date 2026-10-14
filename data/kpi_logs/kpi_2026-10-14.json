@@ -1,34 +1,32 @@
 {
   "run_date": "2026-10-14",
-  "run_timestamp": "2026-10-14T03:18:58.386944+00:00",
+  "run_timestamp": "2026-10-14T15:52:33.351933+00:00",
   "collection": {
     "sources_active": 38,
     "sources_attempted": 38,
-    "sources_succeeded": 37,
-    "sources_failed": 1,
-    "success_rate": "97.4%"
+    "sources_succeeded": 38,
+    "sources_failed": 0,
+    "success_rate": "100.0%"
   },
   "articles": {
-    "collected": 364,
-    "new": 364,
+    "collected": 374,
+    "new": 374,
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1767
+    "extracted": 1900
   },
   "report": {
     "generated": true,
-    "cards": 54,
+    "cards": 49,
     "sections": 0
   },
   "top_source": {
     "name": "Wine Industry Advisor",
-    "count": 360,
-    "percentage": 19.5
+    "count": 364,
+    "percentage": 19.3
   },
-  "runtime_seconds": 129.3481457233429,
-  "errors": [
-    "Tim Atkin MW: RSSCollector: 404 Client Error: Not Found for url: https://www.timatkin.com/feed/"
-  ],
+  "runtime_seconds": 163.2609760761261,
+  "errors": [],
   "notes": null
 }
