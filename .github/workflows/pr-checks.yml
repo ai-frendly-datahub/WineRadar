@@ -60,8 +60,10 @@ jobs:
         continue-on-error: true
 
       - name: Run tests with coverage
+        env:
+          COVERAGE_RCFILE: pyproject.toml
         run: |
-          pytest tests/ -v --cov=. --cov-report=xml --cov-report=term-missing --tb=short
+          pytest tests/ -v --cov=. --cov-config=pyproject.toml --cov-report=xml --cov-report=term-missing --tb=short
         continue-on-error: true
 
       - name: Upload coverage to Codecov
