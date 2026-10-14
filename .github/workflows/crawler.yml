@@ -6,7 +6,7 @@ on:
       - main
   workflow_dispatch:
   schedule:
-    - cron: "0 23 * * *"  # 매일 23:00 UTC (KST 08:00+1)
+    - cron: "0 23 * * *"  # 매일 08:00 KST (23:00 UTC)
 
 permissions:
   contents: write

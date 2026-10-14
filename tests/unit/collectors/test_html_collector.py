@@ -112,6 +112,46 @@ def test_extract_article_list(wine21_source: dict, sample_list_html: bytes) -> N
     assert articles[0]["published_at"].year == 2025
 
 
+def test_federdoc_listing_uses_h4_entry_title() -> None:
+    source = {
+        "name": "Federdoc",
+        "id": "official_federdoc_it",
+        "type": "official",
+        "country": "IT",
+        "continent": "OLD_WORLD",
+        "region": "Europe/Southern/Italy",
+        "producer_role": "industry_assoc",
+        "trust_tier": "T1_authoritative",
+        "info_purpose": ["P5_education"],
+        "collection_tier": "C2_html_simple",
+        "content_type": "education",
+        "language": "it",
+        "config": {
+            "list_url": "https://www.federdoc.com/news/",
+            "collection_method": "html",
+            "article_selector": "article",
+            "link_selector": "h4.entry-title a",
+            "summary_selector": ".entry-content p",
+            "max_articles": 20,
+        },
+    }
+    html = (
+        b"<html><body>"
+        b"<article><span class='entry-title rich-snippet-hidden'>News</span></article>"
+        b"<article>"
+        b"<h4 class='entry-title'>"
+        b"<a href='https://www.federdoc.com/nasce-oggi-docmagazine/'>Nasce oggi DocMagazine</a>"
+        b"</h4>"
+        b"<div class='entry-content'><p>Il nuovo magazine delle DOC.</p></div>"
+        b"</article></body></html>"
+    )
+    items = list(HTMLCollector(source, fetcher=lambda url: html).collect())
+    assert len(items) == 1
+    assert items[0]["title"] == "Nasce oggi DocMagazine"
+    assert items[0]["url"] == "https://www.federdoc.com/nasce-oggi-docmagazine/"
+    assert "magazine" in (items[0].get("summary") or "")
+
+
 def test_collect_basic(wine21_source: dict, sample_list_html: bytes) -> None:
     collector = HTMLCollector(wine21_source, fetcher=lambda url: sample_list_html)
     items = list(collector.collect())

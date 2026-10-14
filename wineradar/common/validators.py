@@ -7,6 +7,45 @@ from typing import Any
 from urllib.parse import urlparse
 
 
+_ERROR_PAGE_TITLE_RE = re.compile(
+    r"^(?:"
+    r"just a moment\.{0,3}|"
+    r"attention required!?|"
+    r"access denied|"
+    r"403 forbidden|"
+    r"404(?: not found)?|"
+    r"not found|"
+    r"enable javascript and cookies to continue"
+    r")(?:\s*\|\s*.*)?$",
+    re.IGNORECASE,
+)
+
+
+def is_challenge_or_error_page(title: str | None, body: str | None = None) -> bool:
+    """True when a fetched document is a bot wall, Cloudflare interstitial, or error page.
+
+    These responses are not articles. Callers must drop them instead of storing the page.
+    """
+    title_text = (title or "").strip()
+    body_text = body or ""
+    if title_text and _ERROR_PAGE_TITLE_RE.match(title_text):
+        return True
+
+    blob = f"{title_text}\n{body_text}".lower()
+    if "just a moment" in blob and (
+        "cloudflare" in blob or "security verification" in blob or "verify you are human" in blob
+    ):
+        return True
+    if "attention required" in blob and ("cloudflare" in blob or "been blocked" in blob):
+        return True
+    if "cf-browser-verification" in blob or "challenges.cloudflare.com" in blob:
+        return True
+    # winereview.co.kr returns HTTP 200 with a CUPID/slowAES cookie wall, not a feed.
+    if "slowaes.decrypt" in blob and "cupid" in blob:
+        return True
+    return False
+
+
 def normalize_title(title: str) -> str:
     if not title:
         return ""
@@ -109,6 +148,11 @@ def validate_article(article: Any) -> tuple[bool, list[str]]:
 
     if not category or not isinstance(category, str):
         errors.append("category is missing or not a string")
+
+    title_text = title if isinstance(title, str) else ""
+    summary_text = summary if isinstance(summary, str) else ""
+    if is_challenge_or_error_page(title_text, summary_text):
+        errors.append("content appears to be a challenge or error page")
 
     return len(errors) == 0, errors
 

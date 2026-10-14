@@ -99,3 +99,22 @@ class TestRSSCollectorRetryLogic:
 
         assert content == b"<rss></rss>"
         assert mock_get.call_count == 2
+
+    @patch("collectors.rss_collector.requests.get")
+    def test_timeout_defaults_to_45_seconds(self, mock_get: Mock) -> None:
+        collector = self._create_collector()
+        mock_get.return_value = _BytesResponse(b"<rss></rss>")
+
+        collector._default_fetcher("https://example.com/feed")
+
+        assert mock_get.call_args.kwargs["timeout"] == 45
+
+    @patch("collectors.rss_collector.requests.get")
+    def test_timeout_reads_source_config(self, mock_get: Mock) -> None:
+        collector = self._create_collector()
+        collector.source_meta["config"]["request_timeout"] = 20
+        mock_get.return_value = _BytesResponse(b"<rss></rss>")
+
+        collector._default_fetcher("https://example.com/feed")
+
+        assert mock_get.call_args.kwargs["timeout"] == 20

@@ -122,7 +122,8 @@ sources:
     date_selector: time
     content_selector: div.td-post-content
     max_articles: 20
-    skip_reason: covered by active RSS source media_winereview_rss_kr; HTML path kept as fallback after legacy /news returned 404
+    skip_reason: legacy /news returned 404, and /feed/ returns an HTTP 200 CUPID/slowAES cookie wall rather than RSS. Do not bypass the wall.
+    retry_policy: re-enable only if a list or feed returns article HTML or application/rss+xml without a challenge
   content_type: news_review
   continent: ASIA
   country: KR
@@ -223,17 +224,19 @@ sources:
   config:
     collection_method: rss
     list_url: https://www.thedrinksbusiness.com/feed/
+    skip_reason: Cloudflare returns HTTP 403 Attention Required for the feed. Do not bypass the challenge.
+    retry_policy: re-enable only if the feed is reachable without a Cloudflare interstitial
   content_type: news_review
   continent: OLD_WORLD
   country: GB
-  enabled: true
+  enabled: false
   id: media_drinksbusiness_uk
   info_purpose:
   - P1_daily_briefing
   - P4_trend_discovery
   language: en
   name: The Drinks Business
-  notes: UK-based global drinks trade media with active RSS feed
+  notes: 'DISABLED 2026-10-14: feed returns Cloudflare 403 Attention Required. UK trade coverage stays on Decanter and Jancis Robinson.'
   producer_role: trade_media
   region: Europe/Western/UK
   requires_login: false
@@ -546,10 +549,11 @@ sources:
     collection_method: html
     list_url: https://www.federdoc.com/news/
     article_selector: article
-    link_selector: h2.entry-title a
+    link_selector: h4.entry-title a
     summary_selector: .entry-content p
     date_selector: time
     max_articles: 20
+    request_timeout: 45
   content_type: education
   continent: OLD_WORLD
   country: IT
@@ -559,7 +563,7 @@ sources:
   - P5_education
   language: it
   name: Federdoc
-  notes: Italian DOC federation, educational content
+  notes: Italian DOC federation. Listing titles are h4.entry-title, not h2. /news/feed/ is an empty comments feed.
   producer_role: industry_assoc
   region: Europe/Southern/Italy
   requires_login: false
@@ -998,6 +1002,7 @@ sources:
     collection_method: rss
     list_url: https://www.acenologia.com/feed/
     freshness_sla_days: 60
+    request_timeout: 45
   content_type: news_review
   continent: OLD_WORLD
   country: ES
@@ -1091,17 +1096,19 @@ sources:
     collection_method: rss
     list_url: https://www.winereview.co.kr/feed/
     freshness_sla_days: 24
+    skip_reason: HTTP 200 body is a CUPID/slowAES JavaScript cookie wall, not RSS. Do not bypass the wall.
+    retry_policy: re-enable only if /feed/ returns application/rss+xml without a challenge
   content_type: news_review
   continent: ASIA
   country: KR
-  enabled: true
+  enabled: false
   id: media_winereview_rss_kr
   info_purpose:
   - P1_daily_briefing
   - P4_trend_discovery
   language: ko
   name: Wine Review Korea RSS
-  notes: Alternative RSS feed for Wine Review - Asian market coverage enhancement with clustered Korean-language posts and observed 2-3 week quiet windows (audited 2026-04-30).
+  notes: 'DISABLED 2026-10-14: /feed/ returns a CUPID cookie wall. Korean coverage stays on Wine21, the consumer association, and Shinsegae L&B.'
   producer_role: trade_media
   region: Asia/East/Korea
   requires_login: false
@@ -1280,16 +1287,18 @@ sources:
   config:
     collection_method: rss
     list_url: https://www.winecountry.com/feed/
+    skip_reason: TLS handshake fails because the server sends only the leaf certificate (unable to get local issuer). Certificate verification is not disabled.
+    retry_policy: re-enable when the host serves the intermediate or a collector smoke succeeds with verification on
   content_type: news_review
   continent: NEW_WORLD
   country: US
-  enabled: true
+  enabled: false
   id: media_winecountry_us
   info_purpose:
   - P4_trend_discovery
   language: en
   name: Wine Country
-  notes: California wine country travel and wine reviews (Added 2026-04-08)
+  notes: 'DISABLED 2026-10-14: incomplete TLS chain raises SSLError. Last raw file is 2026-08-15. Do not set verify=False.'
   producer_role: trade_media
   region: Americas/North/USA
   requires_login: false
@@ -1394,6 +1403,7 @@ sources:
     collection_method: rss
     list_url: https://www.wineswithattitude.co.uk/feed/
     freshness_sla_days: 60
+    request_timeout: 45
   content_type: news_review
   continent: OLD_WORLD
   country: GB
@@ -1719,17 +1729,19 @@ sources:
     collection_method: rss
     list_url: https://winereviewonline.com/feed/
     freshness_sla_days: 8
+    skip_reason: Cloudflare returns HTTP 403 Just a moment for the feed. Do not bypass the challenge.
+    retry_policy: re-enable only if the feed is reachable without a Cloudflare interstitial
   content_type: news_review
   continent: NEW_WORLD
   country: US
-  enabled: true
+  enabled: false
   id: media_winereviewonline_us
   info_purpose:
   - P1_daily_briefing
   - P4_trend_discovery
   language: en
   name: Wine Review Online
-  notes: Wine reviews and recommendations from industry experts; audited 2026-04-30 as weekly batches with multiple same-day posts.
+  notes: 'DISABLED 2026-10-14: feed returns Cloudflare 403 Just a moment. No raw items were stored in October.'
   producer_role: expert_media
   region: Americas/North/USA
   requires_login: false
