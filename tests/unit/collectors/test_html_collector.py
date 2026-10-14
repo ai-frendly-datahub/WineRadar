@@ -136,15 +136,15 @@ def test_federdoc_listing_uses_h4_entry_title() -> None:
         },
     }
     html = (
-        "<html><body>"
-        "<article><span class='entry-title rich-snippet-hidden'>News</span></article>"
-        "<article>"
-        "<h4 class='entry-title'>"
-        "<a href='https://www.federdoc.com/nasce-oggi-docmagazine/'>Nasce oggi DocMagazine</a>"
-        "</h4>"
-        "<div class='entry-content'><p>Il nuovo magazine delle DOC.</p></div>"
-        "</article></body></html>"
-    ).encode()
+        b"<html><body>"
+        b"<article><span class='entry-title rich-snippet-hidden'>News</span></article>"
+        b"<article>"
+        b"<h4 class='entry-title'>"
+        b"<a href='https://www.federdoc.com/nasce-oggi-docmagazine/'>Nasce oggi DocMagazine</a>"
+        b"</h4>"
+        b"<div class='entry-content'><p>Il nuovo magazine delle DOC.</p></div>"
+        b"</article></body></html>"
+    )
     items = list(HTMLCollector(source, fetcher=lambda url: html).collect())
     assert len(items) == 1
     assert items[0]["title"] == "Nasce oggi DocMagazine"

@@ -8,6 +8,7 @@ from pathlib import Path
 
 import duckdb
 
+
 logger = logging.getLogger(__name__)
 
 
