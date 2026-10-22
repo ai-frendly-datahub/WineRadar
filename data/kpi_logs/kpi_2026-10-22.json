@@ -1,6 +1,6 @@
 {
   "run_date": "2026-10-22",
-  "run_timestamp": "2026-10-22T01:24:48.764221+00:00",
+  "run_timestamp": "2026-10-22T16:03:04.089933+00:00",
   "collection": {
     "sources_active": 38,
     "sources_attempted": 38,
@@ -14,19 +14,19 @@
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1883
+    "extracted": 1853
   },
   "report": {
     "generated": true,
-    "cards": 55,
+    "cards": 61,
     "sections": 0
   },
   "top_source": {
     "name": "Wine Industry Advisor",
-    "count": 50,
+    "count": 55,
     "percentage": 9.7
   },
-  "runtime_seconds": 125.24871397018433,
+  "runtime_seconds": 116.34084558486938,
   "errors": [],
   "notes": null
 }
