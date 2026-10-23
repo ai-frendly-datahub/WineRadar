@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-24",
+  "category": "wine",
+  "article_count": 68,
+  "source_count": 19,
+  "matched_count": 68,
+  "top_entities": [
+    {
+      "name": "topic",
+      "count": 93
+    },
+    {
+      "name": "region",
+      "count": 82
+    },
+    {
+      "name": "grape_variety",
+      "count": 40
+    },
+    {
+      "name": "climate_zone",
+      "count": 27
+    },
+    {
+      "name": "winery",
+      "count": 22
+    }
+  ],
+  "sources": {
+    "Enolife": 3,
+    "Wine21": 7,
+    "Wine Enthusiast": 4,
+    "Jamie Goode's Wine Blog": 3,
+    "Terre de Vins": 2,
+    "Rioja Wine Official": 1,
+    "Wine Magazine South Africa": 3,
+    "Drinkhacker": 1,
+    "VinePair": 2,
+    "Federdoc": 7,
+    "Wine Institute": 10,
+    "Decanter": 2,
+    "Gambero Rosso": 2,
+    "Shinsegae L&B": 5,
+    "Wine Dharma": 5,
+    "Wine Industry Advisor": 7,
+    "Winetitles Australia": 1,
+    "Vino Joy News": 2,
+    "Vinography": 1
+  },
+  "generated_at": "2026-10-24T00:59:18.101033+09:00"
+}
