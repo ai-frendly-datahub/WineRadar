@@ -1,6 +1,6 @@
 {
   "run_date": "2026-10-25",
-  "run_timestamp": "2026-10-25T01:00:59.055329+00:00",
+  "run_timestamp": "2026-10-25T14:56:02.016340+00:00",
   "collection": {
     "sources_active": 38,
     "sources_attempted": 38,
@@ -14,11 +14,11 @@
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1799
+    "extracted": 1804
   },
   "report": {
     "generated": true,
-    "cards": 53,
+    "cards": 52,
     "sections": 0
   },
   "top_source": {
@@ -26,7 +26,7 @@
     "count": 40,
     "percentage": 8.0
   },
-  "runtime_seconds": 103.68122792243958,
+  "runtime_seconds": 148.44019651412964,
   "errors": [],
   "notes": null
 }
