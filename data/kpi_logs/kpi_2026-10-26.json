@@ -1,34 +1,32 @@
 {
   "run_date": "2026-10-26",
-  "run_timestamp": "2026-10-26T01:09:52.902703+00:00",
+  "run_timestamp": "2026-10-26T17:17:35.586257+00:00",
   "collection": {
     "sources_active": 38,
     "sources_attempted": 38,
-    "sources_succeeded": 37,
-    "sources_failed": 1,
-    "success_rate": "97.4%"
+    "sources_succeeded": 38,
+    "sources_failed": 0,
+    "success_rate": "100.0%"
   },
   "articles": {
-    "collected": 364,
-    "new": 364,
+    "collected": 374,
+    "new": 374,
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1758
+    "extracted": 1718
   },
   "report": {
     "generated": true,
-    "cards": 67,
+    "cards": 56,
     "sections": 0
   },
   "top_source": {
     "name": "Gambero Rosso",
-    "count": 45,
-    "percentage": 8.8
+    "count": 46,
+    "percentage": 9.2
   },
-  "runtime_seconds": 83.54003190994263,
-  "errors": [
-    "Enolife: RSSCollector: HTTPSConnectionPool(host='enolife.com.ar', port=443): Max retries exceeded with url: /feed/ (Caused "
-  ],
+  "runtime_seconds": 86.08800220489502,
+  "errors": [],
   "notes": null
 }
