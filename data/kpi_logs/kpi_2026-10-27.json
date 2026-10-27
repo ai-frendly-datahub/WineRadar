@@ -1,6 +1,6 @@
 {
   "run_date": "2026-10-27",
-  "run_timestamp": "2026-10-27T02:01:10.286622+00:00",
+  "run_timestamp": "2026-10-27T16:23:55.227230+00:00",
   "collection": {
     "sources_active": 38,
     "sources_attempted": 38,
@@ -14,19 +14,19 @@
     "duplicate": 0
   },
   "entities": {
-    "extracted": 1731
+    "extracted": 1824
   },
   "report": {
     "generated": true,
-    "cards": 53,
+    "cards": 49,
     "sections": 0
   },
   "top_source": {
-    "name": "Wine Industry Advisor",
-    "count": 45,
-    "percentage": 9.0
+    "name": "Gambero Rosso",
+    "count": 48,
+    "percentage": 9.6
   },
-  "runtime_seconds": 106.79459691047668,
+  "runtime_seconds": 87.51639008522034,
   "errors": [],
   "notes": null
 }
