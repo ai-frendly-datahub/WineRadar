@@ -1,0 +1,34 @@
+{
+  "run_date": "2026-10-28",
+  "run_timestamp": "2026-10-28T02:14:57.732648+00:00",
+  "collection": {
+    "sources_active": 38,
+    "sources_attempted": 38,
+    "sources_succeeded": 37,
+    "sources_failed": 1,
+    "success_rate": "97.4%"
+  },
+  "articles": {
+    "collected": 364,
+    "new": 364,
+    "duplicate": 0
+  },
+  "entities": {
+    "extracted": 1713
+  },
+  "report": {
+    "generated": true,
+    "cards": 55,
+    "sections": 0
+  },
+  "top_source": {
+    "name": "Wine Industry Advisor",
+    "count": 48,
+    "percentage": 9.6
+  },
+  "runtime_seconds": 233.4077513217926,
+  "errors": [
+    "Winetitles Australia: RSSCollector: 525 Server Error: <none> for url: https://winetitles.com.au/feed/"
+  ],
+  "notes": null
+}
