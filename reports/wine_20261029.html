@@ -1,0 +1,2986 @@
+<!doctype html>
+<html lang="en" data-visual-system="radar-unified-v2" data-visual-surface="report" data-visual-page="daily-report">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Wine Radar - Report</title>
+
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" />
+
+    <style>
+      :root{
+        --vs-bg-0:#0b0b0f;
+        --vs-bg-1:#121116;
+        --vs-surface-0:rgba(24, 22, 29, .74);
+        --vs-surface-1:rgba(28, 26, 34, .74);
+        --vs-surface-2:rgba(28, 26, 34, .92);
+        --vs-line:rgba(244, 244, 247, .14);
+        --vs-line-strong:rgba(244, 244, 247, .22);
+        --vs-shadow:0 18px 60px rgba(0,0,0,.44);
+        --vs-text:#e9eefb;
+        --vs-text-muted:rgba(233, 238, 251, .72);
+        --vs-text-faint:rgba(233, 238, 251, .52);
+        --vs-brand:#33d6c5;
+        --vs-brand-strong:#19b591;
+        --vs-accent:#f6c84c;
+        --vs-danger:#ff5b6e;
+        --vs-font-mono:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        --vs-font-sans:"Pretendard Variable","Pretendard", ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+        --vs-radius:8px;
+        --vs-max:1180px;
+
+        --bg0:var(--vs-bg-0);
+        --bg1:var(--vs-bg-1);
+        --panel0:var(--vs-surface-0);
+        --panel1:var(--vs-surface-1);
+        --panel2:var(--vs-surface-2);
+        --line:var(--vs-line);
+        --line2:var(--vs-line-strong);
+        --shadow:var(--vs-shadow);
+        --text:var(--vs-text);
+        --muted:var(--vs-text-muted);
+        --faint:var(--vs-text-faint);
+        --brand:var(--vs-brand);
+        --brand2:var(--vs-brand-strong);
+        --accent:var(--vs-accent);
+        --danger:var(--vs-danger);
+
+        --radius:var(--vs-radius);
+        --radius2:var(--vs-radius);
+        --max:var(--vs-max);
+
+        --mono:var(--vs-font-mono);
+        --sans:var(--vs-font-sans);
+
+        --focus: 0 0 0 3px rgba(51, 214, 197, .20), 0 0 0 1px rgba(51, 214, 197, .70);
+      }
+
+      *{box-sizing:border-box}
+      html,body{height:100%}
+      body{
+        margin:0;
+        font-family:var(--sans);
+        color:var(--text);
+        background: linear-gradient(180deg, var(--bg0), var(--bg1) 58%, #08080b);
+        overflow-x:hidden;
+      }
+
+      a{color:inherit; text-decoration:none}
+      a:hover{text-decoration:none}
+      ::selection{background:rgba(51,214,197,.24)}
+      .skip{
+        position:absolute;
+        left:-999px;
+        top:12px;
+        padding:10px 12px;
+        border-radius:8px;
+        background:rgba(14, 22, 42, .98);
+        border:1px solid var(--line2);
+        color:var(--text);
+        z-index:9999;
+      }
+      .skip:focus{left:12px; box-shadow:var(--focus); outline:none}
+
+      .wrap{max-width:var(--max); margin:0 auto; padding:20px 16px 64px}
+      .topbar{
+        position:sticky; top:0; z-index:50;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        background: linear-gradient(180deg, rgba(5,7,12,.92), rgba(5,7,12,.55));
+        border-bottom:1px solid rgba(150,190,255,.10);
+      }
+      .topbar-inner{max-width:var(--max); margin:0 auto; padding:14px 16px; display:flex; align-items:center; justify-content:space-between; gap:14px}
+      .brand{
+        display:flex; align-items:center; gap:10px;
+        min-width:220px;
+      }
+      .mark{
+        width:34px; height:34px; border-radius:12px;
+        background:
+          radial-gradient(18px 18px at 32% 28%, rgba(255,255,255,.18), transparent 55%),
+          linear-gradient(145deg, rgba(51,214,197,.95), rgba(25,167,195,.78) 55%, rgba(246,200,76,.72));
+        box-shadow: 0 10px 30px rgba(0,0,0,.45);
+        border:1px solid rgba(255,255,255,.10);
+      }
+      .brand-title{
+        line-height:1.05;
+        font-weight:750;
+        letter-spacing:-.02em;
+      }
+      .brand-sub{
+        display:block;
+        font-family:var(--mono);
+        font-size:12px;
+        color:var(--faint);
+        margin-top:4px;
+      }
+      .nav{
+        display:flex; flex-wrap:wrap; gap:8px;
+        justify-content:flex-end;
+      }
+      .pill{
+        display:inline-flex; align-items:center; gap:8px;
+        padding:9px 12px;
+        border-radius:999px;
+        border:1px solid rgba(150,190,255,.14);
+        background:rgba(10,16,30,.45);
+        color:var(--muted);
+        font-size:13px;
+        transition: transform .18s ease, border-color .18s ease, background .18s ease, color .18s ease;
+        user-select:none;
+      }
+      .pill:hover{
+        transform: translateY(-1px);
+        border-color: rgba(51,214,197,.34);
+        background: rgba(10,16,30,.70);
+        color: rgba(233,238,251,.88);
+      }
+      .pill:focus-visible{outline:none; box-shadow:var(--focus)}
+
+      /* Report Navigation */
+      .report-navigation{
+        display:flex;
+        align-items:center;
+        gap:12px;
+        margin-left:auto;
+      }
+      .nav-button{
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+        padding:8px 14px;
+        border-radius:999px;
+        border:1px solid rgba(150,190,255,.14);
+        background:rgba(10,16,30,.45);
+        color:var(--muted);
+        font-size:13px;
+        font-weight:500;
+        transition: all .18s ease;
+        cursor:pointer;
+        text-decoration:none;
+      }
+      .nav-button:hover:not([disabled]){
+        transform: translateY(-1px);
+        border-color: rgba(51,214,197,.34);
+        background: rgba(10,16,30,.70);
+        color: rgba(233,238,251,.88);
+      }
+      .nav-button[disabled]{
+        opacity:.4;
+        cursor:not-allowed;
+        pointer-events:none;
+      }
+      .nav-button:focus-visible{outline:none; box-shadow:var(--focus)}
+
+      .hero{
+        padding:24px 0 12px;
+        display:grid;
+        grid-template-columns: 1.25fr .75fr;
+        gap:18px;
+        align-items:stretch;
+      }
+      .hero-card{
+        border-radius: var(--radius2);
+        background: linear-gradient(180deg, var(--panel2), rgba(14,22,42,.58));
+        border: 1px solid rgba(150,190,255,.14);
+        box-shadow: var(--shadow);
+        padding:18px 18px 16px;
+        position:relative;
+        overflow:hidden;
+      }
+      .hero-card:before{content:none}
+      .hero-body{position:relative}
+      .kicker{
+        display:inline-flex; align-items:center; gap:10px;
+        font-family:var(--mono);
+        font-size:12px;
+        color:rgba(233,238,251,.72);
+        letter-spacing:.06em;
+        text-transform:uppercase;
+      }
+      .dot{
+        width:8px; height:8px; border-radius:999px;
+        background: var(--brand);
+        box-shadow:0 0 0 4px rgba(51,214,197,.12);
+      }
+      h1{
+        margin:10px 0 0;
+        font-weight:820;
+        letter-spacing:-.03em;
+        font-size: clamp(28px, 3.2vw, 40px);
+        line-height:1.08;
+      }
+      .lede{
+        margin:10px 0 0;
+        color: var(--muted);
+        font-size:15px;
+        line-height:1.55;
+        max-width: 72ch;
+      }
+      .meta{
+        margin:14px 0 0;
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px 12px;
+        color: rgba(233,238,251,.70);
+        font-size:13px;
+      }
+      .meta span{
+        display:inline-flex; align-items:center; gap:8px;
+        padding:6px 10px;
+        border-radius:999px;
+        border:1px solid rgba(150,190,255,.12);
+        background: rgba(10,16,30,.40);
+      }
+      .mono{font-family:var(--mono)}
+      .accent{color: rgba(246,200,76,.96)}
+      .ok{color: rgba(51,214,197,.92)}
+      .bad{color: rgba(255,91,110,.92)}
+
+      .stats{
+        border-radius: var(--radius2);
+        background: linear-gradient(180deg, rgba(10,16,30,.64), rgba(10,16,30,.36));
+        border: 1px solid rgba(150,190,255,.12);
+        box-shadow: 0 12px 40px rgba(0,0,0,.34);
+        padding:16px;
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap:12px;
+      }
+      .stat{
+        border-radius: 8px;
+        background: rgba(14,22,42,.45);
+        border: 1px solid rgba(150,190,255,.12);
+        padding:12px 12px 10px;
+        min-height: 76px;
+      }
+      .stat .label{
+        color: rgba(233,238,251,.66);
+        font-size:12px;
+        font-family: var(--mono);
+        letter-spacing:.03em;
+      }
+      .stat .value{
+        margin-top:8px;
+        font-weight:800;
+        letter-spacing:-.02em;
+        font-size: 20px;
+        line-height:1.1;
+      }
+      .stat .hint{
+        margin-top:6px;
+        color: rgba(233,238,251,.60);
+        font-size:12px;
+        line-height:1.35;
+      }
+
+      .grid{
+        margin-top:14px;
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap:14px;
+      }
+      .panel{
+        border-radius: var(--radius2);
+        background: linear-gradient(180deg, var(--panel0), var(--panel1));
+        border: 1px solid rgba(150,190,255,.12);
+        box-shadow: 0 16px 55px rgba(0,0,0,.38);
+        overflow:hidden;
+      }
+      .panel-hd{
+        padding:14px 16px;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        gap:12px;
+        border-bottom:1px solid rgba(150,190,255,.10);
+        background: rgba(10,16,30,.20);
+      }
+      .panel-title{
+        margin:0;
+        font-weight:780;
+        letter-spacing:-.02em;
+        font-size:14px;
+      }
+      .panel-sub{
+        margin:6px 0 0;
+        color: rgba(233,238,251,.64);
+        font-size:12px;
+        line-height:1.35;
+        font-family: var(--mono);
+      }
+      .panel-bd{padding:14px 16px 16px}
+      .chart-wrap{position:relative; height: 290px}
+      .chart-wrap.tall{height: 320px}
+      canvas{max-width:100%}
+
+      /* Plugin Charts Container */
+      #plugin-charts{
+        margin-top:14px;
+      }
+      .plugin-chart{
+        border-radius: var(--radius2);
+        background: linear-gradient(180deg, var(--panel0), var(--panel1));
+        border: 1px solid rgba(150,190,255,.12);
+        box-shadow: 0 16px 55px rgba(0,0,0,.38);
+        overflow:hidden;
+        margin-bottom:14px;
+      }
+      .plugin-chart-header{
+        padding:14px 16px;
+        border-bottom:1px solid rgba(150,190,255,.10);
+        background: rgba(10,16,30,.20);
+      }
+      .plugin-chart h3{
+        margin:0;
+        font-weight:780;
+        letter-spacing:-.02em;
+        font-size:14px;
+        color: var(--text);
+      }
+      .plugin-chart .chart-container{
+        padding:14px 16px 16px;
+        min-height: 300px;
+      }
+
+      .extra-section-body{
+        display:flex;
+        flex-direction:column;
+        gap:14px;
+      }
+      .extra-section-body p{
+        margin:0;
+        color: rgba(233,238,251,.76);
+        font-size:13px;
+        line-height:1.6;
+      }
+      .extra-section-body > div{
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+      }
+      .extra-section-body h3{
+        margin:0;
+        font-size:13px;
+        font-weight:780;
+        letter-spacing:.02em;
+        text-transform:uppercase;
+        color: rgba(233,238,251,.74);
+        font-family: var(--mono);
+      }
+      .extra-section-body .metric-grid{
+        display:grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap:10px;
+      }
+      .extra-section-body .metric-card{
+        border-radius: 8px;
+        border: 1px solid rgba(150,190,255,.12);
+        background: rgba(10,16,30,.38);
+        padding: 12px;
+      }
+      .extra-section-body .metric-card span{
+        display:block;
+        color: rgba(233,238,251,.64);
+        font-size: 12px;
+      }
+      .extra-section-body .metric-card strong{
+        display:block;
+        margin-top:6px;
+        font-size: 20px;
+        line-height:1.1;
+        letter-spacing:-.02em;
+      }
+      .extra-section-body .inline-chips{
+        display:flex;
+        flex-wrap:wrap;
+        gap:8px;
+      }
+      .extra-section-body .data-table{
+        width:100%;
+        border-collapse: collapse;
+        font-size:13px;
+      }
+      .extra-section-body .data-table th,
+      .extra-section-body .data-table td{
+        padding:10px 8px;
+        border-top: 1px solid rgba(150,190,255,.12);
+        text-align:left;
+        vertical-align:top;
+      }
+      .extra-section-body .data-table th{
+        color: rgba(233,238,251,.64);
+        font-family: var(--mono);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+      }
+      .extra-section-body ul{
+        margin:0;
+        padding-left:18px;
+        color: rgba(233,238,251,.72);
+        font-size:13px;
+        line-height:1.55;
+      }
+      .extra-section-body li + li{
+        margin-top:6px;
+      }
+      .extra-section-body code{
+        font-family: var(--mono);
+        font-size:12px;
+        color: rgba(233,238,251,.86);
+      }
+
+      .notice{
+        margin-top:14px;
+        border-radius: var(--radius2);
+        border: 1px solid rgba(255,91,110,.28);
+        background: linear-gradient(180deg, rgba(255,91,110,.14), rgba(10,16,30,.56));
+        box-shadow: 0 18px 55px rgba(0,0,0,.34);
+        padding:14px 16px;
+      }
+      .notice h2{
+        margin:0;
+        font-size:14px;
+        font-weight:800;
+        letter-spacing:-.02em;
+      }
+      .notice p{
+        margin:8px 0 0;
+        color: rgba(233,238,251,.74);
+        font-size:13px;
+        line-height:1.5;
+      }
+      .notice ul{
+        margin:10px 0 0;
+        padding-left: 18px;
+        color: rgba(233,238,251,.72);
+        font-size:13px;
+        line-height:1.55;
+      }
+
+      .section{
+        margin-top:16px;
+      }
+      .section--extension .panel{
+        border-color: rgba(51,214,197,.18);
+      }
+      .section-hd{
+        display:flex; align-items:flex-end; justify-content:space-between; gap:12px;
+        margin: 20px 0 10px;
+      }
+      .section-hd h2{
+        margin:0;
+        font-size: 16px;
+        font-weight:820;
+        letter-spacing:-.02em;
+      }
+      .section-hd .right{
+        display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;
+      }
+      .muted{color: rgba(233,238,251,.68)}
+      .small{font-size:12px}
+      .kbd{
+        font-family: var(--mono);
+        font-size: 12px;
+        color: rgba(233,238,251,.72);
+        background: rgba(10,16,30,.52);
+        border:1px solid rgba(150,190,255,.14);
+        padding:6px 10px;
+        border-radius:999px;
+      }
+
+      /* Entity Pills Section */
+      .entity-section{
+        margin-top:14px;
+        padding:16px 18px;
+        border-radius: var(--radius2);
+        background: linear-gradient(180deg, var(--panel0), var(--panel1));
+        border: 1px solid rgba(150,190,255,.12);
+        box-shadow: 0 12px 40px rgba(0,0,0,.34);
+      }
+      .entity-pills{
+        display:flex;
+        flex-wrap:wrap;
+        gap:8px;
+      }
+      .entity-pill{
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+        padding:6px 12px;
+        border-radius:999px;
+        border: 1px solid rgba(51,214,197,.18);
+        background: rgba(51,214,197,.10);
+        color: var(--text);
+        font-size:13px;
+        font-weight:500;
+        cursor:pointer;
+        transition: all .18s ease;
+      }
+      .entity-pill:hover{
+        transform: translateY(-1px);
+        border-color: rgba(51,214,197,.34);
+        background: rgba(51,214,197,.18);
+      }
+      .entity-pill .count{
+        font-family: var(--mono);
+        font-size:12px;
+        color: var(--accent);
+        font-weight:600;
+      }
+
+      .articles{
+        display:grid;
+        grid-template-columns: 1fr;
+        gap:10px;
+      }
+      .card{
+        border-radius: 8px;
+        background: rgba(14,22,42,.46);
+        border: 1px solid rgba(150,190,255,.12);
+        padding: 12px 12px 11px;
+        transition: transform .18s ease, border-color .18s ease, background .18s ease;
+        display:flex;
+        gap:10px;
+        align-items:flex-start;
+      }
+      .card:hover{
+        transform: translateY(-1px);
+        border-color: rgba(51,214,197,.22);
+        background: rgba(14,22,42,.62);
+      }
+      .card:focus-within{box-shadow: var(--focus)}
+      .card .left{flex:1; min-width:0}
+      .title{
+        margin:0;
+        font-weight:780;
+        letter-spacing:-.02em;
+        font-size: 14px;
+        line-height:1.35;
+      }
+      .title a{
+        display:inline-block;
+        outline:none;
+      }
+      .title a:focus-visible{outline:none}
+      .desc{
+        margin:8px 0 0;
+        color: rgba(233,238,251,.68);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+      .row{
+        margin-top:10px;
+        display:flex;
+        flex-wrap:wrap;
+        gap:8px;
+        align-items:center;
+        color: rgba(233,238,251,.64);
+        font-size: 12px;
+      }
+      .chip{
+        display:inline-flex; align-items:center;
+        gap:8px;
+        padding:6px 10px;
+        border-radius:999px;
+        border: 1px solid rgba(150,190,255,.12);
+        background: rgba(10,16,30,.38);
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+      .chip strong{font-weight:800; color: rgba(233,238,251,.86)}
+      .chip.brand{
+        border-color: rgba(51,214,197,.18);
+        background: rgba(51,214,197,.10);
+      }
+      .actions{
+        display:flex;
+        align-items:center;
+        justify-content:flex-end;
+      }
+      .btn{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        gap:10px;
+        padding:10px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(150,190,255,.14);
+        background: rgba(10,16,30,.46);
+        color: rgba(233,238,251,.86);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: -.01em;
+        transition: transform .18s ease, border-color .18s ease, background .18s ease;
+        cursor:pointer;
+        user-select:none;
+        min-width: 84px;
+      }
+      .btn:hover{
+        transform: translateY(-1px);
+        border-color: rgba(246,200,76,.30);
+        background: rgba(10,16,30,.68);
+      }
+      .btn:focus-visible{outline:none; box-shadow:var(--focus)}
+      .btn.primary{
+        border-color: rgba(51,214,197,.22);
+        background: linear-gradient(135deg, rgba(51,214,197,.22), rgba(25,167,195,.12));
+      }
+      .btn.primary:hover{border-color: rgba(51,214,197,.36)}
+      .btn[aria-disabled="true"]{opacity:.6; cursor:not-allowed}
+
+      .footer{
+        margin-top:24px;
+        padding-top:14px;
+        border-top: 1px solid rgba(150,190,255,.10);
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px 14px;
+        justify-content:space-between;
+        align-items:center;
+        color: rgba(233,238,251,.62);
+        font-size: 12px;
+      }
+      .footer a{color: rgba(233,238,251,.74)}
+      .footer a:hover{color: rgba(51,214,197,.90)}
+      .footer-actions{
+        display:flex;
+        gap:12px;
+        align-items:center;
+      }
+      .export-btn{
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        padding:8px 14px;
+        border-radius:999px;
+        border: 1px solid rgba(246,200,76,.22);
+        background: rgba(246,200,76,.12);
+        color: var(--accent);
+        font-size:13px;
+        font-weight:600;
+        cursor:pointer;
+        transition: all .18s ease;
+      }
+      .export-btn:hover{
+        transform: translateY(-1px);
+        border-color: rgba(246,200,76,.36);
+        background: rgba(246,200,76,.20);
+      }
+
+      @media (max-width: 980px){
+        .hero{grid-template-columns: 1fr; }
+        .stats{grid-template-columns: 1fr 1fr}
+        .grid{grid-template-columns: 1fr}
+        .report-navigation{margin-left:0; margin-top:8px; width:100%; justify-content:center}
+      }
+      @media (max-width: 560px){
+        .topbar-inner{align-items:flex-start; flex-wrap:wrap}
+        .brand{min-width: 0}
+        .nav{justify-content:flex-start}
+        .stats{grid-template-columns: 1fr}
+        .card{flex-direction:column}
+        .actions{justify-content:flex-start}
+        .btn{width:100%}
+        .chart-wrap{height: 260px}
+        .chart-wrap.tall{height: 300px}
+        .footer{flex-direction:column; text-align:center}
+        .footer-actions{width:100%; justify-content:center}
+      }
+      @media (prefers-reduced-motion: reduce){
+        *{scroll-behavior:auto !important}
+        .pill,.card,.btn,.entity-pill,.nav-button,.export-btn{transition:none !important}
+        .pill:hover,.card:hover,.btn:hover,.entity-pill:hover,.nav-button:hover,.export-btn:hover{transform:none !important}
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip" href="#content">Skip to content</a>
+
+    <header class="topbar" role="banner">
+      <div class="topbar-inner">
+        <div class="brand" aria-label="Report identity">
+          <div class="mark" aria-hidden="true"></div>
+          <div>
+            <div class="brand-title">Wine Radar</div>
+            <span class="brand-sub">editorial report - charts + feed</span>
+          </div>
+        </div>
+
+        <nav class="report-navigation" aria-label="Day navigation">
+          <a href="wine_20261028.html"
+             class="nav-button"
+
+             aria-label="Previous day report">
+            <span>&larr;</span> Previous Day
+          </a>
+          <a href="#"
+             class="nav-button"
+             disabled aria-disabled="true"
+             aria-label="Next day report">
+            Next Day <span>&rarr;</span>
+          </a>
+        </nav>
+
+        <nav class="nav" aria-label="Jump links">
+          <a class="pill" href="#charts">Charts</a>
+
+          <a class="pill" href="#entities">Entities</a>
+          <a class="pill" href="#articles">Articles</a>
+
+        </nav>
+      </div>
+    </header>
+
+    <main id="content" class="wrap" role="main">
+      <section class="hero" aria-label="Overview">
+        <div class="hero-card">
+          <div class="hero-body">
+            <div class="kicker">
+              <span class="dot" aria-hidden="true"></span>
+              <span class="mono">RADAR</span>
+              <span class="mono muted">/</span>
+              <span class="mono accent">Wine Radar</span>
+            </div>
+
+            <h1>Wine Radar</h1>
+            <p class="lede">
+              A fast, reusable HTML report for lightweight Radar projects: entity distribution, article velocity,
+              and source mix, alongside a clean reading list.
+            </p>
+
+            <div class="meta" aria-label="Key facts">
+              <span><span class="mono muted">articles</span><span class="mono ok">56</span></span>
+              <span><span class="mono muted">entities</span><span class="mono accent">5</span></span>
+              <span><span class="mono muted">errors</span><span class="mono ok">0</span></span>
+              <span title="Generated time"><span class="mono muted">Generated at</span><span class="mono">2026-10-29 02:17 UTC</span></span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="stats" aria-label="Quick stats">
+          <div class="stat">
+            <div class="label">SOURCES</div>
+            <div class="value"></div>
+            <div class="hint">Active data sources</div>
+          </div>
+          <div class="stat">
+            <div class="label">COLLECTED</div>
+            <div class="value"></div>
+            <div class="hint">Total items collected</div>
+          </div>
+          <div class="stat">
+            <div class="label">MATCHED</div>
+            <div class="value"></div>
+            <div class="hint">Entity matches found</div>
+          </div>
+          <div class="stat">
+            <div class="label">WINDOW</div>
+            <div class="value">d</div>
+            <div class="hint">Collection window</div>
+          </div>
+        </aside>
+      </section>
+
+
+
+      <section id="charts" class="section" aria-label="Charts">
+        <div class="section-hd">
+          <h2>Visuals</h2>
+          <div class="right">
+            <span class="kbd">Chart.js</span>
+            <span class="kbd">dark editorial</span>
+            <span class="kbd">responsive</span>
+          </div>
+        </div>
+
+        <div class="grid">
+          <article class="panel" aria-label="Entity distribution">
+            <header class="panel-hd">
+              <div>
+                <p class="panel-title">Entity Distribution</p>
+                <p class="panel-sub">Top entities by frequency</p>
+              </div>
+              <div class="pill" aria-hidden="true">bar</div>
+            </header>
+            <div class="panel-bd">
+              <div class="chart-wrap" role="img" aria-label="Bar chart showing entity frequency">
+                <canvas id="chartEntities"></canvas>
+              </div>
+              <noscript>
+                <p class="muted small">Charts require JavaScript. Enable JS to see entity distribution.</p>
+              </noscript>
+            </div>
+          </article>
+
+          <article class="panel" aria-label="Article timeline">
+            <header class="panel-hd">
+              <div>
+                <p class="panel-title">Article Timeline</p>
+                <p class="panel-sub">Daily volume inferred from article dates</p>
+              </div>
+              <div class="pill" aria-hidden="true">line</div>
+            </header>
+            <div class="panel-bd">
+              <div class="chart-wrap tall" role="img" aria-label="Line chart showing article volume over time">
+                <canvas id="chartTimeline"></canvas>
+              </div>
+              <noscript>
+                <p class="muted small">Charts require JavaScript. Enable JS to see the timeline.</p>
+              </noscript>
+            </div>
+          </article>
+        </div>
+
+        <div class="grid" style="margin-top:14px">
+          <article class="panel" aria-label="Source distribution">
+            <header class="panel-hd">
+              <div>
+                <p class="panel-title">Source Distribution</p>
+                <p class="panel-sub">Share of articles by source</p>
+              </div>
+              <div class="pill" aria-hidden="true">doughnut</div>
+            </header>
+            <div class="panel-bd">
+              <div class="chart-wrap" role="img" aria-label="Doughnut chart showing article share by source">
+                <canvas id="chartSources"></canvas>
+              </div>
+              <noscript>
+                <p class="muted small">Charts require JavaScript. Enable JS to see source breakdown.</p>
+              </noscript>
+            </div>
+          </article>
+
+          <article class="panel" aria-label="Data freshness">
+            <header class="panel-hd">
+              <div>
+                <p class="panel-title">Data Freshness</p>
+                <p class="panel-sub">Collection lag distribution</p>
+              </div>
+              <div class="pill" aria-hidden="true">lag</div>
+            </header>
+            <div class="panel-bd">
+              <div class="chart-wrap" role="img" aria-label="Bar chart showing collection lag in hours">
+                <canvas id="chartFreshness"></canvas>
+              </div>
+              <noscript>
+                <p class="muted small">Charts require JavaScript. Enable JS to see freshness data.</p>
+              </noscript>
+            </div>
+          </article>
+        </div>
+
+        <div class="grid" style="margin-top:14px">
+          <article class="panel" aria-label="Entity extraction rate">
+            <header class="panel-hd">
+              <div>
+                <p class="panel-title">Entity Extraction Rate</p>
+                <p class="panel-sub">Percentage with matched entities</p>
+              </div>
+              <div class="pill" aria-hidden="true">rate</div>
+            </header>
+            <div class="panel-bd">
+              <div class="chart-wrap" role="img" aria-label="Doughnut chart showing entity extraction rate">
+                <canvas id="chartEntityRate"></canvas>
+              </div>
+              <noscript>
+                <p class="muted small">Charts require JavaScript. Enable JS to see extraction rate.</p>
+              </noscript>
+            </div>
+          </article>
+
+          <article class="panel" aria-label="Source health">
+            <header class="panel-hd">
+              <div>
+                <p class="panel-title">Source Health</p>
+                <p class="panel-sub">Article count by source (sorted)</p>
+              </div>
+              <div class="pill" aria-hidden="true">health</div>
+            </header>
+            <div class="panel-bd">
+              <div class="chart-wrap" role="img" aria-label="Horizontal bar chart showing source health">
+                <canvas id="chartSourceHealth"></canvas>
+              </div>
+              <noscript>
+                <p class="muted small">Charts require JavaScript. Enable JS to see source health.</p>
+              </noscript>
+            </div>
+          </article>
+        </div>
+
+
+        <div id="plugin-charts">
+
+
+            <div class="plugin-chart" id="plugin-entity_heatmap" data-config="<div style="height:400px; width:100%;">                        <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-4.1.1.min.js" integrity="sha256-O24V1F27f8pb0glCkelh3cVHLNiHAJ5gCaVtq2aNch8=" crossorigin="anonymous"></script>                <div id="0944328b-50f6-42b8-a6b9-12334754439d" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("0944328b-50f6-42b8-a6b9-12334754439d")) {                    Plotly.newPlot(                        "0944328b-50f6-42b8-a6b9-12334754439d",                        [{"colorscale":[[0.0,"rgb(247,251,255)"],[0.125,"rgb(222,235,247)"],[0.25,"rgb(198,219,239)"],[0.375,"rgb(158,202,225)"],[0.5,"rgb(107,174,214)"],[0.625,"rgb(66,146,198)"],[0.75,"rgb(33,113,181)"],[0.875,"rgb(8,81,156)"],[1.0,"rgb(8,48,107)"]],"hovertemplate":"\uc5d4\ud2f0\ud2f0: %{y}\u003cbr\u003e\ub0a0\uc9dc: %{x}\u003cbr\u003e\ube48\ub3c4: %{z}\uac74\u003cextra\u003e\u003c\u002fextra\u003e","showscale":true,"x":["10-16","10-17","10-18","10-19","10-20","10-21","10-22","10-23","10-24","10-25","10-26","10-27","10-28","10-29"],"y":["topic","region","grape_variety","climate_zone","winery"],"z":[[0,0,0,0,0,0,0,0,0,0,0,3,23,28],[0,0,0,0,0,0,0,0,0,0,0,3,18,9],[0,0,0,0,0,0,0,0,0,0,0,2,11,1],[0,0,0,0,0,0,0,0,0,0,0,2,11,0],[0,0,0,0,0,0,0,0,0,0,0,3,6,0]],"type":"heatmap"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05}}},"margin":{"l":120,"r":20,"t":24,"b":40},"font":{"color":"#e9eefb"},"xaxis":{"title":{"text":"\ub0a0\uc9dc"},"color":"#e9eefb","gridcolor":"rgba(233,238,251,0.1)"},"yaxis":{"title":{"text":""},"color":"#e9eefb","gridcolor":"rgba(233,238,251,0.1)","autorange":"reversed"},"height":400,"paper_bgcolor":"rgba(10,14,23,0)","plot_bgcolor":"rgba(14,22,42,0.5)"},                        {"responsive": true}                    )                };            </script>        </div>">
+              <div class="plugin-chart-header">
+                <h3>엔티티 히트맵 (Top 15 × 14일)</h3>
+              </div>
+              <div class="chart-container"></div>
+            </div>
+
+
+        </div>
+      </section>
+
+
+
+
+      <section id="wine-quality" class="section" aria-label="Wine quality">
+        <div class="section-hd">
+          <h2>Wine Quality</h2>
+          <div class="right">
+            <span class="kbd">wine_quality.json</span>
+          </div>
+        </div>
+        <article class="panel">
+          <header class="panel-hd">
+            <div>
+              <p class="panel-title">Operational Source Checks</p>
+              <p class="panel-sub">freshness, disabled high-value sources, and auction/list candidates</p>
+            </div>
+          </header>
+          <div class="panel-bd">
+            <div class="row" aria-label="Wine quality summary">
+              <span class="chip"><strong>fresh</strong> 27</span>
+<span class="chip"><strong>stale</strong> 2</span>
+<span class="chip"><strong>missing</strong> 0</span>
+<span class="chip"><strong>disabled high-value</strong> 28</span>
+<span class="chip"><strong>auction</strong> 0</span>
+<span class="chip"><strong>restaurant lists</strong> 0</span>
+<span class="chip"><strong>market</strong> 5</span>
+            </div>
+            <p class="muted small">Auction price and restaurant wine-list candidates remain disabled until access terms, parser stability, and canonical wine-key mapping are verified.</p>
+            <ul><li><strong>Wines With Attitude</strong>: stale (daily_briefing, age 103.48d)</li>
+<li><strong>WineAmerica</strong>: stale (market_report, age 96.4d)</li></ul>
+            <ul><li><strong>Wine Review</strong>: daily_briefing; legacy /news returned 404, and /feed/ returns an HTTP 200 CUPID/slowAES cookie wall rather than RSS. Do not bypass the wall.; retry re-enable only if a list or feed returns article HTML or application/rss+xml without a challenge</li>
+<li><strong>The Drinks Business</strong>: daily_briefing; Cloudflare returns HTTP 403 Attention Required for the feed. Do not bypass the challenge.; retry re-enable only if the feed is reachable without a Cloudflare interstitial</li>
+<li><strong>La Revue du vin de France</strong>: daily_briefing; disabled in source config; review parser and access conditions before enabling</li>
+<li><strong>Institut Français de la Vigne et du Vin</strong>: ; French viticulture research institute, statistics [disabled pending 403/404 retest noted in SOURCE_STATUS]</li>
+<li><strong>Winenara Stories</strong>: daily_briefing; disabled in source config; review parser and access conditions before enabling</li>
+<li><strong>Liv-ex Market Data</strong>: auction_price; API or data-license review required before collection; retry review_contract_then_parser_smoke</li></ul>
+          </div>
+        </article>
+      </section>
+      <section id="entities" class="section" aria-label="Entity table">
+        <div class="section-hd">
+          <h2>Entities</h2>
+          <div class="right">
+            <span class="kbd">clickable pills</span>
+            <span class="kbd">top 24 shown</span>
+          </div>
+        </div>
+
+        <div class="entity-section">
+
+          <div class="entity-pills" aria-label="Entity count list">
+
+            <span class="entity-pill" data-entity="region" role="button" tabindex="0">
+              region
+              <span class="count">98</span>
+            </span>
+
+            <span class="entity-pill" data-entity="topic" role="button" tabindex="0">
+              topic
+              <span class="count">91</span>
+            </span>
+
+            <span class="entity-pill" data-entity="grape_variety" role="button" tabindex="0">
+              grape_variety
+              <span class="count">57</span>
+            </span>
+
+            <span class="entity-pill" data-entity="climate_zone" role="button" tabindex="0">
+              climate_zone
+              <span class="count">20</span>
+            </span>
+
+            <span class="entity-pill" data-entity="winery" role="button" tabindex="0">
+              winery
+              <span class="count">20</span>
+            </span>
+
+          </div>
+
+        </div>
+      </section>
+
+      <section id="articles" class="section" aria-label="Articles">
+        <div class="section-hd">
+          <h2>Articles</h2>
+          <div class="right">
+            <span class="kbd">cards</span>
+            <span class="kbd">source + date</span>
+            <span class="kbd">fast scan</span>
+          </div>
+        </div>
+
+        <article class="panel">
+          <header class="panel-hd">
+            <div>
+              <p class="panel-title">Reading List</p>
+              <p class="panel-sub">Click through to the original source</p>
+            </div>
+            <div class="pill" aria-hidden="true">56</div>
+          </header>
+          <div class="panel-bd">
+
+            <div class="articles" id="articles-list" aria-label="Article list">
+
+              <div class="card" role="article" aria-label="Article: [신규 와인] 비노에이치, 미국 인기 와인 &#39;쓰리 티프스&#39; 국내 론칭" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.wine21.com/11_news/news_view.html?news_no=21418" target="_blank" rel="noopener noreferrer">[신규 와인] 비노에이치, 미국 인기 와인 &#39;쓰리 티프스&#39; 국내 론칭</a>
+                  </p>
+
+
+                  <p class="desc">[신규 와인] 비노에이치, 미국 인기 와인 &#39;쓰리 티프스&#39; 국내 론칭</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine21</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.wine21.com/11_news/news_view.html?news_no=21418" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: 고지대 테루아와 예술, 사자의 기개가 깃든 와인 &#39;헤스 퍼슨 에스테이트&#39;" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.wine21.com/11_news/news_view.html?news_no=21423" target="_blank" rel="noopener noreferrer">고지대 테루아와 예술, 사자의 기개가 깃든 와인 &#39;헤스 퍼슨 에스테이트&#39;</a>
+                  </p>
+
+
+                  <p class="desc">고지대 테루아와 예술, 사자의 기개가 깃든 와인 &#39;헤스 퍼슨 에스테이트&#39;</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine21</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.wine21.com/11_news/news_view.html?news_no=21423" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: GCF 그룹이 잇는 루아르와 칠레 와인" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.wine21.com/11_news/news_view.html?news_no=21421" target="_blank" rel="noopener noreferrer">GCF 그룹이 잇는 루아르와 칠레 와인</a>
+                  </p>
+
+
+                  <p class="desc">GCF 그룹이 잇는 루아르와 칠레 와인</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine21</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.wine21.com/11_news/news_view.html?news_no=21421" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: 동원와인플러스 포트폴리오 시음회, &#39;Wine Library – 그랜드 테이스팅 in SEOUL&#39; 성료" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.wine21.com/11_news/news_view.html?news_no=21422" target="_blank" rel="noopener noreferrer">동원와인플러스 포트폴리오 시음회, &#39;Wine Library – 그랜드 테이스팅 in SEOUL&#39; 성료</a>
+                  </p>
+
+
+                  <p class="desc">동원와인플러스 포트폴리오 시음회, &#39;Wine Library – 그랜드 테이스팅 in SEOUL&#39; 성료</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine21</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.wine21.com/11_news/news_view.html?news_no=21422" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: 비노에이치, 포트폴리오 시음회 &#39;UNCORKED 2026&#39; 성료" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.wine21.com/11_news/news_view.html?news_no=21419" target="_blank" rel="noopener noreferrer">비노에이치, 포트폴리오 시음회 &#39;UNCORKED 2026&#39; 성료</a>
+                  </p>
+
+
+                  <p class="desc">비노에이치, 포트폴리오 시음회 &#39;UNCORKED 2026&#39; 성료</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine21</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.wine21.com/11_news/news_view.html?news_no=21419" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: [신규 와인] 에르네스, 뉴질랜드에서 재회한 &#39;레이저백 피노 누아&#39; 국내 첫 공식 출시" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.wine21.com/11_news/news_view.html?news_no=21424" target="_blank" rel="noopener noreferrer">[신규 와인] 에르네스, 뉴질랜드에서 재회한 &#39;레이저백 피노 누아&#39; 국내 첫 공식 출시</a>
+                  </p>
+
+
+                  <p class="desc">[신규 와인] 에르네스, 뉴질랜드에서 재회한 &#39;레이저백 피노 누아&#39; 국내 첫 공식 출시</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine21</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.wine21.com/11_news/news_view.html?news_no=21424" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: [칼럼] 2026년 3분기까지 와인 시장 현황과 향후 전망" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.wine21.com/11_news/news_view.html?news_no=21420" target="_blank" rel="noopener noreferrer">[칼럼] 2026년 3분기까지 와인 시장 현황과 향후 전망</a>
+                  </p>
+
+
+                  <p class="desc">[칼럼] 2026년 3분기까지 와인 시장 현황과 향후 전망</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine21</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.wine21.com/11_news/news_view.html?news_no=21420" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Review: Edradour 2000 Vintage 18 Years Old Barolo Cask Finish" data-entities="["region", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.drinkhacker.com/2026/10/28/review-edradour-2000-vintage-18-years-old-barolo-cask-finish/" target="_blank" rel="noopener noreferrer">Review: Edradour 2000 Vintage 18 Years Old Barolo Cask Finish</a>
+                  </p>
+
+
+                  <p class="desc">&lt;p&gt;Edradour Distillery has never been afraid of doing things a little differently, and I’m always excited by an opportunity to try their bottlings. This 2000 vintage 18-year old Barolo Cask is a particularly interesting ...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Drinkhacker</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.drinkhacker.com/2026/10/28/review-edradour-2000-vintage-18-years-old-barolo-cask-finish/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Por fin Quino y Mafalda tendrán su casa en Mendoza" data-entities="["region", "climate_zone"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://enolife.com.ar/es/por-fin-quino-y-mafalda-tendran-su-casa-en-mendoza/" target="_blank" rel="noopener noreferrer">Por fin Quino y Mafalda tendrán su casa en Mendoza</a>
+                  </p>
+
+
+                  <p class="desc">A partir de este sábado 31 de octubre de 2026, los vecinos y turistas de&amp;#8230;</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Enolife</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://enolife.com.ar/es/por-fin-quino-y-mafalda-tendran-su-casa-en-mendoza/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Atención bodegas mendocinas: últimos cupos para participar en la feria Wine Paris del 15 al 17/2/27" data-entities="["region", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://enolife.com.ar/es/atencion-bodegas-mendocinas-ultimos-cupos-para-participar-en-la-feria-wine-paris-del-15-al-17-2-27/" target="_blank" rel="noopener noreferrer">Atención bodegas mendocinas: últimos cupos para participar en la feria Wine Paris del 15 al 17/2/27</a>
+                  </p>
+
+
+                  <p class="desc">ProMendoza, la agencia estatal de promoción de los productos de la provincia en el mundo,&amp;#8230;</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Enolife</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://enolife.com.ar/es/atencion-bodegas-mendocinas-ultimos-cupos-para-participar-en-la-feria-wine-paris-del-15-al-17-2-27/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Video: with Filipa Pato in her old vineyards in Bairrada, Portugal, which she farms with the help of pigs" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineanorak.com/2026/10/28/video-with-filipa-pato-in-her-old-vineyards-in-bairrada-portugal-which-she-farms-with-the-help-of-pigs/" target="_blank" rel="noopener noreferrer">Video: with Filipa Pato in her old vineyards in Bairrada, Portugal, which she farms with the help of pigs</a>
+                  </p>
+
+
+                  <p class="desc">Filipa Pato began making her own wines in 2001, starting with three rented plots. Since then she and her husband</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Jamie Goode&#39;s Wine Blog</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineanorak.com/2026/10/28/video-with-filipa-pato-in-her-old-vineyards-in-bairrada-portugal-which-she-farms-with-the-help-of-pigs/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Highlights: Overgaauw Sylvaner 2025 Stellenbosch, South Africa" data-entities="["region", "topic", "climate_zone"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineanorak.com/2026/10/28/highlights-overgaauw-sylvaner-2025-stellenbosch-south-africa/" target="_blank" rel="noopener noreferrer">Highlights: Overgaauw Sylvaner 2025 Stellenbosch, South Africa</a>
+                  </p>
+
+
+                  <p class="desc">This wine is noteworthy because it is South Africa’s only Sylvaner, first made in 1971. Just a single hectare of</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Jamie Goode&#39;s Wine Blog</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 3</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineanorak.com/2026/10/28/highlights-overgaauw-sylvaner-2025-stellenbosch-south-africa/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Cuántas calorías tienen el vino y las bebidas alcohólicas y cómo influyen en el peso" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://enolife.com.ar/es/cuantas-calorias-tienen-el-vino-y-las-bebidas-alcoholicas-y-como-influyen-en-el-peso/" target="_blank" rel="noopener noreferrer">Cuántas calorías tienen el vino y las bebidas alcohólicas y cómo influyen en el peso</a>
+                  </p>
+
+
+                  <p class="desc">Cuando uno consume más calorías de las que el cuerpo necesita, se produce el llamado&amp;#8230;</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Enolife</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://enolife.com.ar/es/cuantas-calorias-tienen-el-vino-y-las-bebidas-alcoholicas-y-como-influyen-en-el-peso/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: 7 of the Best Chardonnays From Germany" data-entities="["grape_variety", "region", "topic", "climate_zone"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://vinepair.com/good-wine-reviews/best-german-chardonnay/" target="_blank" rel="noopener noreferrer">7 of the Best Chardonnays From Germany</a>
+                  </p>
+
+
+                  <p class="desc">&lt;p&gt;Riesling is all but synonymous with German wine. It’s the most planted grape in Germany, accounting for almost a quarter of the country’s vineyard area. And while Riesling’s dominance is not about to change anytime so...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> VinePair</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 4</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://vinepair.com/good-wine-reviews/best-german-chardonnay/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Cité du Vin : Philippe Massol passe la main à Laurent Basse-Cathalinat" data-entities="["region", "climate_zone"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.terredevins.com/actualites/cite-du-vin-philippe-massol-passe-la-main-a-laurent-basse-cathalinat" target="_blank" rel="noopener noreferrer">Cité du Vin : Philippe Massol passe la main à Laurent Basse-Cathalinat</a>
+                  </p>
+
+
+                  <p class="desc">&lt;p&gt;À la tête du projet depuis les premiers croquis, Philippe Massol quitte la direction générale de la Cité du Vin le 31 décembre. Son bras droit depuis douze ans, Laurent Basse-Cathalinat, lui succède au 1er janvier 202...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Terre de Vins</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.terredevins.com/actualites/cite-du-vin-philippe-massol-passe-la-main-a-laurent-basse-cathalinat" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: BANDO DI GARA PROGETTO EUROPEO THE HEART OF EUROPEAN TASTE: SINERGIA TRA 4 ECCELLENZE ENOGASTRONOMICHE" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.federdoc.com/bando-di-gara-progetto-europeo-the-heart-of-european-taste-sinergia-tra-4-eccellenze-enogastronomiche/" target="_blank" rel="noopener noreferrer">BANDO DI GARA PROGETTO EUROPEO THE HEART OF EUROPEAN TASTE: SINERGIA TRA 4 ECCELLENZE ENOGASTRONOMICHE</a>
+                  </p>
+
+
+                  <p class="desc">BANDO DI GARA PROGETTO EUROPEO THE HEART OF EUROPEAN TASTE: SINERGIA TRA 4 ECCELLENZE ENOGASTRONOMICHE</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Federdoc</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.federdoc.com/bando-di-gara-progetto-europeo-the-heart-of-european-taste-sinergia-tra-4-eccellenze-enogastronomiche/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Il Presidente Federdoc Bonaldi interviene all’evento della nascita del Polo Vitivinicolo Triveneto" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.federdoc.com/il-presidente-federdoc-bonaldi-interviene-allevento-della-nascita-del-polo-vinicolo-triveneto/" target="_blank" rel="noopener noreferrer">Il Presidente Federdoc Bonaldi interviene all’evento della nascita del Polo Vitivinicolo Triveneto</a>
+                  </p>
+
+
+                  <p class="desc">Il Presidente Federdoc Bonaldi interviene all’evento della nascita del Polo Vitivinicolo Triveneto</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Federdoc</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.federdoc.com/il-presidente-federdoc-bonaldi-interviene-allevento-della-nascita-del-polo-vinicolo-triveneto/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Rinnovato accordo Masaf, eBay, Federdoc ed Origin Italia a tutela delle Indicazioni Geografiche nel commercio elettronico" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.federdoc.com/rinnovato-accordo-masaf-ebay-federdoc-ed-origin-italia-a-tutela-delle-indicazioni-geografiche-nel-commercio-elettronico/" target="_blank" rel="noopener noreferrer">Rinnovato accordo Masaf, eBay, Federdoc ed Origin Italia a tutela delle Indicazioni Geografiche nel commercio elettronico</a>
+                  </p>
+
+
+                  <p class="desc">Rinnovato accordo Masaf, eBay, Federdoc ed Origin Italia a tutela delle Indicazioni Geografiche nel commercio elettronico</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Federdoc</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.federdoc.com/rinnovato-accordo-masaf-ebay-federdoc-ed-origin-italia-a-tutela-delle-indicazioni-geografiche-nel-commercio-elettronico/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Federdoc: nominato il nuovo Consiglio di Amministrazione per il triennio 2025- 2028" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.federdoc.com/federdoc-nominato-il-nuovo-consiglio-di-amministrazione-per-il-triennio-2025-2028/" target="_blank" rel="noopener noreferrer">Federdoc: nominato il nuovo Consiglio di Amministrazione per il triennio 2025- 2028</a>
+                  </p>
+
+
+                  <p class="desc">Federdoc: nominato il nuovo Consiglio di Amministrazione per il triennio 2025- 2028</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Federdoc</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.federdoc.com/federdoc-nominato-il-nuovo-consiglio-di-amministrazione-per-il-triennio-2025-2028/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Federdoc: forte preoccupazione per i dazi USA sui vini a denominazione d’origine.Comunicato stampa." data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.federdoc.com/federdoc-forte-preoccupazione-per-i-dazi-usa-sui-vini-a-denominazione-dorigine/" target="_blank" rel="noopener noreferrer">Federdoc: forte preoccupazione per i dazi USA sui vini a denominazione d’origine.Comunicato stampa.</a>
+                  </p>
+
+
+                  <p class="desc">Federdoc: forte preoccupazione per i dazi USA sui vini a denominazione d’origine.Comunicato stampa.</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Federdoc</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.federdoc.com/federdoc-forte-preoccupazione-per-i-dazi-usa-sui-vini-a-denominazione-dorigine/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Gli stakeholder europei delle IG si riuniscono a Bruxelles per plasmare il futuro delle Indicazioni Geografiche" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.federdoc.com/gli-stakeholder-europei-delle-ig-si-riuniscono-a-bruxelles-per-plasmare-il-futuro-delle-indicazioni-geografiche/" target="_blank" rel="noopener noreferrer">Gli stakeholder europei delle IG si riuniscono a Bruxelles per plasmare il futuro delle Indicazioni Geografiche</a>
+                  </p>
+
+
+                  <p class="desc">Gli stakeholder europei delle IG si riuniscono a Bruxelles per plasmare il futuro delle Indicazioni Geografiche</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Federdoc</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.federdoc.com/gli-stakeholder-europei-delle-ig-si-riuniscono-a-bruxelles-per-plasmare-il-futuro-delle-indicazioni-geografiche/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Dazi, Bonaldi: “Si rischia ingente perdita economica, confidiamo nella politica”" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.federdoc.com/dazi-bonaldi-si-rischia-ingente-perdita-economica-confidiamo-nella-politica/" target="_blank" rel="noopener noreferrer">Dazi, Bonaldi: “Si rischia ingente perdita economica, confidiamo nella politica”</a>
+                  </p>
+
+
+                  <p class="desc">Dazi, Bonaldi: “Si rischia ingente perdita economica, confidiamo nella politica”</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Federdoc</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.federdoc.com/dazi-bonaldi-si-rischia-ingente-perdita-economica-confidiamo-nella-politica/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: No Hong Kong Trip Is Complete Without a Visit to This Hotel Bar" data-entities="["region", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.wineenthusiast.com/culture/travel/hong-kong-argo-four-seasons/" target="_blank" rel="noopener noreferrer">No Hong Kong Trip Is Complete Without a Visit to This Hotel Bar</a>
+                  </p>
+
+
+                  <p class="desc">&lt;p&gt;Newly ranked #25 on this year&#39;s 50 Best Bars list, Four Seasons Hong Kong&#39;s Argo looks to its home city for inspiration.&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.wineenthusiast.com/culture/travel/hong-kong-argo-four-seaso...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Enthusiast</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.wineenthusiast.com/culture/travel/hong-kong-argo-four-seasons/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: We Cracked the Code on a Low-ABV Margarita" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.wineenthusiast.com/recipe/agave-wine-margarita/" target="_blank" rel="noopener noreferrer">We Cracked the Code on a Low-ABV Margarita</a>
+                  </p>
+
+
+                  <p class="desc">&lt;p&gt;Agave wine stars alongside lime juice, agave syrup, and orange juice in this low-alcohol spin on the classic margarita.&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.wineenthusiast.com/recipe/agave-wine-margarita/&#34;&gt;We Cracked ...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Enthusiast</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.wineenthusiast.com/recipe/agave-wine-margarita/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Book review: Wine, A Global History by Kathleen Burk" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.decanter.com/wine/book-review-wine-a-global-history-by-kathleen-burk/" target="_blank" rel="noopener noreferrer">Book review: Wine, A Global History by Kathleen Burk</a>
+                  </p>
+
+
+                  <p class="desc">Plus, our reviewer on The Wine Store...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Decanter</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.decanter.com/wine/book-review-wine-a-global-history-by-kathleen-burk/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: I vini del Collio al primo posto tra i bianchi di collina: precedono Alto Adige e Colli Orientali tra i ristoratori" data-entities="["grape_variety", "region", "topic", "climate_zone"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.gamberorosso.it/notizie/vino/tre-bicchieri/collio-evolution-sondaggio-wine-monitor-2026/" target="_blank" rel="noopener noreferrer">I vini del Collio al primo posto tra i bianchi di collina: precedono Alto Adige e Colli Orientali tra i ristoratori</a>
+                  </p>
+
+
+                  <p class="desc">Secondo l&#39;indagine Nomisma Wine Monitor, tra i vitigni spiccano ribolla gialla, friulano e sauvignon, poi il pinot grigio. Il Consorzio: &#34;Doc solida e riconosciuta, ma ampi margini di crescita&#34;</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Gambero Rosso</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 4</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.gamberorosso.it/notizie/vino/tre-bicchieri/collio-evolution-sondaggio-wine-monitor-2026/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: (협회 회원 특별 초대전)10월 14일에 국내에 수입된 조지아 와인을 모두 시음할 수 있는 ‘조지아 와인 그랜드 테이스팅’을 개최합니다. 이 행사에 초대합니다. 방문해주시면 감사하겠습니다. 방문객 전원에게 10월 초에 출간 예정인 책 를 무료로 증정합니다.행사명: 조지아 와인 그랜드 테이스팅행사주최: 동유럽와인연구원(원장 박찬준)일정: 10월 14일(수) 오후 1시부터 5시 30분까지장소: 스페이스 쉐어 강남센터 3층 Jupiter Hall(서초구 강남대로 499, 방문객 차량 주차 불가)참가 대상: 업계 종사자 및 미디어(인플루언서 포함) @@ 필독 :신청시 반드시  소속과 직책을 &#34;한국와인소비자협회&#34;회원으로 신청바랍니다.아래의 링크에서 참가를 등록해주세요.https://docs.google.com/forms/d/e/1FAIpQLSd6dT_9XECwei5C7y6ycu6ZsbS4spt-d6ei5q2t2sI5kXGiNQ/viewform?usp=dialoghttps://docs.goog" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://koreawine.or.kr/board/view/262/347" target="_blank" rel="noopener noreferrer">(협회 회원 특별 초대전)10월 14일에 국내에 수입된 조지아 와인을 모두 시음할 수 있는 ‘조지아 와인 그랜드 테이스팅’을 개최합니다. 이 행사에 초대합니다. 방문해주시면 감사하겠습니다. 방문객 전원에게 10월 초에 출간 예정인 책 를 무료로 증정합니다.행사명: 조지아 와인 그랜드 테이스팅행사주최: 동유럽와인연구원(원장 박찬준)일정: 10월 14일(수) 오후 1시부터 5시 30분까지장소: 스페이스 쉐어 강남센터 3층 Jupiter Hall(서초구 강남대로 499, 방문객 차량 주차 불가)참가 대상: 업계 종사자 및 미디어(인플루언서 포함) @@ 필독 :신청시 반드시  소속과 직책을 &#34;한국와인소비자협회&#34;회원으로 신청바랍니다.아래의 링크에서 참가를 등록해주세요.https://docs.google.com/forms/d/e/1FAIpQLSd6dT_9XECwei5C7y6ycu6ZsbS4spt-d6ei5q2t2sI5kXGiNQ/viewform?usp=dialoghttps://docs.goog</a>
+                  </p>
+
+
+                  <p class="desc">(협회 회원 특별 초대전)10월 14일에 국내에 수입된 조지아 와인을 모두 시음할 수 있는 ‘조지아 와인 그랜드 테이스팅’을 개최합니다. 이 행사에 초대합니다. 방문해주시면 감사하겠습니다. 방문객 전원에게 10월 초에 출간 예정인 책 를 무료로 증정합니다.행사명: 조지아 와인 그랜드 테이스팅행사주최: 동유럽와인연구원(원장 박찬준)일정: 10월 14일(수) 오후 1시부터 5시 30분까지장소: ...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Korean Wine Consumer Association</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://koreawine.or.kr/board/view/262/347" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: 안녕하세요.깊어가는 가을 아쉬운 마음 비건 와인 강좌와 함께 달래보아요~.내 몸과 나를 위한 행복한 시간이 필요한분께 추천!마지막 남은 10월과 11월의 기회~찾아가는 비건 와인 시음~♡♡♡♡ 서두르세요 선착순 조기마감예정입니다.  #신청방법:1.롯데백화점 문화센타 홈페이지에서 신청받습니다.2. 위에 나와있는 각 해당 문의처로 신청바랍니다." data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://koreawine.or.kr/board/view/269/347" target="_blank" rel="noopener noreferrer">안녕하세요.깊어가는 가을 아쉬운 마음 비건 와인 강좌와 함께 달래보아요~.내 몸과 나를 위한 행복한 시간이 필요한분께 추천!마지막 남은 10월과 11월의 기회~찾아가는 비건 와인 시음~♡♡♡♡ 서두르세요 선착순 조기마감예정입니다.  #신청방법:1.롯데백화점 문화센타 홈페이지에서 신청받습니다.2. 위에 나와있는 각 해당 문의처로 신청바랍니다.</a>
+                  </p>
+
+
+                  <p class="desc">안녕하세요.깊어가는 가을 아쉬운 마음 비건 와인 강좌와 함께 달래보아요~.내 몸과 나를 위한 행복한 시간이 필요한분께 추천!마지막 남은 10월과 11월의 기회~찾아가는 비건 와인 시음~♡♡♡♡ 서두르세요 선착순 조기마감예정입니다.  #신청방법:1.롯데백화점 문화센타 홈페이지에서 신청받습니다.2. 위에 나와있는 각 해당 문의처로 신청바랍니다.</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Korean Wine Consumer Association</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://koreawine.or.kr/board/view/269/347" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: 대전 국제와인 expo" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://koreawine.or.kr/board/view/270/347" target="_blank" rel="noopener noreferrer">대전 국제와인 expo</a>
+                  </p>
+
+
+                  <p class="desc">대전 국제와인 expo</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Korean Wine Consumer Association</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://koreawine.or.kr/board/view/270/347" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Wine Institute Secures $500,000 Grant to Advance Collaborative Effort to Build Demand for California Wine" data-entities="["region", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineinstitute.org/press-releases/wine-institute-secures-500000-grant-to-advance-collaborative-effort-to-build-demand-for-california-wine/" target="_blank" rel="noopener noreferrer">Wine Institute Secures $500,000 Grant to Advance Collaborative Effort to Build Demand for California Wine</a>
+                  </p>
+
+
+                  <p class="desc">Wine Institute Secures $500,000 Grant to Advance Collaborative Effort to Build Demand for California Wine</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Institute</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineinstitute.org/press-releases/wine-institute-secures-500000-grant-to-advance-collaborative-effort-to-build-demand-for-california-wine/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Gretchen Roddick of Hope Family Wines Elected Wine Institute 2026-2027 Board Chair" data-entities="["topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineinstitute.org/press-releases/gretchen-roddick-of-hope-family-wines-elected-wine-institute-2026-2027-board-chair/" target="_blank" rel="noopener noreferrer">Gretchen Roddick of Hope Family Wines Elected Wine Institute 2026-2027 Board Chair</a>
+                  </p>
+
+
+                  <p class="desc">Gretchen Roddick of Hope Family Wines Elected Wine Institute 2026-2027 Board Chair</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Institute</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 1</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineinstitute.org/press-releases/gretchen-roddick-of-hope-family-wines-elected-wine-institute-2026-2027-board-chair/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Wine Institute Statement on AB 1585 and the Path Forward for California Wine" data-entities="["region", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineinstitute.org/press-releases/wine-institute-statement-on-ab-1585-and-the-path-forward-for-california-wine/" target="_blank" rel="noopener noreferrer">Wine Institute Statement on AB 1585 and the Path Forward for California Wine</a>
+                  </p>
+
+
+                  <p class="desc">Wine Institute Statement on AB 1585 and the Path Forward for California Wine</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Institute</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineinstitute.org/press-releases/wine-institute-statement-on-ab-1585-and-the-path-forward-for-california-wine/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Distilled Spirits Council and Wine Institute File Amicus Brief Challenging Oregon EPR Law’s Disproportionate Impact on Wine and Spirits Producers" data-entities="["region", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineinstitute.org/press-releases/distilled-spirits-council-and-wine-institute-file-amicus-brief-challenging-oregon-epr-laws-disproportionate-impact-on-wine-and-spirits-producers/" target="_blank" rel="noopener noreferrer">Distilled Spirits Council and Wine Institute File Amicus Brief Challenging Oregon EPR Law’s Disproportionate Impact on Wine and Spirits Producers</a>
+                  </p>
+
+
+                  <p class="desc">Distilled Spirits Council and Wine Institute File Amicus Brief Challenging Oregon EPR Law’s Disproportionate Impact on Wine and Spirits Producers</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Institute</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineinstitute.org/press-releases/distilled-spirits-council-and-wine-institute-file-amicus-brief-challenging-oregon-epr-laws-disproportionate-impact-on-wine-and-spirits-producers/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: ‘Pour Outside the Lines’ During California Wine Month This September" data-entities="["region", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineinstitute.org/press-releases/pour-outside-the-lines-during-california-wine-month-this-september/" target="_blank" rel="noopener noreferrer">‘Pour Outside the Lines’ During California Wine Month This September</a>
+                  </p>
+
+
+                  <p class="desc">‘Pour Outside the Lines’ During California Wine Month This September</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Institute</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineinstitute.org/press-releases/pour-outside-the-lines-during-california-wine-month-this-september/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Wine Institute Tests New Approach to Coordinated Storytelling During California Wine Month" data-entities="["region", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineinstitute.org/press-releases/wine-institute-tests-new-approach-to-coordinated-storytelling-during-california-wine-month/" target="_blank" rel="noopener noreferrer">Wine Institute Tests New Approach to Coordinated Storytelling During California Wine Month</a>
+                  </p>
+
+
+                  <p class="desc">Wine Institute Tests New Approach to Coordinated Storytelling During California Wine Month</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Institute</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineinstitute.org/press-releases/wine-institute-tests-new-approach-to-coordinated-storytelling-during-california-wine-month/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: California Wines Advances Expert-Level Wine Education with Capstone California Level 4" data-entities="["region", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineinstitute.org/press-releases/california-wines-advances-expert-level-wine-education-with-capstone-california-level-4/" target="_blank" rel="noopener noreferrer">California Wines Advances Expert-Level Wine Education with Capstone California Level 4</a>
+                  </p>
+
+
+                  <p class="desc">California Wines Advances Expert-Level Wine Education with Capstone California Level 4</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Institute</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineinstitute.org/press-releases/california-wines-advances-expert-level-wine-education-with-capstone-california-level-4/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: California Wines’ Eureka! Event Brings Climate-Smart Winegrowing to New York" data-entities="["region", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineinstitute.org/press-releases/california-wines-eureka-event-brings-climate-smart-winegrowing-to-new-york/" target="_blank" rel="noopener noreferrer">California Wines’ Eureka! Event Brings Climate-Smart Winegrowing to New York</a>
+                  </p>
+
+
+                  <p class="desc">California Wines’ Eureka! Event Brings Climate-Smart Winegrowing to New York</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Institute</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineinstitute.org/press-releases/california-wines-eureka-event-brings-climate-smart-winegrowing-to-new-york/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: AB 1991 Signed Into Law, Giving California Wineries a New Consumer Research Tool" data-entities="["region", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineinstitute.org/press-releases/ab-1991-signed-into-law-giving-california-wineries-a-new-consumer-research-tool/" target="_blank" rel="noopener noreferrer">AB 1991 Signed Into Law, Giving California Wineries a New Consumer Research Tool</a>
+                  </p>
+
+
+                  <p class="desc">AB 1991 Signed Into Law, Giving California Wineries a New Consumer Research Tool</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Institute</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineinstitute.org/press-releases/ab-1991-signed-into-law-giving-california-wineries-a-new-consumer-research-tool/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: California 2026 Vintage Preview: An Early Harvest Shows Promise Across the State" data-entities="["region", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineinstitute.org/press-releases/california-2026-vintage-preview-an-early-harvest-shows-promise-across-the-state/" target="_blank" rel="noopener noreferrer">California 2026 Vintage Preview: An Early Harvest Shows Promise Across the State</a>
+                  </p>
+
+
+                  <p class="desc">California 2026 Vintage Preview: An Early Harvest Shows Promise Across the State</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Institute</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineinstitute.org/press-releases/california-2026-vintage-preview-an-early-harvest-shows-promise-across-the-state/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: China remains SA wine’s biggest export market as trade mission heads to Shanghai" data-entities="["grape_variety", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://winetitles.com.au/china-remains-sa-wines-biggest-export-market-as-trade-mission-heads-to-shanghai/" target="_blank" rel="noopener noreferrer">China remains SA wine’s biggest export market as trade mission heads to Shanghai</a>
+                  </p>
+
+
+                  <p class="desc">&lt;p&gt;Mainland China was worth $632 million in South Australian wine exports in the year to September 2026, ahead of a state government trade mission to China aimed at strengthening export relationships. Led by Primary Indu...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Winetitles Australia</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-29</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://winetitles.com.au/china-remains-sa-wines-biggest-export-market-as-trade-mission-heads-to-shanghai/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Carignan, Underrated No More" data-entities="["grape_variety", "region", "topic", "climate_zone"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineindustryadvisor.com/2026/10/28/carignan-underrated-no-more/" target="_blank" rel="noopener noreferrer">Carignan, Underrated No More</a>
+                  </p>
+
+
+                  <p class="desc">&lt;img alt=&#34;&#34; class=&#34;webfeedsFeaturedVisual wp-post-image&#34; height=&#34;360&#34; src=&#34;https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28104500/MailChimp_Good-Stuff-Web-Featured-Image-54-640x3...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Industry Advisor</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 4</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineindustryadvisor.com/2026/10/28/carignan-underrated-no-more/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Napa’s Charles Krug Owners Partner With Dealcoholized Wine Brand" data-entities="["region", "winery", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineindustryadvisor.com/2026/10/28/napas-charles-krug-owners-partner-with-dealcoholized-wine-brand/" target="_blank" rel="noopener noreferrer">Napa’s Charles Krug Owners Partner With Dealcoholized Wine Brand</a>
+                  </p>
+
+
+                  <p class="desc">&lt;img alt=&#34;&#34; class=&#34;webfeedsFeaturedVisual wp-post-image&#34; height=&#34;360&#34; src=&#34;https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28091240/ns_missing-thorn-cellar-102726_1600-640x360.jpg&#34;...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Industry Advisor</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 3</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineindustryadvisor.com/2026/10/28/napas-charles-krug-owners-partner-with-dealcoholized-wine-brand/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: The Last Guests of the Season: Off-Season Tasting Rooms" data-entities="["region", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineindustryadvisor.com/2026/10/28/the-last-guests-of-the-season-off-season-tasting-rooms/" target="_blank" rel="noopener noreferrer">The Last Guests of the Season: Off-Season Tasting Rooms</a>
+                  </p>
+
+
+                  <p class="desc">&lt;img alt=&#34;&#34; class=&#34;webfeedsFeaturedVisual wp-post-image&#34; height=&#34;357&#34; src=&#34;https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28082309/empty-tasting-room-november-scaled-1-640x357.jpe...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Industry Advisor</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineindustryadvisor.com/2026/10/28/the-last-guests-of-the-season-off-season-tasting-rooms/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: California’s Cult Malbec Is Back: Devil Proof’s 2024 Vintage Arrives November 3" data-entities="["grape_variety", "region", "topic", "climate_zone"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineindustryadvisor.com/2026/10/28/californias-cult-malbec-is-back-devil-proofs-2024-vintage-arrives-november-3/" target="_blank" rel="noopener noreferrer">California’s Cult Malbec Is Back: Devil Proof’s 2024 Vintage Arrives November 3</a>
+                  </p>
+
+
+                  <p class="desc">&lt;img alt=&#34;&#34; class=&#34;webfeedsFeaturedVisual wp-post-image&#34; height=&#34;427&#34; src=&#34;https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28091407/DP-Color-Photo-4-640x427.png&#34; style=&#34;display: bl...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Industry Advisor</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 4</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineindustryadvisor.com/2026/10/28/californias-cult-malbec-is-back-devil-proofs-2024-vintage-arrives-november-3/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Bluestone Vineyard’s 2023 Cabernet Franc Named Best of Class at San Francisco International Wine Competition" data-entities="["grape_variety", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineindustryadvisor.com/2026/10/28/bluestone-vineyards-2023-cabernet-franc-named-best-of-class-at-san-francisco-international-wine-competition/" target="_blank" rel="noopener noreferrer">Bluestone Vineyard’s 2023 Cabernet Franc Named Best of Class at San Francisco International Wine Competition</a>
+                  </p>
+
+
+                  <p class="desc">&lt;img alt=&#34;&#34; class=&#34;webfeedsFeaturedVisual wp-post-image&#34; height=&#34;960&#34; src=&#34;https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28084517/2026-Gov-Cup-6-640x960.jpg&#34; style=&#34;display: bloc...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Industry Advisor</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineindustryadvisor.com/2026/10/28/bluestone-vineyards-2023-cabernet-franc-named-best-of-class-at-san-francisco-international-wine-competition/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: 🎧224: Fermentation Step by Step" data-entities="["grape_variety", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineindustryadvisor.com/2026/10/28/224-fermentation-step-by-step/" target="_blank" rel="noopener noreferrer">🎧224: Fermentation Step by Step</a>
+                  </p>
+
+
+                  <p class="desc">&lt;img alt=&#34;&#34; class=&#34;webfeedsFeaturedVisual wp-post-image&#34; height=&#34;427&#34; src=&#34;https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2025/06/26125644/from-the-web-placeholder-03-640x427.jpg&#34; style=&#34;...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Industry Advisor</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineindustryadvisor.com/2026/10/28/224-fermentation-step-by-step/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Malu Lambert: South Africa’s growers need a new deal" data-entities="["grape_variety", "region", "winery", "topic", "climate_zone"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://winemag.co.za/wine/opinion/malu-lambert-south-africas-growers-need-a-new-deal/" target="_blank" rel="noopener noreferrer">Malu Lambert: South Africa’s growers need a new deal</a>
+                  </p>
+
+
+                  <p class="desc">&lt;p&gt;South Africa’s wine industry has been built on what critic and commentator Michael Fridjhon describes as “a history of production-driven enterprises”. Speaking at the University of Cape Town’s Business of Wine graduat...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Magazine South Africa</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 5</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://winemag.co.za/wine/opinion/malu-lambert-south-africas-growers-need-a-new-deal/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: International Carignan Day: 12 awarded wines to celebrate with" data-entities="["grape_variety", "region", "topic", "climate_zone"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.decanter.com/decanter-world-wine-awards/international-carignan-day-12-awarded-wines-to-celebrate-with-514554/" target="_blank" rel="noopener noreferrer">International Carignan Day: 12 awarded wines to celebrate with</a>
+                  </p>
+
+
+                  <p class="desc">A selection of award-winning wines to try from DWWA...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Decanter</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 4</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.decanter.com/decanter-world-wine-awards/international-carignan-day-12-awarded-wines-to-celebrate-with-514554/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Vivre à fond Bordeaux Tasting !" data-entities="["grape_variety", "region", "winery", "topic", "climate_zone"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.terredevins.com/actualites/vivre-a-fond-bordeaux-tasting" target="_blank" rel="noopener noreferrer">Vivre à fond Bordeaux Tasting !</a>
+                  </p>
+
+
+                  <p class="desc">&lt;p&gt;Les 12 et 13 décembre prochains, le salon Bordeaux Tasting, organisé par Terre de Vins, réunira pour sa quinzième édition un condensé de tout ce que le vignoble français sait faire de meilleur. Bordeaux, évidemment, m...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Terre de Vins</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 5</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.terredevins.com/actualites/vivre-a-fond-bordeaux-tasting" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Parallel vines: Cabernet Franc stars across Ontario and New York State" data-entities="["grape_variety", "region", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.decanter.com/wine/cabernet-franc/parallel-vines-cabernet-franc-stars-across-ontario-and-new-york-state/" target="_blank" rel="noopener noreferrer">Parallel vines: Cabernet Franc stars across Ontario and New York State</a>
+                  </p>
+
+
+                  <p class="desc">The grape that knows no borders...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Decanter</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 3</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.decanter.com/wine/cabernet-franc/parallel-vines-cabernet-franc-stars-across-ontario-and-new-york-state/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: A New White Zin" data-entities="["grape_variety", "region", "winery", "topic", "climate_zone"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://timatkin.com/a-new-white-zin/" target="_blank" rel="noopener noreferrer">A New White Zin</a>
+                  </p>
+
+
+                  <p class="desc">If you are not familiar with the lore of White Zinfandel — America’s greatest contribution to wine culture — you are missing out on some excellent cocktail conversation. I understand this might sound like the layup for a...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Tim Atkin MW</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 5</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://timatkin.com/a-new-white-zin/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: 🎧📺How Grounded Wine Co. Is Growing 28% YOY With Josh Phelps" data-entities="["winery", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineindustryadvisor.com/2026/10/28/how-grounded-wine-co-is-growing-28-yoy-with-josh-phelps/" target="_blank" rel="noopener noreferrer">🎧📺How Grounded Wine Co. Is Growing 28% YOY With Josh Phelps</a>
+                  </p>
+
+
+                  <p class="desc">&lt;img alt=&#34;&#34; class=&#34;webfeedsFeaturedVisual wp-post-image&#34; height=&#34;360&#34; src=&#34;https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28082323/youtube-DEZ64RaveCM-640x360.jpg&#34; style=&#34;display:...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Industry Advisor</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 2</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineindustryadvisor.com/2026/10/28/how-grounded-wine-co-is-growing-28-yoy-with-josh-phelps/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Grapes for Humanity Global Foundation Wine Legends VII Raises More Than $200,000 for the POLG Foundation at New York Gala" data-entities="["region", "winery", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://wineindustryadvisor.com/2026/10/28/grapes-for-humanity-global-foundation-wine-legends-vii-raises-more-than-200k/" target="_blank" rel="noopener noreferrer">Grapes for Humanity Global Foundation Wine Legends VII Raises More Than $200,000 for the POLG Foundation at New York Gala</a>
+                  </p>
+
+
+                  <p class="desc">&lt;img alt=&#34;&#34; class=&#34;webfeedsFeaturedVisual wp-post-image&#34; height=&#34;427&#34; src=&#34;https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28084251/Prince-Robert_ftimg-640x427.jpg&#34; style=&#34;display:...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Industry Advisor</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-28</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 3</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://wineindustryadvisor.com/2026/10/28/grapes-for-humanity-global-foundation-wine-legends-vii-raises-more-than-200k/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: Vintage Menus Are a Glimpse into the Golden Age of Dining" data-entities="["region", "winery", "topic"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.wineenthusiast.com/culture/vintage-restaurant-menus/" target="_blank" rel="noopener noreferrer">Vintage Menus Are a Glimpse into the Golden Age of Dining</a>
+                  </p>
+
+
+                  <p class="desc">&lt;p&gt;Eugen Beer and Barbara McMahon aim to preserve dining culture through their enormous collection of vintage menus.&lt;/p&gt;
+&lt;p&gt;The post &lt;a href=&#34;https://www.wineenthusiast.com/culture/vintage-restaurant-menus/&#34;&gt;Vintage Menu...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Enthusiast</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-27</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 3</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.wineenthusiast.com/culture/vintage-restaurant-menus/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: 2026 Top 100 Cellar Selections" data-entities="["grape_variety", "region", "winery", "topic", "climate_zone"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.wineenthusiast.com/toplists/cellar-selections-2026/" target="_blank" rel="noopener noreferrer">2026 Top 100 Cellar Selections</a>
+                  </p>
+
+
+                  <p class="desc">&lt;p&gt;WINE &amp;#38; RATINGS Top 100 Cellar Selections 2026 The best age-worthy wines of the year, according to our expert Tasting Panel. BY The Editors of wine enthusiast &amp;#124; 3 Min Read PHOTOGRAPHY BY CHELSEA KYLE / PROP ST...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Wine Enthusiast</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-27</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 5</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.wineenthusiast.com/toplists/cellar-selections-2026/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+              <div class="card" role="article" aria-label="Article: We Asked 8 Sommeliers: What’s the Most Overrated White Wine? (2026)" data-entities="["grape_variety", "region", "winery", "topic", "climate_zone"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://vinepair.com/articles/wa-wine-pros-overrated-white-wine-2026/" target="_blank" rel="noopener noreferrer">We Asked 8 Sommeliers: What’s the Most Overrated White Wine? (2026)</a>
+                  </p>
+
+
+                  <p class="desc">&lt;p&gt;White wine is a reliable go-to for many drinkers. It can bring crisp, saline edges, juicy tropical fruit notes, or even rich, nutty flavors. For its diversity, palatability, and low-ABV nature, the genre has recently ...</p>
+
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> VinePair</span>
+
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-10-27</span></span>
+
+
+                    <span class="chip brand"><strong>entities</strong> 5</span>
+
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://vinepair.com/articles/wa-wine-pros-overrated-white-wine-2026/" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </article>
+      </section>
+
+      <footer class="footer" role="contentinfo">
+        <div>
+          <span class="mono">category</span>
+          <span class="muted">/</span>
+          <span>Wine Radar</span>
+          <span class="muted">·</span>
+          <span class="mono">2026-10-29 02:17 UTC</span>
+        </div>
+        <div class="footer-actions">
+          <a href="#content" class="mono" aria-label="Back to top">back to top</a>
+          <button id="export-csv" class="export-btn" aria-label="Export to CSV">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Export CSV
+          </button>
+        </div>
+      </footer>
+
+      <script id="articles-data" type="application/json">[{"collected_at": null, "link": "https://www.wine21.com/11_news/news_view.html?news_no=21418", "matched_entities": {"topic": ["wine_general", "wine_release"]}, "published_at": "2026-10-29T02:16:17.972572", "source": "Wine21", "summary": "[\uc2e0\uaddc \uc640\uc778] \ube44\ub178\uc5d0\uc774\uce58, \ubbf8\uad6d \uc778\uae30 \uc640\uc778 \u0027\uc4f0\ub9ac \ud2f0\ud504\uc2a4\u0027 \uad6d\ub0b4 \ub860\uce6d", "title": "[\uc2e0\uaddc \uc640\uc778] \ube44\ub178\uc5d0\uc774\uce58, \ubbf8\uad6d \uc778\uae30 \uc640\uc778 \u0027\uc4f0\ub9ac \ud2f0\ud504\uc2a4\u0027 \uad6d\ub0b4 \ub860\uce6d"}, {"collected_at": null, "link": "https://www.wine21.com/11_news/news_view.html?news_no=21423", "matched_entities": {"topic": ["wine_general"]}, "published_at": "2026-10-29T02:16:17.972572", "source": "Wine21", "summary": "\uace0\uc9c0\ub300 \ud14c\ub8e8\uc544\uc640 \uc608\uc220, \uc0ac\uc790\uc758 \uae30\uac1c\uac00 \uae43\ub4e0 \uc640\uc778 \u0027\ud5e4\uc2a4 \ud37c\uc2a8 \uc5d0\uc2a4\ud14c\uc774\ud2b8\u0027", "title": "\uace0\uc9c0\ub300 \ud14c\ub8e8\uc544\uc640 \uc608\uc220, \uc0ac\uc790\uc758 \uae30\uac1c\uac00 \uae43\ub4e0 \uc640\uc778 \u0027\ud5e4\uc2a4 \ud37c\uc2a8 \uc5d0\uc2a4\ud14c\uc774\ud2b8\u0027"}, {"collected_at": null, "link": "https://www.wine21.com/11_news/news_view.html?news_no=21421", "matched_entities": {"topic": ["wine_general"]}, "published_at": "2026-10-29T02:16:17.972572", "source": "Wine21", "summary": "GCF \uadf8\ub8f9\uc774 \uc787\ub294 \ub8e8\uc544\ub974\uc640 \uce60\ub808 \uc640\uc778", "title": "GCF \uadf8\ub8f9\uc774 \uc787\ub294 \ub8e8\uc544\ub974\uc640 \uce60\ub808 \uc640\uc778"}, {"collected_at": null, "link": "https://www.wine21.com/11_news/news_view.html?news_no=21422", "matched_entities": {"topic": ["wine_event", "wine_general"]}, "published_at": "2026-10-29T02:16:17.972572", "source": "Wine21", "summary": "\ub3d9\uc6d0\uc640\uc778\ud50c\ub7ec\uc2a4 \ud3ec\ud2b8\ud3f4\ub9ac\uc624 \uc2dc\uc74c\ud68c, \u0027Wine Library \u2013 \uadf8\ub79c\ub4dc \ud14c\uc774\uc2a4\ud305 in SEOUL\u0027 \uc131\ub8cc", "title": "\ub3d9\uc6d0\uc640\uc778\ud50c\ub7ec\uc2a4 \ud3ec\ud2b8\ud3f4\ub9ac\uc624 \uc2dc\uc74c\ud68c, \u0027Wine Library \u2013 \uadf8\ub79c\ub4dc \ud14c\uc774\uc2a4\ud305 in SEOUL\u0027 \uc131\ub8cc"}, {"collected_at": null, "link": "https://www.wine21.com/11_news/news_view.html?news_no=21419", "matched_entities": {"topic": ["wine_event"]}, "published_at": "2026-10-29T02:16:17.972572", "source": "Wine21", "summary": "\ube44\ub178\uc5d0\uc774\uce58, \ud3ec\ud2b8\ud3f4\ub9ac\uc624 \uc2dc\uc74c\ud68c \u0027UNCORKED 2026\u0027 \uc131\ub8cc", "title": "\ube44\ub178\uc5d0\uc774\uce58, \ud3ec\ud2b8\ud3f4\ub9ac\uc624 \uc2dc\uc74c\ud68c \u0027UNCORKED 2026\u0027 \uc131\ub8cc"}, {"collected_at": null, "link": "https://www.wine21.com/11_news/news_view.html?news_no=21424", "matched_entities": {"topic": ["wine_general", "wine_release"]}, "published_at": "2026-10-29T02:16:17.972572", "source": "Wine21", "summary": "[\uc2e0\uaddc \uc640\uc778] \uc5d0\ub974\ub124\uc2a4, \ub274\uc9c8\ub79c\ub4dc\uc5d0\uc11c \uc7ac\ud68c\ud55c \u0027\ub808\uc774\uc800\ubc31 \ud53c\ub178 \ub204\uc544\u0027 \uad6d\ub0b4 \uccab \uacf5\uc2dd \ucd9c\uc2dc", "title": "[\uc2e0\uaddc \uc640\uc778] \uc5d0\ub974\ub124\uc2a4, \ub274\uc9c8\ub79c\ub4dc\uc5d0\uc11c \uc7ac\ud68c\ud55c \u0027\ub808\uc774\uc800\ubc31 \ud53c\ub178 \ub204\uc544\u0027 \uad6d\ub0b4 \uccab \uacf5\uc2dd \ucd9c\uc2dc"}, {"collected_at": null, "link": "https://www.wine21.com/11_news/news_view.html?news_no=21420", "matched_entities": {"topic": ["wine_general", "wine_market"]}, "published_at": "2026-10-29T02:16:17.972572", "source": "Wine21", "summary": "[\uce7c\ub7fc] 2026\ub144 3\ubd84\uae30\uae4c\uc9c0 \uc640\uc778 \uc2dc\uc7a5 \ud604\ud669\uacfc \ud5a5\ud6c4 \uc804\ub9dd", "title": "[\uce7c\ub7fc] 2026\ub144 3\ubd84\uae30\uae4c\uc9c0 \uc640\uc778 \uc2dc\uc7a5 \ud604\ud669\uacfc \ud5a5\ud6c4 \uc804\ub9dd"}, {"collected_at": null, "link": "https://www.drinkhacker.com/2026/10/28/review-edradour-2000-vintage-18-years-old-barolo-cask-finish/", "matched_entities": {"region": ["Barolo"], "topic": ["wine_education", "wine_general", "wine_release"]}, "published_at": "2026-10-28T22:31:11", "source": "Drinkhacker", "summary": "\u003cp\u003eEdradour Distillery has never been afraid of doing things a little differently, and I\u2019m always excited by an opportunity to try their bottlings. This 2000 vintage 18-year old Barolo Cask is a particularly interesting example: spending 12 years in ex-bourbon casks before a lengthy six years in Barolo casks. The result is a whisky where\u0026#8230;\u003c/p\u003e\n\u003cp\u003eThe post \u003ca href=\"https://www.drinkhacker.com/2026/10/28/review-edradour-2000-vintage-18-years-old-barolo-cask-finish/\"\u003eReview: Edradour 2000 Vintage 18 Years Old Barolo Cask Finish\u003c/a\u003e appeared first on \u003ca href=\"https://www.drinkhacker.com\"\u003eDrinkhacker: The Insider\u0026#039;s Guide to Good Drinking\u003c/a\u003e.\u003c/p\u003e", "title": "Review: Edradour 2000 Vintage 18 Years Old Barolo Cask Finish"}, {"collected_at": null, "link": "https://enolife.com.ar/es/por-fin-quino-y-mafalda-tendran-su-casa-en-mendoza/", "matched_entities": {"climate_zone": ["Continental"], "region": ["Mendoza"]}, "published_at": "2026-10-28T21:52:33", "source": "Enolife", "summary": "A partir de este s\u00e1bado 31 de octubre de 2026, los vecinos y turistas de\u0026#8230;", "title": "Por fin Quino y Mafalda tendr\u00e1n su casa en Mendoza"}, {"collected_at": null, "link": "https://enolife.com.ar/es/atencion-bodegas-mendocinas-ultimos-cupos-para-participar-en-la-feria-wine-paris-del-15-al-17-2-27/", "matched_entities": {"region": ["Porto"], "topic": ["wine_general"]}, "published_at": "2026-10-28T21:10:14", "source": "Enolife", "summary": "ProMendoza, la agencia estatal de promoci\u00f3n de los productos de la provincia en el mundo,\u0026#8230;", "title": "Atenci\u00f3n bodegas mendocinas: \u00faltimos cupos para participar en la feria Wine Paris del 15 al 17/2/27"}, {"collected_at": null, "link": "https://wineanorak.com/2026/10/28/video-with-filipa-pato-in-her-old-vineyards-in-bairrada-portugal-which-she-farms-with-the-help-of-pigs/", "matched_entities": {"topic": ["wine_general"]}, "published_at": "2026-10-28T20:55:15", "source": "Jamie Goode\u0027s Wine Blog", "summary": "Filipa Pato began making her own wines in 2001, starting with three rented plots. Since then she and her husband", "title": "Video: with Filipa Pato in her old vineyards in Bairrada, Portugal, which she farms with the help of pigs"}, {"collected_at": null, "link": "https://wineanorak.com/2026/10/28/highlights-overgaauw-sylvaner-2025-stellenbosch-south-africa/", "matched_entities": {"climate_zone": ["Mediterranean"], "region": ["Stellenbosch"], "topic": ["wine_general"]}, "published_at": "2026-10-28T19:55:20", "source": "Jamie Goode\u0027s Wine Blog", "summary": "This wine is noteworthy because it is South Africa\u2019s only Sylvaner, first made in 1971. Just a single hectare of", "title": "Highlights: Overgaauw Sylvaner 2025 Stellenbosch, South Africa"}, {"collected_at": null, "link": "https://enolife.com.ar/es/cuantas-calorias-tienen-el-vino-y-las-bebidas-alcoholicas-y-como-influyen-en-el-peso/", "matched_entities": {"topic": ["wine_general"]}, "published_at": "2026-10-28T17:13:05", "source": "Enolife", "summary": "Cuando uno consume m\u00e1s calor\u00edas de las que el cuerpo necesita, se produce el llamado\u0026#8230;", "title": "Cu\u00e1ntas calor\u00edas tienen el vino y las bebidas alcoh\u00f3licas y c\u00f3mo influyen en el peso"}, {"collected_at": null, "link": "https://vinepair.com/good-wine-reviews/best-german-chardonnay/", "matched_entities": {"climate_zone": ["Continental"], "grape_variety": ["Chardonnay", "Riesling"], "region": ["Alsace", "Baden", "Burgundy", "Germany", "Mosel", "Pfalz", "Rheinhessen"], "topic": ["wine_general", "wine_market"]}, "published_at": "2026-10-28T16:55:05", "source": "VinePair", "summary": "\u003cp\u003eRiesling is all but synonymous with German wine. It\u2019s the most planted grape in Germany, accounting for almost a quarter of the country\u2019s vineyard area. And while Riesling\u2019s dominance is not about to change anytime soon, another white variety is becoming recognized for its quality and potential in Germany. The grape is none other than Chardonnay. German Chardonnay is still a minor player, covering only about 3 percent of German vineyards. About 7,000 acres of it were under vine in 2023, but more of it is being planted every year. And with good reason.\u003c/p\u003e\n\u003cp\u003eThe article \u003ca href=\"https://vinepair.com/good-wine-reviews/best-german-chardonnay/\"\u003e7 of the Best Chardonnays From Germany\u003c/a\u003e appeared first on \u003ca href=\"https://vinepair.com\"\u003eVinePair\u003c/a\u003e.\u003c/p\u003e", "title": "7 of the Best Chardonnays From Germany"}, {"collected_at": null, "link": "https://www.terredevins.com/actualites/cite-du-vin-philippe-massol-passe-la-main-a-laurent-basse-cathalinat", "matched_entities": {"climate_zone": ["Mediterranean"], "region": ["Bordeaux"]}, "published_at": "2026-10-28T16:06:49", "source": "Terre de Vins", "summary": "\u003cp\u003e\u00c0 la t\u00eate du projet depuis les premiers croquis, Philippe Massol quitte la direction g\u00e9n\u00e9rale de la Cit\u00e9 du Vin le 31 d\u00e9cembre. Son bras droit depuis douze ans, Laurent Basse-Cathalinat, lui succ\u00e8de au 1er janvier 2027. Apr\u00e8s le d\u00e9part de Sylvie Cazes de la pr\u00e9sidence en juin, c\u2019est toute la gouvernance historique du lieu [\u0026#8230;]\u003c/p\u003e\n\u003cp\u003eCet article \u003ca href=\"https://www.terredevins.com/actualites/cite-du-vin-philippe-massol-passe-la-main-a-laurent-basse-cathalinat\"\u003eCit\u00e9 du Vin : Philippe Massol passe la main \u00e0 Laurent Basse-Cathalinat\u003c/a\u003e est apparu en premier sur \u003ca href=\"https://www.terredevins.com\"\u003eTerre de Vins\u003c/a\u003e.\u003c/p\u003e", "title": "Cit\u00e9 du Vin : Philippe Massol passe la main \u00e0 Laurent Basse-Cathalinat"}, {"collected_at": null, "link": "https://www.federdoc.com/bando-di-gara-progetto-europeo-the-heart-of-european-taste-sinergia-tra-4-eccellenze-enogastronomiche/", "matched_entities": {"topic": ["wine_general"]}, "published_at": "2026-10-29T02:16:18.393382", "source": "Federdoc", "summary": "BANDO DI GARA PROGETTO EUROPEO THE HEART OF EUROPEAN TASTE: SINERGIA TRA 4 ECCELLENZE ENOGASTRONOMICHE", "title": "BANDO DI GARA PROGETTO EUROPEO THE HEART OF EUROPEAN TASTE: SINERGIA TRA 4 ECCELLENZE ENOGASTRONOMICHE"}, {"collected_at": null, "link": "https://www.federdoc.com/il-presidente-federdoc-bonaldi-interviene-allevento-della-nascita-del-polo-vinicolo-triveneto/", "matched_entities": {"topic": ["wine_general", "wine_policy"]}, "published_at": "2026-10-29T02:16:18.393382", "source": "Federdoc", "summary": "Il Presidente Federdoc Bonaldi interviene all\u2019evento della nascita del Polo Vitivinicolo Triveneto", "title": "Il Presidente Federdoc Bonaldi interviene all\u2019evento della nascita del Polo Vitivinicolo Triveneto"}, {"collected_at": null, "link": "https://www.federdoc.com/rinnovato-accordo-masaf-ebay-federdoc-ed-origin-italia-a-tutela-delle-indicazioni-geografiche-nel-commercio-elettronico/", "matched_entities": {"topic": ["wine_policy"]}, "published_at": "2026-10-29T02:16:18.393382", "source": "Federdoc", "summary": "Rinnovato accordo Masaf, eBay, Federdoc ed Origin Italia a tutela delle Indicazioni Geografiche nel commercio elettronico", "title": "Rinnovato accordo Masaf, eBay, Federdoc ed Origin Italia a tutela delle Indicazioni Geografiche nel commercio elettronico"}, {"collected_at": null, "link": "https://www.federdoc.com/federdoc-nominato-il-nuovo-consiglio-di-amministrazione-per-il-triennio-2025-2028/", "matched_entities": {"topic": ["wine_policy"]}, "published_at": "2026-10-29T02:16:18.393382", "source": "Federdoc", "summary": "Federdoc: nominato il nuovo Consiglio di Amministrazione per il triennio 2025- 2028", "title": "Federdoc: nominato il nuovo Consiglio di Amministrazione per il triennio 2025- 2028"}, {"collected_at": null, "link": "https://www.federdoc.com/federdoc-forte-preoccupazione-per-i-dazi-usa-sui-vini-a-denominazione-dorigine/", "matched_entities": {"topic": ["wine_general", "wine_market", "wine_policy"]}, "published_at": "2026-10-29T02:16:18.393382", "source": "Federdoc", "summary": "Federdoc: forte preoccupazione per i dazi USA sui vini a denominazione d\u2019origine.Comunicato stampa.", "title": "Federdoc: forte preoccupazione per i dazi USA sui vini a denominazione d\u2019origine.Comunicato stampa."}, {"collected_at": null, "link": "https://www.federdoc.com/gli-stakeholder-europei-delle-ig-si-riuniscono-a-bruxelles-per-plasmare-il-futuro-delle-indicazioni-geografiche/", "matched_entities": {"topic": ["wine_policy"]}, "published_at": "2026-10-29T02:16:18.393382", "source": "Federdoc", "summary": "Gli stakeholder europei delle IG si riuniscono a Bruxelles per plasmare il futuro delle Indicazioni Geografiche", "title": "Gli stakeholder europei delle IG si riuniscono a Bruxelles per plasmare il futuro delle Indicazioni Geografiche"}, {"collected_at": null, "link": "https://www.federdoc.com/dazi-bonaldi-si-rischia-ingente-perdita-economica-confidiamo-nella-politica/", "matched_entities": {"topic": ["wine_market"]}, "published_at": "2026-10-29T02:16:18.393382", "source": "Federdoc", "summary": "Dazi, Bonaldi: \u201cSi rischia ingente perdita economica, confidiamo nella politica\u201d", "title": "Dazi, Bonaldi: \u201cSi rischia ingente perdita economica, confidiamo nella politica\u201d"}, {"collected_at": null, "link": "https://www.wineenthusiast.com/culture/travel/hong-kong-argo-four-seasons/", "matched_entities": {"region": ["Jerez"], "topic": ["wine_education", "wine_general"]}, "published_at": "2026-10-28T15:08:05", "source": "Wine Enthusiast", "summary": "\u003cp\u003eNewly ranked #25 on this year\u0027s 50 Best Bars list, Four Seasons Hong Kong\u0027s Argo looks to its home city for inspiration.\u003c/p\u003e\n\u003cp\u003eThe post \u003ca href=\"https://www.wineenthusiast.com/culture/travel/hong-kong-argo-four-seasons/\"\u003eNo Hong Kong Trip Is Complete Without a Visit to This Hotel Bar\u003c/a\u003e appeared first on \u003ca href=\"https://www.wineenthusiast.com\"\u003eWine Enthusiast\u003c/a\u003e.\u003c/p\u003e", "title": "No Hong Kong Trip Is Complete Without a Visit to This Hotel Bar"}, {"collected_at": null, "link": "https://www.wineenthusiast.com/recipe/agave-wine-margarita/", "matched_entities": {"topic": ["wine_general"]}, "published_at": "2026-10-28T14:28:16", "source": "Wine Enthusiast", "summary": "\u003cp\u003eAgave wine stars alongside lime juice, agave syrup, and orange juice in this low-alcohol spin on the classic margarita.\u003c/p\u003e\n\u003cp\u003eThe post \u003ca href=\"https://www.wineenthusiast.com/recipe/agave-wine-margarita/\"\u003eWe Cracked the Code on a Low-ABV Margarita\u003c/a\u003e appeared first on \u003ca href=\"https://www.wineenthusiast.com\"\u003eWine Enthusiast\u003c/a\u003e.\u003c/p\u003e", "title": "We Cracked the Code on a Low-ABV Margarita"}, {"collected_at": null, "link": "https://www.decanter.com/wine/book-review-wine-a-global-history-by-kathleen-burk/", "matched_entities": {"topic": ["wine_general"]}, "published_at": "2026-10-28T13:53:50", "source": "Decanter", "summary": "Plus, our reviewer on The Wine Store...", "title": "Book review: Wine, A Global History by Kathleen Burk"}, {"collected_at": null, "link": "https://www.gamberorosso.it/notizie/vino/tre-bicchieri/collio-evolution-sondaggio-wine-monitor-2026/", "matched_entities": {"climate_zone": ["Continental"], "grape_variety": ["Pinot Gris"], "region": ["Alto Adige"], "topic": ["wine_general", "wine_policy"]}, "published_at": "2026-10-28T12:03:14", "source": "Gambero Rosso", "summary": "Secondo l\u0027indagine Nomisma Wine Monitor, tra i vitigni spiccano ribolla gialla, friulano e sauvignon, poi il pinot grigio. Il Consorzio: \"Doc solida e riconosciuta, ma ampi margini di crescita\"", "title": "I vini del Collio al primo posto tra i bianchi di collina: precedono Alto Adige e Colli Orientali tra i ristoratori"}, {"collected_at": null, "link": "https://koreawine.or.kr/board/view/262/347", "matched_entities": {"topic": ["wine_event", "wine_general", "wine_market"]}, "published_at": "2026-10-29T02:16:18.105738", "source": "Korean Wine Consumer Association", "summary": "(\ud611\ud68c \ud68c\uc6d0 \ud2b9\ubcc4 \ucd08\ub300\uc804)10\uc6d4 14\uc77c\uc5d0 \uad6d\ub0b4\uc5d0 \uc218\uc785\ub41c \uc870\uc9c0\uc544 \uc640\uc778\uc744 \ubaa8\ub450 \uc2dc\uc74c\ud560 \uc218 \uc788\ub294 \u2018\uc870\uc9c0\uc544 \uc640\uc778 \uadf8\ub79c\ub4dc \ud14c\uc774\uc2a4\ud305\u2019\uc744 \uac1c\ucd5c\ud569\ub2c8\ub2e4. \uc774 \ud589\uc0ac\uc5d0 \ucd08\ub300\ud569\ub2c8\ub2e4. \ubc29\ubb38\ud574\uc8fc\uc2dc\uba74 \uac10\uc0ac\ud558\uaca0\uc2b5\ub2c8\ub2e4. \ubc29\ubb38\uac1d \uc804\uc6d0\uc5d0\uac8c 10\uc6d4 \ucd08\uc5d0 \ucd9c\uac04 \uc608\uc815\uc778 \ucc45 \ub97c \ubb34\ub8cc\ub85c \uc99d\uc815\ud569\ub2c8\ub2e4.\ud589\uc0ac\uba85: \uc870\uc9c0\uc544 \uc640\uc778 \uadf8\ub79c\ub4dc \ud14c\uc774\uc2a4\ud305\ud589\uc0ac\uc8fc\ucd5c: \ub3d9\uc720\ub7fd\uc640\uc778\uc5f0\uad6c\uc6d0(\uc6d0\uc7a5 \ubc15\ucc2c\uc900)\uc77c\uc815: 10\uc6d4 14\uc77c(\uc218) \uc624\ud6c4 1\uc2dc\ubd80\ud130 5\uc2dc 30\ubd84\uae4c\uc9c0\uc7a5\uc18c: \uc2a4\ud398\uc774\uc2a4 \uc250\uc5b4 \uac15\ub0a8\uc13c\ud130 3\uce35 Jupiter Hall(\uc11c\ucd08\uad6c \uac15\ub0a8\ub300\ub85c 499, \ubc29\ubb38\uac1d \ucc28\ub7c9 \uc8fc\ucc28 \ubd88\uac00)\ucc38\uac00 \ub300\uc0c1: \uc5c5\uacc4 \uc885\uc0ac\uc790 \ubc0f \ubbf8\ub514\uc5b4(\uc778\ud50c\ub8e8\uc5b8\uc11c \ud3ec\ud568)\u00a0@@ \ud544\ub3c5 :\uc2e0\uccad\uc2dc \ubc18\ub4dc\uc2dc \u00a0\uc18c\uc18d\uacfc \uc9c1\ucc45\uc744 \"\ud55c\uad6d\uc640\uc778\uc18c\ube44\uc790\ud611\ud68c\"\ud68c\uc6d0\uc73c\ub85c \uc2e0\uccad\ubc14\ub78d\ub2c8\ub2e4.\uc544\ub798\uc758 \ub9c1\ud06c\uc5d0\uc11c \ucc38\uac00\ub97c \ub4f1\ub85d\ud574\uc8fc\uc138\uc694.https://docs.google.com/forms/d/e/1FAIpQLSd6dT_9XECwei5C7y6ycu6ZsbS4spt-d6ei5q2t2sI5kXGiNQ/viewform?usp=dialoghttps://docs.goog", "title": "(\ud611\ud68c \ud68c\uc6d0 \ud2b9\ubcc4 \ucd08\ub300\uc804)10\uc6d4 14\uc77c\uc5d0 \uad6d\ub0b4\uc5d0 \uc218\uc785\ub41c \uc870\uc9c0\uc544 \uc640\uc778\uc744 \ubaa8\ub450 \uc2dc\uc74c\ud560 \uc218 \uc788\ub294 \u2018\uc870\uc9c0\uc544 \uc640\uc778 \uadf8\ub79c\ub4dc \ud14c\uc774\uc2a4\ud305\u2019\uc744 \uac1c\ucd5c\ud569\ub2c8\ub2e4. \uc774 \ud589\uc0ac\uc5d0 \ucd08\ub300\ud569\ub2c8\ub2e4. \ubc29\ubb38\ud574\uc8fc\uc2dc\uba74 \uac10\uc0ac\ud558\uaca0\uc2b5\ub2c8\ub2e4. \ubc29\ubb38\uac1d \uc804\uc6d0\uc5d0\uac8c 10\uc6d4 \ucd08\uc5d0 \ucd9c\uac04 \uc608\uc815\uc778 \ucc45 \ub97c \ubb34\ub8cc\ub85c \uc99d\uc815\ud569\ub2c8\ub2e4.\ud589\uc0ac\uba85: \uc870\uc9c0\uc544 \uc640\uc778 \uadf8\ub79c\ub4dc \ud14c\uc774\uc2a4\ud305\ud589\uc0ac\uc8fc\ucd5c: \ub3d9\uc720\ub7fd\uc640\uc778\uc5f0\uad6c\uc6d0(\uc6d0\uc7a5 \ubc15\ucc2c\uc900)\uc77c\uc815: 10\uc6d4 14\uc77c(\uc218) \uc624\ud6c4 1\uc2dc\ubd80\ud130 5\uc2dc 30\ubd84\uae4c\uc9c0\uc7a5\uc18c: \uc2a4\ud398\uc774\uc2a4 \uc250\uc5b4 \uac15\ub0a8\uc13c\ud130 3\uce35 Jupiter Hall(\uc11c\ucd08\uad6c \uac15\ub0a8\ub300\ub85c 499, \ubc29\ubb38\uac1d \ucc28\ub7c9 \uc8fc\ucc28 \ubd88\uac00)\ucc38\uac00 \ub300\uc0c1: \uc5c5\uacc4 \uc885\uc0ac\uc790 \ubc0f \ubbf8\ub514\uc5b4(\uc778\ud50c\ub8e8\uc5b8\uc11c \ud3ec\ud568)\u00a0@@ \ud544\ub3c5 :\uc2e0\uccad\uc2dc \ubc18\ub4dc\uc2dc \u00a0\uc18c\uc18d\uacfc \uc9c1\ucc45\uc744 \"\ud55c\uad6d\uc640\uc778\uc18c\ube44\uc790\ud611\ud68c\"\ud68c\uc6d0\uc73c\ub85c \uc2e0\uccad\ubc14\ub78d\ub2c8\ub2e4.\uc544\ub798\uc758 \ub9c1\ud06c\uc5d0\uc11c \ucc38\uac00\ub97c \ub4f1\ub85d\ud574\uc8fc\uc138\uc694.https://docs.google.com/forms/d/e/1FAIpQLSd6dT_9XECwei5C7y6ycu6ZsbS4spt-d6ei5q2t2sI5kXGiNQ/viewform?usp=dialoghttps://docs.goog"}, {"collected_at": null, "link": "https://koreawine.or.kr/board/view/269/347", "matched_entities": {"topic": ["wine_event", "wine_general"]}, "published_at": "2026-10-29T02:16:18.105738", "source": "Korean Wine Consumer Association", "summary": "\uc548\ub155\ud558\uc138\uc694.\uae4a\uc5b4\uac00\ub294 \uac00\uc744 \uc544\uc26c\uc6b4 \ub9c8\uc74c \ube44\uac74 \uc640\uc778 \uac15\uc88c\uc640 \ud568\uaed8 \ub2ec\ub798\ubcf4\uc544\uc694~.\ub0b4 \ubab8\uacfc \ub098\ub97c \uc704\ud55c \ud589\ubcf5\ud55c \uc2dc\uac04\uc774 \ud544\uc694\ud55c\ubd84\uaed8\u00a0\ucd94\ucc9c!\ub9c8\uc9c0\ub9c9 \ub0a8\uc740 10\uc6d4\uacfc 11\uc6d4\uc758 \uae30\ud68c~\ucc3e\uc544\uac00\ub294\u00a0\ube44\uac74 \uc640\uc778 \uc2dc\uc74c~\u2661\u2661\u2661\u2661 \uc11c\ub450\ub974\uc138\uc694 \uc120\ucc29\uc21c \uc870\uae30\ub9c8\uac10\uc608\uc815\uc785\ub2c8\ub2e4.\u00a0\u00a0#\uc2e0\uccad\ubc29\ubc95:1.\ub86f\ub370\ubc31\ud654\uc810 \ubb38\ud654\uc13c\ud0c0 \ud648\ud398\uc774\uc9c0\uc5d0\uc11c \uc2e0\uccad\ubc1b\uc2b5\ub2c8\ub2e4.2. \uc704\uc5d0 \ub098\uc640\uc788\ub294 \uac01 \ud574\ub2f9 \ubb38\uc758\ucc98\ub85c \uc2e0\uccad\ubc14\ub78d\ub2c8\ub2e4.", "title": "\uc548\ub155\ud558\uc138\uc694.\uae4a\uc5b4\uac00\ub294 \uac00\uc744 \uc544\uc26c\uc6b4 \ub9c8\uc74c \ube44\uac74 \uc640\uc778 \uac15\uc88c\uc640 \ud568\uaed8 \ub2ec\ub798\ubcf4\uc544\uc694~.\ub0b4 \ubab8\uacfc \ub098\ub97c \uc704\ud55c \ud589\ubcf5\ud55c \uc2dc\uac04\uc774 \ud544\uc694\ud55c\ubd84\uaed8\u00a0\ucd94\ucc9c!\ub9c8\uc9c0\ub9c9 \ub0a8\uc740 10\uc6d4\uacfc 11\uc6d4\uc758 \uae30\ud68c~\ucc3e\uc544\uac00\ub294\u00a0\ube44\uac74 \uc640\uc778 \uc2dc\uc74c~\u2661\u2661\u2661\u2661 \uc11c\ub450\ub974\uc138\uc694 \uc120\ucc29\uc21c \uc870\uae30\ub9c8\uac10\uc608\uc815\uc785\ub2c8\ub2e4.\u00a0\u00a0#\uc2e0\uccad\ubc29\ubc95:1.\ub86f\ub370\ubc31\ud654\uc810 \ubb38\ud654\uc13c\ud0c0 \ud648\ud398\uc774\uc9c0\uc5d0\uc11c \uc2e0\uccad\ubc1b\uc2b5\ub2c8\ub2e4.2. \uc704\uc5d0 \ub098\uc640\uc788\ub294 \uac01 \ud574\ub2f9 \ubb38\uc758\ucc98\ub85c \uc2e0\uccad\ubc14\ub78d\ub2c8\ub2e4."}, {"collected_at": null, "link": "https://koreawine.or.kr/board/view/270/347", "matched_entities": {"topic": ["wine_general"]}, "published_at": "2026-10-29T02:16:18.105738", "source": "Korean Wine Consumer Association", "summary": "\ub300\uc804 \uad6d\uc81c\uc640\uc778 expo", "title": "\ub300\uc804 \uad6d\uc81c\uc640\uc778 expo"}, {"collected_at": null, "link": "https://wineinstitute.org/press-releases/wine-institute-secures-500000-grant-to-advance-collaborative-effort-to-build-demand-for-california-wine/", "matched_entities": {"region": ["California"], "topic": ["wine_general"]}, "published_at": "2026-10-29T02:16:17.656185", "source": "Wine Institute", "summary": "Wine Institute Secures $500,000 Grant to Advance Collaborative Effort to Build Demand for California Wine", "title": "Wine Institute Secures $500,000 Grant to Advance Collaborative Effort to Build Demand for California Wine"}, {"collected_at": null, "link": "https://wineinstitute.org/press-releases/gretchen-roddick-of-hope-family-wines-elected-wine-institute-2026-2027-board-chair/", "matched_entities": {"topic": ["wine_general"]}, "published_at": "2026-10-29T02:16:17.656185", "source": "Wine Institute", "summary": "Gretchen Roddick of Hope Family Wines Elected Wine Institute 2026-2027 Board Chair", "title": "Gretchen Roddick of Hope Family Wines Elected Wine Institute 2026-2027 Board Chair"}, {"collected_at": null, "link": "https://wineinstitute.org/press-releases/wine-institute-statement-on-ab-1585-and-the-path-forward-for-california-wine/", "matched_entities": {"region": ["California"], "topic": ["wine_general"]}, "published_at": "2026-10-29T02:16:17.656185", "source": "Wine Institute", "summary": "Wine Institute Statement on AB 1585 and the Path Forward for California Wine", "title": "Wine Institute Statement on AB 1585 and the Path Forward for California Wine"}, {"collected_at": null, "link": "https://wineinstitute.org/press-releases/distilled-spirits-council-and-wine-institute-file-amicus-brief-challenging-oregon-epr-laws-disproportionate-impact-on-wine-and-spirits-producers/", "matched_entities": {"region": ["Oregon"], "topic": ["wine_general"]}, "published_at": "2026-10-29T02:16:17.656185", "source": "Wine Institute", "summary": "Distilled Spirits Council and Wine Institute File Amicus Brief Challenging Oregon EPR Law\u2019s Disproportionate Impact on Wine and Spirits Producers", "title": "Distilled Spirits Council and Wine Institute File Amicus Brief Challenging Oregon EPR Law\u2019s Disproportionate Impact on Wine and Spirits Producers"}, {"collected_at": null, "link": "https://wineinstitute.org/press-releases/pour-outside-the-lines-during-california-wine-month-this-september/", "matched_entities": {"region": ["California"], "topic": ["wine_general"]}, "published_at": "2026-10-29T02:16:17.656185", "source": "Wine Institute", "summary": "\u2018Pour Outside the Lines\u2019 During California Wine Month This September", "title": "\u2018Pour Outside the Lines\u2019 During California Wine Month This September"}, {"collected_at": null, "link": "https://wineinstitute.org/press-releases/wine-institute-tests-new-approach-to-coordinated-storytelling-during-california-wine-month/", "matched_entities": {"region": ["California"], "topic": ["wine_general"]}, "published_at": "2026-10-29T02:16:17.656185", "source": "Wine Institute", "summary": "Wine Institute Tests New Approach to Coordinated Storytelling During California Wine Month", "title": "Wine Institute Tests New Approach to Coordinated Storytelling During California Wine Month"}, {"collected_at": null, "link": "https://wineinstitute.org/press-releases/california-wines-advances-expert-level-wine-education-with-capstone-california-level-4/", "matched_entities": {"region": ["California"], "topic": ["wine_general"]}, "published_at": "2026-10-29T02:16:17.656185", "source": "Wine Institute", "summary": "California Wines Advances Expert-Level Wine Education with Capstone California Level 4", "title": "California Wines Advances Expert-Level Wine Education with Capstone California Level 4"}, {"collected_at": null, "link": "https://wineinstitute.org/press-releases/california-wines-eureka-event-brings-climate-smart-winegrowing-to-new-york/", "matched_entities": {"region": ["California", "New York"], "topic": ["wine_general"]}, "published_at": "2026-10-29T02:16:17.656185", "source": "Wine Institute", "summary": "California Wines\u2019 Eureka! Event Brings Climate-Smart Winegrowing to New York", "title": "California Wines\u2019 Eureka! Event Brings Climate-Smart Winegrowing to New York"}, {"collected_at": null, "link": "https://wineinstitute.org/press-releases/ab-1991-signed-into-law-giving-california-wineries-a-new-consumer-research-tool/", "matched_entities": {"region": ["California"], "topic": ["wine_general"]}, "published_at": "2026-10-29T02:16:17.656185", "source": "Wine Institute", "summary": "AB 1991 Signed Into Law, Giving California Wineries a New Consumer Research Tool", "title": "AB 1991 Signed Into Law, Giving California Wineries a New Consumer Research Tool"}, {"collected_at": null, "link": "https://wineinstitute.org/press-releases/california-2026-vintage-preview-an-early-harvest-shows-promise-across-the-state/", "matched_entities": {"region": ["California"], "topic": ["wine_education"]}, "published_at": "2026-10-29T02:16:17.656185", "source": "Wine Institute", "summary": "California 2026 Vintage Preview: An Early Harvest Shows Promise Across the State", "title": "California 2026 Vintage Preview: An Early Harvest Shows Promise Across the State"}, {"collected_at": null, "link": "https://winetitles.com.au/china-remains-sa-wines-biggest-export-market-as-trade-mission-heads-to-shanghai/", "matched_entities": {"grape_variety": ["Cabernet Sauvignon", "Chardonnay", "Merlot", "Riesling"], "topic": ["wine_general", "wine_market"]}, "published_at": "2026-10-29T00:00:10", "source": "Winetitles Australia", "summary": "\u003cp\u003eMainland China was worth $632 million in South Australian wine exports in the year to September 2026, ahead of a state government trade mission to China aimed at strengthening export relationships. Led by Primary Industries and Regional Development Minister Clare Scriven, the delegation will visit Jinan, Weifang, Qingdao and Shanghai over a week. South Australian wine, seafood, honey and beverage producers will take part in a Taste of South Australia event ahead of the China International Import Expo in Shanghai, connecting with Chinese importers and distributors.\u003c/p\u003e\n\u003cp\u003eThe post \u003ca href=\"https://winetitles.com.au/china-remains-sa-wines-biggest-export-market-as-trade-mission-heads-to-shanghai/\"\u003eChina remains SA wine\u2019s biggest export market as trade mission heads to Shanghai\u003c/a\u003e appeared first on \u003ca href=\"https://winetitles.com.au\"\u003eWinetitles\u003c/a\u003e.\u003c/p\u003e", "title": "China remains SA wine\u2019s biggest export market as trade mission heads to Shanghai"}, {"collected_at": null, "link": "https://wineindustryadvisor.com/2026/10/28/carignan-underrated-no-more/", "matched_entities": {"climate_zone": ["Mediterranean"], "grape_variety": ["Carignan"], "region": ["Sonoma"], "topic": ["wine_general"]}, "published_at": "2026-10-28T23:44:41", "source": "Wine Industry Advisor", "summary": "\u003cimg alt=\"\" class=\"webfeedsFeaturedVisual wp-post-image\" height=\"360\" src=\"https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28104500/MailChimp_Good-Stuff-Web-Featured-Image-54-640x360.png\" style=\"display: block; margin: auto; margin-bottom: 1px;\" title=\"sonomawinegrape.org\" width=\"640\" /\u003e\u003cp\u003e\u003cimg alt=\"\" class=\"attachment-post-thumbnail size-post-thumbnail wp-post-image\" height=\"720\" src=\"https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28104500/MailChimp_Good-Stuff-Web-Featured-Image-54.png\" title=\"sonomawinegrape.org\" width=\"1280\" /\u003e\u003c/p\u003eDiscover Sonoma County\u2019s historic Carignan grape, from century-old vineyards to vibrant, spicy red wines, and explore the heritage vines keeping this underrated variety alive.", "title": "Carignan, Underrated No More"}, {"collected_at": null, "link": "https://wineindustryadvisor.com/2026/10/28/napas-charles-krug-owners-partner-with-dealcoholized-wine-brand/", "matched_entities": {"region": ["Napa Valley"], "topic": ["wine_general", "wine_market"], "winery": ["Krug"]}, "published_at": "2026-10-28T23:07:41", "source": "Wine Industry Advisor", "summary": "\u003cimg alt=\"\" class=\"webfeedsFeaturedVisual wp-post-image\" height=\"360\" src=\"https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28091240/ns_missing-thorn-cellar-102726_1600-640x360.jpg\" style=\"display: block; margin: auto; margin-bottom: 1px;\" title=\"winespectator.com\" width=\"640\" /\u003e\u003cp\u003e\u003cimg alt=\"\" class=\"attachment-post-thumbnail size-post-thumbnail wp-post-image\" height=\"900\" src=\"https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28091240/ns_missing-thorn-cellar-102726_1600.jpg\" title=\"winespectator.com\" width=\"1600\" /\u003e\u003c/p\u003eNapa\u0027s historic Charles Krug Winery enters the dealcoholized wine market through a strategic partnership with Missing Thorn, signaling validation for the growing DA wine category.", "title": "Napa\u2019s Charles Krug Owners Partner With Dealcoholized Wine Brand"}, {"collected_at": null, "link": "https://wineindustryadvisor.com/2026/10/28/the-last-guests-of-the-season-off-season-tasting-rooms/", "matched_entities": {"region": ["Dry Creek Valley"], "topic": ["wine_event"]}, "published_at": "2026-10-28T22:30:41", "source": "Wine Industry Advisor", "summary": "\u003cimg alt=\"\" class=\"webfeedsFeaturedVisual wp-post-image\" height=\"357\" src=\"https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28082309/empty-tasting-room-november-scaled-1-640x357.jpeg\" style=\"display: block; margin: auto; margin-bottom: 1px;\" title=\"vianarra.com\" width=\"640\" /\u003e\u003cp\u003e\u003cimg alt=\"\" class=\"attachment-post-thumbnail size-post-thumbnail wp-post-image\" height=\"893\" src=\"https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28082309/empty-tasting-room-november-scaled-1-scaled.jpeg\" title=\"vianarra.com\" width=\"1600\" /\u003e\u003c/p\u003eAn off-season tasting room in Dry Creek Valley lost a founding member\u2019s case sale. A 1974 night at the Stanley Hotel shows what that afternoon was worth.", "title": "The Last Guests of the Season: Off-Season Tasting Rooms"}, {"collected_at": null, "link": "https://wineindustryadvisor.com/2026/10/28/californias-cult-malbec-is-back-devil-proofs-2024-vintage-arrives-november-3/", "matched_entities": {"climate_zone": ["Mediterranean"], "grape_variety": ["Malbec"], "region": ["California", "Sonoma"], "topic": ["wine_education", "wine_general"]}, "published_at": "2026-10-28T16:15:21", "source": "Wine Industry Advisor", "summary": "\u003cimg alt=\"\" class=\"webfeedsFeaturedVisual wp-post-image\" height=\"427\" src=\"https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28091407/DP-Color-Photo-4-640x427.png\" style=\"display: block; margin: auto; margin-bottom: 1px;\" width=\"640\" /\u003e\u003cp\u003e\u003cimg alt=\"\" class=\"attachment-post-thumbnail size-post-thumbnail wp-post-image\" height=\"1280\" src=\"https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28091407/DP-Color-Photo-4-scaled.png\" width=\"1920\" /\u003e\u003c/p\u003e\u201c Live well, drink well, and the devil can\u2019t get you.\u201d \u2013 Cuban Philosophy October 28, 2026 (Sonoma County, CA) \u0026#8212; Devil Proof is a cult wine brand created by [...]", "title": "California\u2019s Cult Malbec Is Back: Devil Proof\u2019s 2024 Vintage Arrives November 3"}, {"collected_at": null, "link": "https://wineindustryadvisor.com/2026/10/28/bluestone-vineyards-2023-cabernet-franc-named-best-of-class-at-san-francisco-international-wine-competition/", "matched_entities": {"grape_variety": ["Cabernet Franc"], "topic": ["wine_general"]}, "published_at": "2026-10-28T15:48:38", "source": "Wine Industry Advisor", "summary": "\u003cimg alt=\"\" class=\"webfeedsFeaturedVisual wp-post-image\" height=\"960\" src=\"https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28084517/2026-Gov-Cup-6-640x960.jpg\" style=\"display: block; margin: auto; margin-bottom: 1px;\" width=\"640\" /\u003e\u003cp\u003e\u003cimg alt=\"\" class=\"attachment-post-thumbnail size-post-thumbnail wp-post-image\" height=\"1920\" src=\"https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28084517/2026-Gov-Cup-6-scaled.jpg\" width=\"1280\" /\u003e\u003c/p\u003eOctober 28, 2026 (Bridgewater, VA) \u0026#8212; Bluestone Vineyard\u0026#8217;s 2023 Estate-Grown Cabernet Franc earned a Double Gold medal, 96 points, and Best of Class honors for Cabernet Franc at the 2026 [...]", "title": "Bluestone Vineyard\u2019s 2023 Cabernet Franc Named Best of Class at San Francisco International Wine Competition"}, {"collected_at": null, "link": "https://wineindustryadvisor.com/2026/10/28/224-fermentation-step-by-step/", "matched_entities": {"grape_variety": ["Cabernet Sauvignon", "Chardonnay", "Merlot"], "topic": ["wine_event", "wine_general"]}, "published_at": "2026-10-28T15:16:41", "source": "Wine Industry Advisor", "summary": "\u003cimg alt=\"\" class=\"webfeedsFeaturedVisual wp-post-image\" height=\"427\" src=\"https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2025/06/26125644/from-the-web-placeholder-03-640x427.jpg\" style=\"display: block; margin: auto; margin-bottom: 1px;\" title=\"insidewinemaking.libsyn.com\" width=\"640\" /\u003e\u003cp\u003e\u003cimg alt=\"\" class=\"attachment-post-thumbnail size-post-thumbnail wp-post-image\" height=\"853\" src=\"https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2025/06/26125644/from-the-web-placeholder-03.jpg\" title=\"insidewinemaking.libsyn.com\" width=\"1280\" /\u003e\u003c/p\u003eFermentation step by step In this solo episode, Jim Duane walks through recent harvest and fermentation decisions for the 2026 Chardonnay, Merlot, and Cabernet Sauvignon at Seavey Vineyard. He explains whole-cluster pressing and press cuts for Chardonnay, why he allows some early juice oxidation, and how he handles settling, nutrients, and barrel fermentation. For Merlot, he covers fruit processing, a cold soak, tartaric acid adjustment, native fermentation, nutrient timing, pump-overs, and malolactic bacteria. Jim also discusses how vineyard conditions and juice chemistry shape his choices, including high potassium and pH, the misleading early titratable-acidity readings in red grapes, and why Brix alone cannot confirm that a wine is dry. He shares his nutrient-dosing approach and his plans for extended Cabernet maceration, tasting daily and keeping free-run and press wine separate. \u00a0 This episode is brought to you by the Sentia Wine Analyzer from Scott Laboratories. Sentia is a handheld analyzer that gives you rapid, in-house measurements of five key analytes: Free SO\u2082, acetic acid, malic acid, glucose, and fructose. There\u0027s no extensive training, calibration is automatic, reagents are minimal, and tests cost just $2 to $6 each. It\u0027s built to fill the gaps between your existing QC checkpoints, whether you\u0027re tracking VA trends, checking free SO\u2082 in barrels during topping, or confirming the end of alcoholic or malolactic fermentation. Sentia isn\u0027t meant to replace reference methods or outside labs. It makes routine analysis more accessible and affordable, especially for smaller wineries or those far from a testing lab. Learn more at scottlab.com/sentia-wine-analysis. Inside Winemaking listeners get 10% off a new Sentia analyzer with code SENTIA10 through their Scott Laboratories account. Offer for a limited time, limit one per customer. \u00a0 Check out the Fundamentals of Winemaking Made Easy video course \u00a0 The Inside Winemaking Podcast on iTunes Now on Spotify And Amazon Music", "title": "\ud83c\udfa7224: Fermentation Step by Step"}, {"collected_at": null, "link": "https://winemag.co.za/wine/opinion/malu-lambert-south-africas-growers-need-a-new-deal/", "matched_entities": {"climate_zone": ["Mediterranean"], "grape_variety": ["Cabernet Franc", "Malbec"], "region": ["California", "Paarl", "Stellenbosch"], "topic": ["wine_education", "wine_event", "wine_general", "wine_market"], "winery": ["Boekenhoutskloof", "Domaine de la Roman\u00e9e-Conti", "Louis Roederer"]}, "published_at": "2026-10-28T14:53:54", "source": "Wine Magazine South Africa", "summary": "\u003cp\u003eSouth Africa\u2019s wine industry has been built on what critic and commentator Michael Fridjhon describes as \u201ca history of production-driven enterprises\u201d. Speaking at the University of Cape Town\u2019s Business of Wine graduation, he touched on how the industry has evolved from one dominated by growers supplying cooperatives to being increasingly defined by the estate model. [\u0026#8230;]\u003c/p\u003e\n\u003cp\u003eThe post \u003ca href=\"https://winemag.co.za/wine/opinion/malu-lambert-south-africas-growers-need-a-new-deal/\"\u003eMalu Lambert: South Africa\u0026#8217;s growers need a new deal\u003c/a\u003e appeared first on \u003ca href=\"https://winemag.co.za\"\u003ewinemag\u003c/a\u003e.\u003c/p\u003e", "title": "Malu Lambert: South Africa\u2019s growers need a new deal"}, {"collected_at": null, "link": "https://www.decanter.com/decanter-world-wine-awards/international-carignan-day-12-awarded-wines-to-celebrate-with-514554/", "matched_entities": {"climate_zone": ["Continental"], "grape_variety": ["Carignan"], "region": ["Burgundy", "Naoussa"], "topic": ["wine_general"]}, "published_at": "2026-10-28T11:57:47", "source": "Decanter", "summary": "A selection of award-winning wines to try from DWWA...", "title": "International Carignan Day: 12 awarded wines to celebrate with"}, {"collected_at": null, "link": "https://www.terredevins.com/actualites/vivre-a-fond-bordeaux-tasting", "matched_entities": {"climate_zone": ["Continental", "Mediterranean"], "grape_variety": ["Pinot Noir"], "region": ["Bordeaux", "Burgundy", "Champagne", "C\u00f4te-R\u00f4tie", "C\u00f4tes du Rh\u00f4ne", "M\u00e9doc", "Pessac-L\u00e9ognan", "Pomerol", "Saint-Est\u00e8phe", "Saint-\u00c9milion"], "topic": ["wine_education", "wine_event", "wine_policy", "wine_release"], "winery": ["Salon", "Veuve Clicquot"]}, "published_at": "2026-10-28T11:00:00", "source": "Terre de Vins", "summary": "\u003cp\u003eLes 12 et 13 d\u00e9cembre prochains, le salon Bordeaux Tasting, organis\u00e9 par Terre de Vins, r\u00e9unira pour sa quinzi\u00e8me \u00e9dition un condens\u00e9 de tout ce que le vignoble fran\u00e7ais sait faire de meilleur. Bordeaux, \u00e9videmment, mais aussi les autres r\u00e9gions viticoles. Pour organiser votre visite, voici un tour d\u2019horizon des temps forts\u0026#160;: masterclass, ateliers, caf\u00e9s [\u0026#8230;]\u003c/p\u003e\n\u003cp\u003eCet article \u003ca href=\"https://www.terredevins.com/actualites/vivre-a-fond-bordeaux-tasting\"\u003eVivre \u00e0 fond Bordeaux Tasting\u00a0!\u003c/a\u003e est apparu en premier sur \u003ca href=\"https://www.terredevins.com\"\u003eTerre de Vins\u003c/a\u003e.\u003c/p\u003e", "title": "Vivre \u00e0 fond Bordeaux Tasting\u00a0!"}, {"collected_at": null, "link": "https://www.decanter.com/wine/cabernet-franc/parallel-vines-cabernet-franc-stars-across-ontario-and-new-york-state/", "matched_entities": {"grape_variety": ["Cabernet Franc", "Gew\u00fcrztraminer"], "region": ["New York"], "topic": ["wine_general"]}, "published_at": "2026-10-28T09:23:43", "source": "Decanter", "summary": "The grape that knows no borders...", "title": "Parallel vines: Cabernet Franc stars across Ontario and New York State"}, {"collected_at": null, "link": "https://timatkin.com/a-new-white-zin/", "matched_entities": {"climate_zone": ["Continental", "Mediterranean", "Semi-Arid"], "grape_variety": ["Cabernet Franc", "Cabernet Sauvignon", "Carmen\u00e8re", "Chardonnay", "Malbec", "Merlot", "Primitivo", "Riesling", "Viognier", "Zinfandel"], "region": ["Bordeaux", "Burgundy", "California", "Tavel", "Walla Walla"], "topic": ["wine_education", "wine_event", "wine_general", "wine_market", "wine_release"], "winery": ["Ridge"]}, "published_at": "2026-10-28T09:01:52", "source": "Tim Atkin MW", "summary": "If you are not familiar with the lore of White Zinfandel \u2014 America\u2019s greatest contribution to wine culture \u2014 you are missing out on some excellent cocktail conversation. I understand this might sound like the layup for a bad wine joke, but I\u2019m not being facetious. White Zinfandel is as important to the United States [\u0026#8230;]", "title": "A New White Zin"}, {"collected_at": null, "link": "https://wineindustryadvisor.com/2026/10/28/how-grounded-wine-co-is-growing-28-yoy-with-josh-phelps/", "matched_entities": {"topic": ["wine_general"], "winery": ["Joseph Phelps"]}, "published_at": "2026-10-28T20:34:41", "source": "Wine Industry Advisor", "summary": "\u003cimg alt=\"\" class=\"webfeedsFeaturedVisual wp-post-image\" height=\"360\" src=\"https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28082323/youtube-DEZ64RaveCM-640x360.jpg\" style=\"display: block; margin: auto; margin-bottom: 1px;\" title=\"youtube.com\" width=\"640\" /\u003e\u003cp\u003e\u003cimg alt=\"\" class=\"attachment-post-thumbnail size-post-thumbnail wp-post-image\" height=\"720\" src=\"https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28082323/youtube-DEZ64RaveCM.jpg\" title=\"youtube.com\" width=\"1280\" /\u003e\u003c/p\u003eHow do you build a wine brand that belongs on both Target shelves and Soho House wine lists?Grounded Wine Co. has grown to more than 80K 9L cases, with compa...", "title": "\ud83c\udfa7\ud83d\udcfaHow Grounded Wine Co. Is Growing 28% YOY With Josh Phelps"}, {"collected_at": null, "link": "https://wineindustryadvisor.com/2026/10/28/grapes-for-humanity-global-foundation-wine-legends-vii-raises-more-than-200k/", "matched_entities": {"region": ["New York"], "topic": ["wine_general"], "winery": ["Ch\u00e2teau Haut-Brion"]}, "published_at": "2026-10-28T15:43:56", "source": "Wine Industry Advisor", "summary": "\u003cimg alt=\"\" class=\"webfeedsFeaturedVisual wp-post-image\" height=\"427\" src=\"https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28084251/Prince-Robert_ftimg-640x427.jpg\" style=\"display: block; margin: auto; margin-bottom: 1px;\" width=\"640\" /\u003e\u003cp\u003e\u003cimg alt=\"\" class=\"attachment-post-thumbnail size-post-thumbnail wp-post-image\" height=\"600\" src=\"https://win-advisor-media-library.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/10/28084251/Prince-Robert_ftimg.jpg\" width=\"900\" /\u003e\u003c/p\u003eGrapes for Humanity Global Foundation\u0026#8217;s sold-out benefit, chaired by Prince Robert and Princess Julie of Luxembourg, featured leading international wine producers and a $90,000 Ch\u00e2teau Haut-Brion auction sale. October 28, [...]", "title": "Grapes for Humanity Global Foundation Wine Legends VII Raises More Than $200,000 for the POLG Foundation at New York Gala"}, {"collected_at": null, "link": "https://www.wineenthusiast.com/culture/vintage-restaurant-menus/", "matched_entities": {"region": ["Margaux", "New York"], "topic": ["wine_education", "wine_general", "wine_market"], "winery": ["Ch\u00e2teau Margaux"]}, "published_at": "2026-10-27T17:50:21", "source": "Wine Enthusiast", "summary": "\u003cp\u003eEugen Beer and Barbara McMahon aim to preserve dining culture through their enormous collection of vintage menus.\u003c/p\u003e\n\u003cp\u003eThe post \u003ca href=\"https://www.wineenthusiast.com/culture/vintage-restaurant-menus/\"\u003eVintage Menus Are a Glimpse into the Golden Age of Dining\u003c/a\u003e appeared first on \u003ca href=\"https://www.wineenthusiast.com\"\u003eWine Enthusiast\u003c/a\u003e.\u003c/p\u003e", "title": "Vintage Menus Are a Glimpse into the Golden Age of Dining"}, {"collected_at": null, "link": "https://www.wineenthusiast.com/toplists/cellar-selections-2026/", "matched_entities": {"climate_zone": ["Continental", "Mediterranean", "Oceanic", "Semi-Arid"], "grape_variety": ["Cabernet Franc", "Cabernet Sauvignon", "Chardonnay", "Corvina", "Grenache", "Malbec", "Merlot", "Mourv\u00e8dre", "Nebbiolo", "Petit Verdot", "Pinot Gris", "Pinot Noir", "Riesling", "Sangiovese", "Sauvignon Blanc", "Syrah", "Tannat", "Tempranillo", "Verdicchio"], "region": ["Alexander Valley", "Alsace", "Alto Adige", "Amarone", "Anderson Valley", "Barolo", "Bolgheri", "Bordeaux", "Brunello di Montalcino", "Burgundy", "Champagne", "Ch\u00e2teauneuf-du-Pape", "Columbia Valley", "Friuli", "Germany", "Maipo Valley", "Margaret River", "Margaux", "McLaren Vale", "Mendoza", "Mosel", "Napa Valley", "Oakville", "Paso Robles", "Pfalz", "Porto", "Pouilly-Fum\u00e9", "Rheingau", "Rh\u00f4ne", "Ribera del Duero", "Rioja", "Russian River Valley", "Saint-Est\u00e8phe", "Santa Cruz Mountains", "Sonoma Coast", "Tuscany", "Uco Valley", "Valpolicella", "Walla Walla"], "topic": ["wine_education", "wine_event", "wine_general", "wine_policy", "wine_release"], "winery": ["Allegrini", "Almaviva", "Dal Forno Romano", "Henschke", "Louis Roederer", "Pol Roger", "Ridge", "Ridge Vineyards", "Vietti"]}, "published_at": "2026-10-27T16:00:00", "source": "Wine Enthusiast", "summary": "\u003cp\u003eWINE \u0026#38; RATINGS Top 100 Cellar Selections 2026 The best age-worthy wines of the year, according to our expert Tasting Panel. BY The Editors of wine enthusiast \u0026#124; 3 Min Read PHOTOGRAPHY BY CHELSEA KYLE / PROP STYLING BY ERICA LUTZ / FEATURING WINE ENTHUSIAST GLASSWARE No legendary wine was first released as the trophy\u003c/p\u003e\n\u003cp\u003eThe post \u003ca href=\"https://www.wineenthusiast.com/toplists/cellar-selections-2026/\"\u003e2026 Top 100 Cellar Selections\u003c/a\u003e appeared first on \u003ca href=\"https://www.wineenthusiast.com\"\u003eWine Enthusiast\u003c/a\u003e.\u003c/p\u003e", "title": "2026 Top 100 Cellar Selections"}, {"collected_at": null, "link": "https://vinepair.com/articles/wa-wine-pros-overrated-white-wine-2026/", "matched_entities": {"climate_zone": ["Continental", "Oceanic"], "grape_variety": ["Albari\u00f1o", "Chardonnay", "Godello", "Moscato", "Muscat", "Pinot Gris", "Riesling", "Sauvignon Blanc", "Vinho Verde"], "region": ["Austria", "California", "Loire", "Sancerre", "Vinho Verde", "Willamette Valley"], "topic": ["wine_education", "wine_event", "wine_general"], "winery": ["Salon"]}, "published_at": "2026-10-27T13:00:25", "source": "VinePair", "summary": "\u003cp\u003eWhite wine is a reliable go-to for many drinkers. It can bring crisp, saline edges, juicy tropical fruit notes, or even rich, nutty flavors. For its diversity, palatability, and low-ABV nature, the genre has recently seen a boost in appeal. But along with that growing popularity, some grapes, regions, or bottles tend to take more than their fair share of the spotlight. And the bottles that drum up the most excitement might not always be all they are hyped up to be.\u003c/p\u003e\n\u003cp\u003eThe article \u003ca href=\"https://vinepair.com/articles/wa-wine-pros-overrated-white-wine-2026/\"\u003eWe Asked 8 Sommeliers: What\u2019s the Most Overrated White Wine? (2026)\u003c/a\u003e appeared first on \u003ca href=\"https://vinepair.com\"\u003eVinePair\u003c/a\u003e.\u003c/p\u003e", "title": "We Asked 8 Sommeliers: What\u2019s the Most Overrated White Wine? (2026)"}]</script>
+      <script id="entities-data" type="application/json">{"climate_zone": 20, "grape_variety": 57, "region": 98, "topic": 91, "winery": 20}</script>
+
+
+      <script src="static/chart.min.js"></script>
+      <script>
+        if (typeof Chart === 'undefined') {
+          var s = document.createElement('script');
+          s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js';
+          document.head.appendChild(s);
+        }
+      </script>
+      <script>
+        (function () {
+          const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+          function readJson(id, fallback) {
+            const el = document.getElementById(id);
+            if (!el) return fallback;
+            const txt = (el.textContent || "").trim();
+            if (!txt) return fallback;
+            try { return JSON.parse(txt); } catch (e) { return fallback; }
+          }
+
+          const articles = readJson("articles-data", []);
+          const entityCountsRaw = readJson("entities-data", {});
+
+          function normalizeEntityPairs(raw) {
+            if (!raw) return [];
+            if (Array.isArray(raw)) {
+              if (raw.length && Array.isArray(raw[0]) && raw[0].length >= 2) {
+                return raw.map(p => [String(p[0]), Number(p[1]) || 0]);
+              }
+              if (raw.length && typeof raw[0] === "object") {
+                return raw.map(o => [String(o.name || o.entity || ""), Number(o.count || o.value || 0) || 0]).filter(p => p[0]);
+              }
+              return [];
+            }
+            if (typeof raw === "object") {
+              return Object.entries(raw).map(([k, v]) => [String(k), Number(v) || 0]);
+            }
+            return [];
+          }
+
+          function getArticleDate(a) {
+            const v = a && (a.published_at || a.published || a.date || a.datetime || a.publishedAt || a.publishedAtISO);
+            if (!v) return null;
+
+            const s = String(v);
+            const direct = new Date(s);
+            if (!isNaN(direct.getTime())) return direct;
+
+            const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+            if (m) {
+              const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+              if (!isNaN(d.getTime())) return d;
+            }
+            return null;
+          }
+
+          function toDayKey(d) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, "0");
+            const day = String(d.getDate()).padStart(2, "0");
+            return y + "-" + m + "-" + day;
+          }
+
+          function buildTimeline(items) {
+            const map = new Map();
+            for (const a of items) {
+              const d = getArticleDate(a);
+              if (!d) continue;
+              const k = toDayKey(d);
+              map.set(k, (map.get(k) || 0) + 1);
+            }
+            const keys = Array.from(map.keys()).sort();
+            return { labels: keys, values: keys.map(k => map.get(k) || 0) };
+          }
+
+          function buildSources(items) {
+            const map = new Map();
+            for (const a of items) {
+              const s = (a && (a.source || a.source_name || a.publisher || a.feed || a.domain)) ? String(a.source || a.source_name || a.publisher || a.feed || a.domain) : "unknown";
+              const key = s.trim() || "unknown";
+              map.set(key, (map.get(key) || 0) + 1);
+            }
+            const pairs = Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
+            const top = pairs.slice(0, 10);
+            const rest = pairs.slice(10).reduce((acc, p) => acc + p[1], 0);
+            const labels = top.map(p => p[0]);
+            const values = top.map(p => p[1]);
+            if (rest > 0) { labels.push("other"); values.push(rest); }
+            return { labels, values };
+          }
+
+          function palette(n) {
+            const base = [
+              "rgba(51,214,197,.86)",
+              "rgba(25,167,195,.78)",
+              "rgba(246,200,76,.86)",
+              "rgba(120,162,255,.78)",
+              "rgba(255,91,110,.74)",
+              "rgba(160,118,255,.70)",
+              "rgba(95,222,132,.70)",
+              "rgba(255,154,74,.70)",
+              "rgba(226,93,255,.62)",
+              "rgba(233,238,251,.46)"
+            ];
+            const out = [];
+            for (let i = 0; i < n; i++) out.push(base[i % base.length]);
+            return out;
+          }
+
+          function chartDefaults() {
+            return {
+              color: "rgba(233,238,251,.78)",
+              borderColor: "rgba(150,190,255,.14)",
+              font: { family: '"Pretendard Variable","Pretendard",system-ui,-apple-system,Segoe UI,sans-serif', size: 12 },
+              animation: reducedMotion ? false : { duration: 650, easing: "easeOutQuart" }
+            };
+          }
+
+          if (!window.Chart) return;
+
+          Chart.defaults.maintainAspectRatio = false;
+          Chart.defaults.responsive = true;
+          Chart.defaults.plugins.legend.labels.boxWidth = 10;
+          Chart.defaults.plugins.legend.labels.boxHeight = 10;
+          Chart.defaults.plugins.legend.labels.usePointStyle = true;
+
+          const defaults = chartDefaults();
+          Chart.defaults.color = defaults.color;
+          Chart.defaults.borderColor = defaults.borderColor;
+          Chart.defaults.font = defaults.font;
+          Chart.defaults.animation = defaults.animation;
+
+          const entityPairs = normalizeEntityPairs(entityCountsRaw)
+            .filter(p => p[0] && Number.isFinite(p[1]))
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 12);
+
+          const timeline = buildTimeline(articles);
+          const sources = buildSources(articles);
+
+          // 1. Entity Distribution
+          const entityCanvas = document.getElementById("chartEntities");
+          if (entityCanvas && entityPairs.length) {
+            const labels = entityPairs.map(p => p[0]);
+            const values = entityPairs.map(p => p[1]);
+            new Chart(entityCanvas.getContext("2d"), {
+              type: "bar",
+              data: {
+                labels,
+                datasets: [{
+                  label: "count",
+                  data: values,
+                  backgroundColor: "rgba(51,214,197,.35)",
+                  borderColor: "rgba(51,214,197,.72)",
+                  borderWidth: 1.2,
+                  borderRadius: 10,
+                  maxBarThickness: 44
+                }]
+              },
+              options: {
+                plugins: {
+                  legend: { display: false },
+                  tooltip: {
+                    backgroundColor: "rgba(10,16,30,.92)",
+                    borderColor: "rgba(150,190,255,.20)",
+                    borderWidth: 1,
+                    titleColor: "rgba(233,238,251,.92)",
+                    bodyColor: "rgba(233,238,251,.84)"
+                  }
+                },
+                scales: {
+                  x: { grid: { display: false }, ticks: { color: "rgba(233,238,251,.68)" } },
+                  y: { beginAtZero: true, grid: { color: "rgba(150,190,255,.10)" }, ticks: { color: "rgba(233,238,251,.64)" } }
+                }
+              }
+            });
+          }
+
+          // 2. Timeline
+          const timelineCanvas = document.getElementById("chartTimeline");
+          if (timelineCanvas && timeline.labels.length) {
+            new Chart(timelineCanvas.getContext("2d"), {
+              type: "line",
+              data: {
+                labels: timeline.labels,
+                datasets: [{
+                  label: "articles/day",
+                  data: timeline.values,
+                  tension: 0.28,
+                  fill: true,
+                  borderColor: "rgba(246,200,76,.84)",
+                  backgroundColor: "rgba(246,200,76,.12)",
+                  pointRadius: 2.8,
+                  pointHoverRadius: 4.2,
+                  pointBackgroundColor: "rgba(246,200,76,.84)",
+                  pointBorderColor: "rgba(10,16,30,.92)",
+                  pointBorderWidth: 1.2
+                }]
+              },
+              options: {
+                plugins: {
+                  legend: { display: false },
+                  tooltip: { backgroundColor: "rgba(10,16,30,.92)", borderColor: "rgba(150,190,255,.20)", borderWidth: 1 }
+                },
+                scales: {
+                  x: { grid: { display: false }, ticks: { color: "rgba(233,238,251,.68)", maxRotation: 0, autoSkip: true, maxTicksLimit: 9 } },
+                  y: { beginAtZero: true, grid: { color: "rgba(150,190,255,.10)" }, ticks: { color: "rgba(233,238,251,.64)" } }
+                }
+              }
+            });
+          }
+
+          // 3. Source Distribution
+          const sourcesCanvas = document.getElementById("chartSources");
+          if (sourcesCanvas && sources.labels.length) {
+            const colors = palette(sources.labels.length);
+            new Chart(sourcesCanvas.getContext("2d"), {
+              type: "doughnut",
+              data: {
+                labels: sources.labels,
+                datasets: [{
+                  label: "articles",
+                  data: sources.values,
+                  backgroundColor: colors.map(c => c.replace(")", ", .24)").replace("rgba", "rgba")),
+                  borderColor: colors.map(c => c.replace(")", ", .80)").replace("rgba", "rgba")),
+                  borderWidth: 1.1,
+                  hoverOffset: 6
+                }]
+              },
+              options: {
+                cutout: "62%",
+                plugins: {
+                  legend: { position: "bottom", labels: { color: "rgba(233,238,251,.72)", padding: 14 } },
+                  tooltip: { backgroundColor: "rgba(10,16,30,.92)", borderColor: "rgba(150,190,255,.20)", borderWidth: 1 }
+                }
+              }
+            });
+          }
+
+          // 4. Data Freshness
+          function buildFreshness(items) {
+            const lagBuckets = { "0-1h": 0, "1-6h": 0, "6-24h": 0, "1-3d": 0, "3-7d": 0, "7d+": 0 };
+            for (const a of items) {
+              const pubStr = a && (a.published_at || a.published);
+              const collStr = a && a.collected_at;
+              if (!pubStr || !collStr) continue;
+              const pubDate = new Date(String(pubStr));
+              const collDate = new Date(String(collStr));
+              if (isNaN(pubDate.getTime()) || isNaN(collDate.getTime())) continue;
+              const lagMs = collDate.getTime() - pubDate.getTime();
+              const lagHours = lagMs / (1000 * 60 * 60);
+              if (lagHours < 1) lagBuckets["0-1h"]++;
+              else if (lagHours < 6) lagBuckets["1-6h"]++;
+              else if (lagHours < 24) lagBuckets["6-24h"]++;
+              else if (lagHours < 72) lagBuckets["1-3d"]++;
+              else if (lagHours < 168) lagBuckets["3-7d"]++;
+              else lagBuckets["7d+"]++;
+            }
+            return { labels: Object.keys(lagBuckets), values: Object.values(lagBuckets) };
+          }
+
+          const freshnessData = buildFreshness(articles);
+          const freshnessCanvas = document.getElementById("chartFreshness");
+          if (freshnessCanvas && freshnessData.labels.length) {
+            new Chart(freshnessCanvas.getContext("2d"), {
+              type: "bar",
+              data: {
+                labels: freshnessData.labels,
+                datasets: [{
+                  label: "articles",
+                  data: freshnessData.values,
+                  backgroundColor: "rgba(120,162,255,.35)",
+                  borderColor: "rgba(120,162,255,.72)",
+                  borderWidth: 1.2,
+                  borderRadius: 8,
+                  maxBarThickness: 44
+                }]
+              },
+              options: {
+                plugins: {
+                  legend: { display: false },
+                  tooltip: { backgroundColor: "rgba(10,16,30,.92)", borderColor: "rgba(150,190,255,.20)", borderWidth: 1 }
+                },
+                scales: {
+                  x: { grid: { display: false }, ticks: { color: "rgba(233,238,251,.68)" } },
+                  y: { beginAtZero: true, grid: { color: "rgba(150,190,255,.10)" }, ticks: { color: "rgba(233,238,251,.64)" } }
+                }
+              }
+            });
+          }
+
+          // 5. Entity Extraction Rate
+          function buildEntityRate(items) {
+            let withEntities = 0, withoutEntities = 0;
+            for (const a of items) {
+              const ents = a && a.matched_entities;
+              if (ents && Object.keys(ents).length > 0) withEntities++;
+              else withoutEntities++;
+            }
+            return { with: withEntities, without: withoutEntities };
+          }
+
+          const entityRateData = buildEntityRate(articles);
+          const entityRateCanvas = document.getElementById("chartEntityRate");
+          if (entityRateCanvas) {
+            const total = entityRateData.with + entityRateData.without;
+            const pct = total > 0 ? Math.round((entityRateData.with / total) * 100) : 0;
+            const plugin = {
+              id: "textCenter",
+              beforeDatasetsDraw(c) {
+                const { width, height } = c.chartArea;
+                const x = c.chartArea.left + width / 2;
+                const y = c.chartArea.top + height / 2;
+                c.ctx.save();
+                c.ctx.font = "bold 24px sans-serif";
+                c.ctx.fillStyle = "rgba(233,238,251,.8)";
+                c.ctx.textAlign = "center";
+                c.ctx.textBaseline = "middle";
+                c.ctx.fillText(pct + "%", x, y);
+                c.ctx.restore();
+              }
+            };
+            new Chart(entityRateCanvas.getContext("2d"), {
+              type: "doughnut",
+              data: {
+                labels: ["With entities", "Without entities"],
+                datasets: [{
+                  data: [entityRateData.with, entityRateData.without],
+                  backgroundColor: ["rgba(95,222,132,.35)", "rgba(255,91,110,.35)"],
+                  borderColor: ["rgba(95,222,132,.80)", "rgba(255,91,110,.80)"],
+                  borderWidth: 1.2
+                }]
+              },
+              options: {
+                cutout: "62%",
+                plugins: {
+                  legend: { position: "bottom", labels: { color: "rgba(233,238,251,.72)", padding: 14 } },
+                  tooltip: { backgroundColor: "rgba(10,16,30,.92)", borderColor: "rgba(150,190,255,.20)", borderWidth: 1 }
+                }
+              },
+              plugins: [plugin]
+            });
+          }
+
+          // 6. Source Health
+          function buildSourceHealth(items) {
+            const map = new Map();
+            for (const a of items) {
+              const s = (a && (a.source || a.source_name || a.publisher || a.feed || a.domain)) ? String(a.source || a.source_name || a.publisher || a.feed || a.domain) : "unknown";
+              const key = s.trim() || "unknown";
+              map.set(key, (map.get(key) || 0) + 1);
+            }
+            const pairs = Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
+            return { labels: pairs.map(p => p[0]), values: pairs.map(p => p[1]) };
+          }
+
+          const sourceHealthData = buildSourceHealth(articles);
+          const sourceHealthCanvas = document.getElementById("chartSourceHealth");
+          if (sourceHealthCanvas && sourceHealthData.labels.length) {
+            const colors = palette(sourceHealthData.labels.length);
+            new Chart(sourceHealthCanvas.getContext("2d"), {
+              type: "bar",
+              data: {
+                labels: sourceHealthData.labels,
+                datasets: [{
+                  label: "articles",
+                  data: sourceHealthData.values,
+                  backgroundColor: colors.map(c => c.replace(")", ", .35)").replace("rgba", "rgba")),
+                  borderColor: colors.map(c => c.replace(")", ", .80)").replace("rgba", "rgba")),
+                  borderWidth: 1.2,
+                  borderRadius: 8,
+                  maxBarThickness: 44
+                }]
+              },
+              options: {
+                indexAxis: "y",
+                plugins: {
+                  legend: { display: false },
+                  tooltip: { backgroundColor: "rgba(10,16,30,.92)", borderColor: "rgba(150,190,255,.20)", borderWidth: 1 }
+                },
+                scales: {
+                  x: { beginAtZero: true, grid: { color: "rgba(150,190,255,.10)" }, ticks: { color: "rgba(233,238,251,.64)" } },
+                  y: { grid: { display: false }, ticks: { color: "rgba(233,238,251,.68)" } }
+                }
+              }
+            });
+          }
+
+          // CSV Export
+          function exportCSV() {
+            const data = articles;
+            if (!data.length) { alert("No data to export"); return; }
+            const BOM = "\uFEFF";
+            const headers = ["Title","Source","Published","Summary","Entities","Link"];
+            const rows = [headers.join(",")];
+            for (const a of data) {
+              let ents = "";
+              if (a.matched_entities) {
+                ents = Object.entries(a.matched_entities).map(e => e[0] + ": " + (Array.isArray(e[1]) ? e[1].join(", ") : e[1])).join("; ");
+              }
+              let pub = a.published_at || a.published || "";
+              if (pub) { const d = new Date(String(pub)); if (!isNaN(d.getTime())) pub = d.toISOString().slice(0,10); }
+              rows.push([
+                csvEsc(a.title || ""), csvEsc(a.source || ""), csvEsc(String(pub)),
+                csvEsc(a.summary || ""), csvEsc(ents), csvEsc(a.link || "")
+              ].join(","));
+            }
+            const csv = BOM + rows.join("\n");
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const el = document.createElement("a");
+            const title = document.querySelector(".brand-title");
+            const catName = title ? title.textContent.trim().replace(/\s+/g, "_") : "report";
+            const dateStr = new Date().toISOString().slice(0,10);
+            el.href = url; el.download = catName + "_report_" + dateStr + ".csv";
+            document.body.appendChild(el); el.click(); document.body.removeChild(el);
+            URL.revokeObjectURL(url);
+          }
+
+          function csvEsc(s) {
+            if (s == null) return '""';
+            s = String(s);
+            if (s.indexOf(",") >= 0 || s.indexOf('"') >= 0 || s.indexOf("\n") >= 0)
+              return '"' + s.replace(/"/g, '""') + '"';
+            return s;
+          }
+
+          const exportBtn = document.getElementById("export-csv");
+          if (exportBtn) {
+            exportBtn.addEventListener("click", exportCSV);
+          }
+
+          // Entity pill click handler
+          document.querySelectorAll(".entity-pill").forEach(pill => {
+            pill.addEventListener("click", function() {
+              const entity = this.dataset.entity;
+              const cards = document.querySelectorAll("#articles-list .card");
+              cards.forEach(card => {
+                const cardEntities = JSON.parse(card.dataset.entities || "[]");
+                if (entity && !cardEntities.includes(entity)) {
+                  card.style.opacity = "0.3";
+                } else {
+                  card.style.opacity = "1";
+                }
+              });
+            });
+            pill.addEventListener("keydown", function(e) {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                this.click();
+              }
+            });
+          });
+        })();
+      </script>
+    </main>
+  </body>
+</html>
