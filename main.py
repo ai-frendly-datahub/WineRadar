@@ -365,6 +365,7 @@ def collect_and_store(
     sources_succeeded = 0
     sources_failed = 0
     errors = []
+    seen_urls: set[str] = set()
     raw_logger = RawLogger(DEFAULT_RAW_DIR)
     search_index = SearchIndex(DEFAULT_SEARCH_DB_PATH)
 
@@ -416,6 +417,12 @@ def collect_and_store(
                         validated_items.append(item)
 
                 for item in validated_items:
+                    article_url = str(item.get("url") or "").strip()
+                    if article_url and article_url in seen_urls:
+                        collector_success = True
+                        continue
+                    if article_url:
+                        seen_urls.add(article_url)
                     entities = extract_all_entities(item)
                     graph_store.upsert_url_and_entities(item, entities, now, db_path=db_path)
                     search_index.upsert(
