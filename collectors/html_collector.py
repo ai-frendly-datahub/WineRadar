@@ -10,7 +10,7 @@ import time  # noqa: E402
 from collections.abc import Callable, Iterable  # noqa: E402
 from datetime import UTC, datetime  # noqa: E402
 from typing import Any  # noqa: E402
-from urllib.parse import urljoin  # noqa: E402
+from urllib.parse import urljoin, urlsplit  # noqa: E402
 
 import requests  # noqa: E402
 from bs4 import BeautifulSoup  # noqa: E402
@@ -19,6 +19,13 @@ from collectors.base import RawItem, validate_raw_item  # noqa: E402
 
 
 PageFetcher = Callable[[str], bytes]
+
+
+def _page_key(url: str) -> tuple[str, str, str]:
+    parts = urlsplit(url)
+    path = parts.path.rstrip("/") or "/"
+    return parts.scheme.lower(), parts.netloc.lower(), path
+
 
 DEFAULT_USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
@@ -154,12 +161,13 @@ class HTMLCollector:
         articles: list[dict[str, Any]] = []
         nodes = soup.select(self.article_selector)
 
+        seen_urls: set[str] = set()
         for node in nodes[: self.max_articles]:
-            link_node = node.select_one(self.link_selector) if self.link_selector else node
+            link_node = self._link_node(node)
             if not link_node:
                 continue
 
-            href = link_node.get(self.url_attr, "").strip()
+            href = str(link_node.get(self.url_attr, "")).strip()
             if not href:
                 continue
 
@@ -187,10 +195,10 @@ class HTMLCollector:
                     else:
                         continue
 
-            if href.startswith("/"):
-                href = urljoin(self.list_url, href)
-            elif not href.startswith("http"):
+            absolute_url = self._absolute_article_url(href)
+            if absolute_url is None or absolute_url in seen_urls:
                 continue
+            href = absolute_url
 
             if self.title_selector:
                 title_elem = node.select_one(self.title_selector)
@@ -207,6 +215,7 @@ class HTMLCollector:
                     title = str(image_node.get("alt") or "").strip()
             if not title:
                 continue
+            seen_urls.add(href)
 
             summary = None
             if self.summary_selector:
@@ -235,6 +244,34 @@ class HTMLCollector:
             )
 
         return articles
+
+    def _link_node(self, node: Any) -> Any | None:
+        """Find the anchor for this article, including selectors that name the node itself."""
+        if not self.link_selector:
+            return node
+        found = node.select_one(self.link_selector)
+        if found is not None:
+            return found
+        parent = getattr(node, "parent", None)
+        if parent is None:
+            return None
+        for candidate in parent.select(self.link_selector):
+            if candidate is node or candidate in node.descendants:
+                return candidate
+        return None
+
+    def _absolute_article_url(self, href: str) -> str | None:
+        """Resolve a list-page href to the article URL and drop index links."""
+        raw = href.strip()
+        if not raw or raw.startswith("#") or raw.lower().startswith("javascript:"):
+            return None
+        absolute = urljoin(self.list_url, raw)
+        parts = urlsplit(absolute)
+        if parts.scheme not in {"http", "https"} or not parts.netloc:
+            return None
+        if _page_key(absolute) == _page_key(self.list_url):
+            return None
+        return str(absolute)
 
     def _create_raw_item(self, article: dict[str, Any], now: datetime) -> RawItem | None:
         url = article["url"]

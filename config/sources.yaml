@@ -148,8 +148,9 @@ sources:
     collection_method: html
     list_url: https://koreawine.or.kr/wineinfo
     wait_for: .board-text-overflow
-    article_selector: .board-text-overflow
-    link_selector: .board-text-overflow a
+    article_selector: "td.board-title div.board-text-overflow:has(a.title), div.title.field.board-title"
+    link_selector: "a.title, a[href*='board/view/']"
+    title_selector: span.title-text
     max_articles: 20
     timeout: 20000
   content_type: education
