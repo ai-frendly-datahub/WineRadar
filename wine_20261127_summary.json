@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-27",
+  "category": "wine",
+  "article_count": 52,
+  "source_count": 13,
+  "matched_count": 52,
+  "top_entities": [
+    {
+      "name": "region",
+      "count": 91
+    },
+    {
+      "name": "topic",
+      "count": 71
+    },
+    {
+      "name": "grape_variety",
+      "count": 51
+    },
+    {
+      "name": "winery",
+      "count": 25
+    },
+    {
+      "name": "climate_zone",
+      "count": 17
+    }
+  ],
+  "sources": {
+    "Wine21": 6,
+    "Enolife": 3,
+    "Gambero Rosso": 4,
+    "Wine Magazine South Africa": 1,
+    "Korean Wine Consumer Association": 5,
+    "Federdoc": 7,
+    "Wine Enthusiast": 2,
+    "Decanter": 2,
+    "Wine Dharma": 5,
+    "Wine Institute": 10,
+    "Winetitles Australia": 5,
+    "VinePair": 1,
+    "Opening a Bottle": 1
+  },
+  "generated_at": "2026-11-27T05:01:27.241320+00:00"
+}
